@@ -28,6 +28,9 @@ lifecycleProcess = "2.8.2"
 glide = "5.0.0-rc01"
 coilSvg = "2.6.0"
 coil = "2.6.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
 
 
 
@@ -61,6 +64,9 @@ androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-p
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coilSvg" }
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
 
 [plugins]
@@ -68,4 +74,5 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 #kapt for room
 org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "org-jetbrains-kotlin-android" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 
