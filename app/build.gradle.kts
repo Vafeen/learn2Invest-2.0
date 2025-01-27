@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "ru.surf.learn2invest"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "ru.surf.learn2invest"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         kapt {
@@ -56,7 +56,7 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(libs.androidx.activity.v160alpha05)
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.room.runtime)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
