@@ -23,3 +23,4 @@ dependencyResolutionManagement {
 rootProject.name = "Learn2Invest"
 include(":app")
 include(":presentation")
+include(":data")
