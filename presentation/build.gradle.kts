@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.surf.learn2invest.resources"
+    namespace = "ru.surf.learn2invest.presentation"
     compileSdk = 35
 
     defaultConfig {
@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-
+    api(project(":domain"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

@@ -24,3 +24,5 @@ rootProject.name = "Learn2Invest"
 include(":app")
 include(":resources")
 include(":domain")
+include(":presentation")
+include(":data")

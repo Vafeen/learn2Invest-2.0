@@ -50,6 +50,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":presentation"))
+    implementation(project(":data"))
     implementation(libs.androidx.activity)
     implementation(libs.androidx.room.runtime)
     implementation(libs.retrofit)
