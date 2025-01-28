@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.data.database_components.DatabaseRepository
 import ru.surf.learn2invest.data.database_components.entity.SearchedCoin
-import ru.surf.learn2invest.noui.network_components.NetworkRepository
-import ru.surf.learn2invest.noui.network_components.responses.CoinReviewResponse
-import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper
+import ru.surf.learn2invest.data.network_components.NetworkRepository
+import ru.surf.learn2invest.data.network_components.responses.CoinReviewResponse
+import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
 import ru.surf.learn2invest.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_MARKETCAP
 import ru.surf.learn2invest.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PERCENT
 import ru.surf.learn2invest.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PRICE
-import ru.surf.learn2invest.utils.toCoinReviewDto
+import ru.surf.learn2invest.data.network_components.toCoinReviewDto
 import javax.inject.Inject
 
 @HiltViewModel

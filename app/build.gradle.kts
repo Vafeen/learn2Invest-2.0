@@ -48,11 +48,6 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":data"))
     implementation(libs.androidx.activity)
-
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.gson)
-    implementation(libs.logging.interceptor)
     // got using fingerprint
     implementation(libs.androidx.biometric)
     implementation(libs.biometric)
@@ -60,8 +55,6 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.lifecycle.process)
-    implementation(libs.coil.svg)
-    implementation(libs.coil)
     implementation(libs.androidx.room.common)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.core.ktx)

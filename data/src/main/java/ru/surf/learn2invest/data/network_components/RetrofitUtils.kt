@@ -1,7 +1,7 @@
-package ru.surf.learn2invest.utils
+package ru.surf.learn2invest.data.network_components
 
-import ru.surf.learn2invest.noui.network_components.responses.AugmentedCoinReviewResponse
-import ru.surf.learn2invest.noui.network_components.responses.CoinReviewResponse
+import ru.surf.learn2invest.data.network_components.responses.AugmentedCoinReviewResponse
+import ru.surf.learn2invest.data.network_components.responses.CoinReviewResponse
 
 /**
  * Константы для репозитория сетевого взаимодействия

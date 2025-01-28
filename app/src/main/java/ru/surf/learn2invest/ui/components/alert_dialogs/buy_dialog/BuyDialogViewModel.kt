@@ -11,8 +11,8 @@ import ru.surf.learn2invest.data.database_components.DatabaseRepository
 import ru.surf.learn2invest.data.database_components.entity.AssetInvest
 import ru.surf.learn2invest.data.database_components.entity.transaction.Transaction
 import ru.surf.learn2invest.domain.TransactionsType
-import ru.surf.learn2invest.noui.network_components.NetworkRepository
-import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper
+import ru.surf.learn2invest.data.network_components.NetworkRepository
+import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
 import ru.surf.learn2invest.utils.getWithCurrency
 import javax.inject.Inject
 

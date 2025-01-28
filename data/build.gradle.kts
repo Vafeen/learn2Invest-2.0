@@ -47,7 +47,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    // room
     kapt(libs.androidx.room.compiler)
+    // retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+    implementation(libs.logging.interceptor)
+    //coil // TODO (mek implementation)
+    api(libs.coil.svg)
+    api(libs.coil)
 }

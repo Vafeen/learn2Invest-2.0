@@ -1,12 +1,10 @@
-package ru.surf.learn2invest.noui.network_components
+package ru.surf.learn2invest.data.network_components
 
-import android.util.Log
 import retrofit2.Retrofit
-import ru.surf.learn2invest.noui.network_components.responses.AugmentedCoinReviewResponse
-import ru.surf.learn2invest.noui.network_components.responses.CoinPriceResponse
-import ru.surf.learn2invest.noui.network_components.responses.CoinReviewResponse
-import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper
-import ru.surf.learn2invest.utils.RetrofitLinks
+import ru.surf.learn2invest.data.network_components.responses.AugmentedCoinReviewResponse
+import ru.surf.learn2invest.data.network_components.responses.CoinPriceResponse
+import ru.surf.learn2invest.data.network_components.responses.CoinReviewResponse
+import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
 import javax.inject.Inject
 import javax.inject.Singleton
 

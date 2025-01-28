@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.noui.dependency_injection
+package ru.surf.learn2invest.data.network_components
 
 import android.content.Context
 import coil.ImageLoader
@@ -12,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.surf.learn2invest.utils.RetrofitLinks
 import javax.inject.Singleton
 
 

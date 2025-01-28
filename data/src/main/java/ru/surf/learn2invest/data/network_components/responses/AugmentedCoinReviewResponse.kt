@@ -1,9 +1,9 @@
-package ru.surf.learn2invest.noui.network_components.responses
+package ru.surf.learn2invest.data.network_components.responses
 
 /**
- * Структура JSON для парсинга иформации о рынке (элемент массива)
+ * Структура JSON для парсинга подробной информации об активе
  */
-data class CoinReviewResponse(
+data class AugmentedCoinReviewResponse(
     val id: String, // идентификатор коина в API
     val rank: Int,
     val symbol: String, // аббревиатура
@@ -14,5 +14,6 @@ data class CoinReviewResponse(
     val volumeUsd24Hr: Float,
     val priceUsd: Float,
     val changePercent24Hr: Float,
-    val vwap24Hr: Float
+    val vwap24Hr: Float,
+    val explorer: String
 )

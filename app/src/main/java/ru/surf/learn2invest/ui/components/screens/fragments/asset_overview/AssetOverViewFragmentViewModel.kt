@@ -13,8 +13,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.surf.learn2invest.noui.network_components.NetworkRepository
-import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper
+import ru.surf.learn2invest.data.network_components.NetworkRepository
+import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
 import ru.surf.learn2invest.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.utils.getWithCurrency
 import java.text.NumberFormat

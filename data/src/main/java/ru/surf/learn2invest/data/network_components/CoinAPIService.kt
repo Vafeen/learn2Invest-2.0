@@ -1,15 +1,15 @@
-package ru.surf.learn2invest.noui.network_components
+package ru.surf.learn2invest.data.network_components
 
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import ru.surf.learn2invest.noui.network_components.responses.APIWrapper
-import ru.surf.learn2invest.noui.network_components.responses.AugmentedCoinReviewResponse
-import ru.surf.learn2invest.noui.network_components.responses.CoinPriceResponse
-import ru.surf.learn2invest.noui.network_components.responses.CoinReviewResponse
-import ru.surf.learn2invest.utils.RetrofitLinks.API_COIN_REVIEW
-import ru.surf.learn2invest.utils.RetrofitLinks.API_HISTORY
-import ru.surf.learn2invest.utils.RetrofitLinks.API_MARKET_REVIEW
+import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_COIN_REVIEW
+import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_HISTORY
+import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_MARKET_REVIEW
+import ru.surf.learn2invest.data.network_components.responses.APIWrapper
+import ru.surf.learn2invest.data.network_components.responses.AugmentedCoinReviewResponse
+import ru.surf.learn2invest.data.network_components.responses.CoinPriceResponse
+import ru.surf.learn2invest.data.network_components.responses.CoinReviewResponse
 
 /**
  * Сервис сетевого взаимодействия

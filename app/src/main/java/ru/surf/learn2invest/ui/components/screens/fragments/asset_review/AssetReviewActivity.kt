@@ -19,7 +19,7 @@ import ru.surf.learn2invest.ui.components.alert_dialogs.sell_dialog.SellDialog
 import ru.surf.learn2invest.ui.components.screens.fragments.asset_overview.AssetOverviewFragment
 import ru.surf.learn2invest.utils.AssetConstants
 import ru.surf.learn2invest.ui.components.screens.fragments.subhistory.SubHistoryFragment
-import ru.surf.learn2invest.utils.RetrofitLinks.API_ICON
+import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.utils.setNavigationBarColor
 import ru.surf.learn2invest.utils.setStatusBarColor
 

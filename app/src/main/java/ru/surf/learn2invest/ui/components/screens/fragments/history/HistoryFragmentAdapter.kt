@@ -18,7 +18,7 @@ import ru.surf.learn2invest.data.database_components.entity.transaction.Transact
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.ui.components.screens.fragments.asset_review.AssetReviewActivity
 import ru.surf.learn2invest.utils.AssetConstants
-import ru.surf.learn2invest.utils.RetrofitLinks.API_ICON
+import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_ICON
 import javax.inject.Inject
 
 class HistoryFragmentAdapter @Inject constructor(

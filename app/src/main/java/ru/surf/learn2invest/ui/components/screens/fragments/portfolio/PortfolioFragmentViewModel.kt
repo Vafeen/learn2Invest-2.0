@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.onEach
 import ru.surf.learn2invest.data.database_components.DatabaseRepository
 import ru.surf.learn2invest.data.database_components.entity.AssetBalanceHistory
 import ru.surf.learn2invest.data.database_components.entity.AssetInvest
-import ru.surf.learn2invest.noui.network_components.NetworkRepository
-import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper
+import ru.surf.learn2invest.data.network_components.NetworkRepository
+import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Calendar
