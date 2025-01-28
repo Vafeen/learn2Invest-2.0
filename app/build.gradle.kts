@@ -53,7 +53,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.activity.v160alpha05)
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.room.runtime)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
