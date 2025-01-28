@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "ru.surf.learn2invest"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "ru.surf.learn2invest"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         kapt {
