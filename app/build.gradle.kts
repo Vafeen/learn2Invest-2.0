@@ -48,9 +48,6 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":data"))
     implementation(libs.androidx.activity)
-    // got using fingerprint
-    implementation(libs.androidx.biometric)
-    implementation(libs.biometric)
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)

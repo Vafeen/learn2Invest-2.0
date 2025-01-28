@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
+import ru.surf.learn2invest.data.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.data.database_components.entity.Profile
 import ru.surf.learn2invest.databinding.FragmentProfileBinding
 import ru.surf.learn2invest.ui.components.alert_dialogs.parent.SimpleDialog
@@ -24,8 +25,8 @@ import ru.surf.learn2invest.ui.components.screens.sign_in.SignInActivity
 import ru.surf.learn2invest.ui.components.screens.trading_password.TradingPasswordActivity
 import ru.surf.learn2invest.ui.components.screens.trading_password.TradingPasswordActivityActions
 import ru.surf.learn2invest.ui.main.MainActivity
-import ru.surf.learn2invest.utils.isBiometricAvailable
 import ru.surf.learn2invest.utils.setStatusBarColor
+import javax.inject.Inject
 
 /**
  * Фрагмент профиля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
@@ -35,6 +36,8 @@ class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     val viewModel: ProfileFragmentViewModel by viewModels()
 
+    @Inject
+    lateinit var fingerprintAuthenticator: FingerprintAuthenticator
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -85,7 +88,7 @@ class ProfileFragment : Fragment() {
                     "${pr.firstName}\n${pr.lastName}"
                 }
                 binding.biometryBtn.isVisible =
-                    isBiometricAvailable(activity = activity as AppCompatActivity)
+                    fingerprintAuthenticator.isBiometricAvailable(activity = activity as AppCompatActivity)
                 fr.deleteProfileTV.setOnClickListener {
                     SimpleDialog(
                         context = requireContext(),

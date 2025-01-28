@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.noui.cryptography
+package ru.surf.learn2invest.data.cryptography
 
 import java.security.MessageDigest
 

@@ -15,10 +15,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
+import ru.surf.learn2invest.data.cryptography.PasswordHasher
 import ru.surf.learn2invest.databinding.ActivitySignInBinding
-import ru.surf.learn2invest.noui.cryptography.PasswordHasher
 import ru.surf.learn2invest.utils.gotoCenter
-import ru.surf.learn2invest.utils.isBiometricAvailable
 import ru.surf.learn2invest.utils.setNavigationBarColor
 import ru.surf.learn2invest.utils.setStatusBarColor
 import ru.surf.learn2invest.utils.tapOn
@@ -224,7 +223,7 @@ class SignInActivity : AppCompatActivity() {
                                         )
                                     userDataIsChanged = true
                                     animatePINCode(truth = true).invokeOnCompletion {
-                                        if (isBiometricAvailable(activity = this@SignInActivity)) {
+                                        if (viewModel.fingerprintAuthenticator.isBiometricAvailable(activity = this@SignInActivity)) {
                                             viewModel.fingerprintAuthenticator.setSuccessCallback {
                                                 databaseRepository.profile =
                                                     databaseRepository.profile.copy(
@@ -388,7 +387,7 @@ class SignInActivity : AppCompatActivity() {
                 }
 
                 fingerprint.isVisible =
-                    if (isBiometricAvailable(activity = this@SignInActivity) && databaseRepository.profile.biometry) {
+                    if (viewModel.fingerprintAuthenticator.isBiometricAvailable(activity = this@SignInActivity) && databaseRepository.profile.biometry) {
                         fingerprint.setOnClickListener {
                             viewModel.fingerprintAuthenticator.auth(
                                 lifecycleCoroutineScope = lifecycleScope,

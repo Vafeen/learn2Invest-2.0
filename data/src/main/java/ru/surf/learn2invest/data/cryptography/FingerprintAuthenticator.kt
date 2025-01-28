@@ -1,13 +1,13 @@
-package ru.surf.learn2invest.noui.cryptography
+package ru.surf.learn2invest.data.cryptography
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.utils.isBiometricAvailable
 import java.util.concurrent.Executor
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,6 +17,17 @@ import javax.inject.Singleton
  */
 @Singleton
 class FingerprintAuthenticator @Inject constructor() {
+    /**
+     * Проверка наличия биометрического аппаратного обеспечения
+     */
+    fun isBiometricAvailable(activity: AppCompatActivity): Boolean {
+        return BiometricManager.from(activity)
+            .canAuthenticate(
+                BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                        BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            ) == BiometricManager.BIOMETRIC_SUCCESS
+    }
+
     /**
      * Сеттер для callback в случае успешной аутентифиакции
      * @param function [callback в случае успешной аутентификации]
