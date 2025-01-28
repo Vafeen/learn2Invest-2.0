@@ -9,7 +9,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
 import ru.surf.learn2invest.databinding.ActivityTradingPasswordBinding
 import ru.surf.learn2invest.utils.Icons.error
@@ -132,7 +135,7 @@ class TradingPasswordActivity : AppCompatActivity() {
                 when (viewModel.action) {
                     TradingPasswordActivityActions.RemoveTradingPassword -> {
                         if (("${passwordEdit.text}" == "${passwordConfirm.text}") && verifyTradingPassword(
-                                user = viewModel.databaseRepository.profile,
+                                user = viewModel.profileFlow.value,
                                 password = "${passwordEdit.text}"
                             )
                         ) ok else error
@@ -154,7 +157,7 @@ class TradingPasswordActivity : AppCompatActivity() {
 
             imageRule5.setImageDrawable(
                 if (verifyTradingPassword(
-                        user = viewModel.databaseRepository.profile,
+                        user = viewModel.profileFlow.value,
                         password = "${passwordLast.text}"
                     )
                 ) ok else error
@@ -295,11 +298,10 @@ class TradingPasswordActivity : AppCompatActivity() {
             })
 
             buttonDoTrading.setOnClickListener {
-                viewModel.apply {
-                    saveTradingPassword(password = "${passwordConfirm.text}")
-                    updateProfile()
+                lifecycleScope.launch(Dispatchers.Main) {
+                    viewModel.saveTradingPassword(password = "${passwordConfirm.text}")
+                    this@TradingPasswordActivity.finish()
                 }
-                this@TradingPasswordActivity.finish()
             }
         }
     }

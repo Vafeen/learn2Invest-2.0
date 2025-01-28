@@ -1,7 +1,7 @@
 package ru.surf.learn2invest.utils
 
 import ru.surf.learn2invest.data.cryptography.PasswordHasher
-import ru.surf.learn2invest.data.database_components.entity.Profile
+import ru.surf.learn2invest.domain.domain_models.Profile
 
 
 /**

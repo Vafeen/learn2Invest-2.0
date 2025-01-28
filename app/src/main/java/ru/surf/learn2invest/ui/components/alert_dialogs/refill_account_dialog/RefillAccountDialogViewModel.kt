@@ -5,23 +5,22 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.data.database_components.DatabaseRepository
+import ru.surf.learn2invest.domain.ProfileManager
 import javax.inject.Inject
 
 
 @HiltViewModel
-class RefillAccountDialogViewModel @Inject constructor(val databaseRepository: DatabaseRepository) :
+class RefillAccountDialogViewModel @Inject constructor(
+    private val profileManager: ProfileManager
+) :
     ViewModel() {
+    val profileFlow = profileManager.profileFlow
     var enteredBalanceF: Float = 0f
 
     fun refill() {
         viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.profile.also {
-                databaseRepository.updateProfile(
-                    it.copy(
-                        fiatBalance = it.fiatBalance + enteredBalanceF
-                    )
-                )
+            profileManager.updateProfile {
+                it.copy(fiatBalance = it.fiatBalance + enteredBalanceF)
             }
         }
     }

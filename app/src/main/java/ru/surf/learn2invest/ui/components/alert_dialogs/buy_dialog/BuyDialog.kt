@@ -17,8 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
-import ru.surf.learn2invest.data.database_components.entity.AssetInvest
 import ru.surf.learn2invest.databinding.DialogBuyBinding
+import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.utils.getWithCurrency
@@ -68,7 +68,9 @@ class BuyDialog(
     override fun initListeners() {
         binding.apply {
             lifecycleScope.launch(Dispatchers.Main) {
-                balanceNum.text = viewModel.databaseRepository.profile.fiatBalance.getWithCurrency()
+                viewModel.profileFlow.collect {
+                    balanceNum.text = it.fiatBalance.getWithCurrency()
+                }
             }
 
             buttonBuy.isVisible = false
@@ -81,7 +83,7 @@ class BuyDialog(
             imageButtonPlus.setOnClickListener {
                 enteringNumberOfLots.setText(enteringNumberOfLots.text.let { numOfLotsText ->
                     (numOfLotsText.toString().toIntOrNull() ?: 0).let {
-                        val balance = viewModel.databaseRepository.profile.fiatBalance
+                        val balance = viewModel.profileFlow.value.fiatBalance
                         when {
                             resultPrice(onFuture = true) <= balance -> {
                                 (it + 1).toString()
@@ -129,7 +131,7 @@ class BuyDialog(
             })
 
             tradingPassword.isVisible =
-                if (viewModel.databaseRepository.profile.tradingPasswordHash != null && viewModel.databaseRepository.profile.fiatBalance != 0f) {
+                if (viewModel.profileFlow.value.tradingPasswordHash != null && viewModel.profileFlow.value.fiatBalance != 0f) {
                     tradingPasswordTV.addTextChangedListener(object : TextWatcher {
                         override fun beforeTextChanged(
                             s: CharSequence?, start: Int, count: Int, after: Int
@@ -158,7 +160,9 @@ class BuyDialog(
     private fun buy() {
         val price = binding.priceNumber.text.toString().getFloatFromStringWithCurrency() ?: 0f
         val amountCurrent = binding.enteringNumberOfLots.text.toString().toInt().toFloat()
-        viewModel.buy(amountCurrent = amountCurrent, price = price)
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.buy(amountCurrent = amountCurrent, price = price)
+        }
     }
 
     override fun getDialogView(): View {
@@ -167,7 +171,7 @@ class BuyDialog(
 
     private fun updateFields() {
         val willPrice = resultPrice(onFuture = false)
-        val fiatBalance = viewModel.databaseRepository.profile.fiatBalance
+        val fiatBalance = viewModel.profileFlow.value.fiatBalance
 
         binding.apply {
             when {
@@ -176,7 +180,7 @@ class BuyDialog(
                 } && fiatBalance != 0f && willPrice <= fiatBalance -> {
                     buttonBuy.isVisible =
                         tradingPasswordTV.text.toString().isTrueTradingPasswordOrIsNotDefined(
-                            profile = viewModel.databaseRepository.profile
+                            profile = viewModel.profileFlow.value
                         )
                     result.text = buildString {
                         append(ContextCompat.getString(dialogContext, R.string.itog))
@@ -199,9 +203,9 @@ class BuyDialog(
                 }
             }
             viewModel.apply {
-                imageButtonPlus.isVisible = databaseRepository.profile.fiatBalance != 0f
-                imageButtonMinus.isVisible = databaseRepository.profile.fiatBalance != 0f
-                enteringNumberOfLots.isEnabled = databaseRepository.profile.fiatBalance != 0f
+                imageButtonPlus.isVisible = profileFlow.value.fiatBalance != 0f
+                imageButtonMinus.isVisible = profileFlow.value.fiatBalance != 0f
+                enteringNumberOfLots.isEnabled = profileFlow.value.fiatBalance != 0f
             }
         }
     }
@@ -220,23 +224,22 @@ class BuyDialog(
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        var asset: AssetInvest? = null
-        viewModel.apply {
-            coin = AssetInvest(
-                name = name, symbol = symbol, coinPrice = 0f, amount = 0f, assetID = id
-            )
-            lifecycleScope.launch(Dispatchers.IO) {
-                asset = databaseRepository.getBySymbolAssetInvest(symbol = symbol)
-            }.invokeOnCompletion {
-                if (asset != null) coin = asset as AssetInvest
-                updateFields()
-                realTimeUpdateJob = startRealTimeUpdate {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        binding.priceNumber.text = it
-                        updateFields()
-                    }
+        viewModel.coin = AssetInvest(
+            name = name, symbol = symbol, coinPrice = 0f, amount = 0f, assetID = id
+        )
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.getBySymbolAssetInvestUseCase.invoke(symbol = symbol)?.let {
+                viewModel.coin = it
+            }
+        }.invokeOnCompletion {
+            updateFields()
+            viewModel.realTimeUpdateJob = viewModel.startRealTimeUpdate {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    binding.priceNumber.text = it
+                    updateFields()
                 }
             }
         }
     }
+
 }

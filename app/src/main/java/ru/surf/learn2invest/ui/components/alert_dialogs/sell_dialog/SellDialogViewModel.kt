@@ -7,68 +7,75 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.data.database_components.DatabaseRepository
-import ru.surf.learn2invest.data.database_components.entity.AssetInvest
-import ru.surf.learn2invest.data.database_components.entity.transaction.Transaction
+import ru.surf.learn2invest.domain.ProfileManager
 import ru.surf.learn2invest.domain.TransactionsType
-import ru.surf.learn2invest.data.network_components.NetworkRepository
-import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
+import ru.surf.learn2invest.domain.database.usecase.DeleteAssetInvestUseCase
+import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
+import ru.surf.learn2invest.domain.database.usecase.InsertAssetInvestUseCase
+import ru.surf.learn2invest.domain.database.usecase.InsertTransactionUseCase
+import ru.surf.learn2invest.domain.domain_models.AssetInvest
+import ru.surf.learn2invest.domain.domain_models.Transaction
+import ru.surf.learn2invest.domain.network.ResponseResult
+import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import ru.surf.learn2invest.utils.getWithCurrency
 import javax.inject.Inject
 
 
 @HiltViewModel
 class SellDialogViewModel @Inject constructor(
-    val databaseRepository: DatabaseRepository,
-    var networkRepository: NetworkRepository
+    private val profileManager: ProfileManager,
+    private val insertTransactionUseCase: InsertTransactionUseCase,
+    private val insertAssetInvestUseCase: InsertAssetInvestUseCase,
+    private val deleteAssetInvestUseCase: DeleteAssetInvestUseCase,
+    private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
+    val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
 ) :
     ViewModel() {
     lateinit var realTimeUpdateJob: Job
     lateinit var coin: AssetInvest
-
+    val profileFlow = profileManager.profileFlow
     fun sell(price: Float, amountCurrent: Float) {
         viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.apply {
-                // обновление баланса
-                updateProfile(
-                    profile.copy(fiatBalance = profile.fiatBalance + price * amountCurrent)
-                )
-                coin.apply {
-                    // обновление истории
-                    insertAllTransaction(
-                        Transaction(
-                            coinID = assetID,
-                            name = name,
-                            symbol = symbol,
-                            coinPrice = price,
-                            dealPrice = price * amountCurrent,
-                            amount = amountCurrent,
-                            transactionType = TransactionsType.Sell
-                        )
-                    )
-                }
-                // обновление портфеля
-                if (amountCurrent < coin.amount) {
-                    insertAllAssetInvest(
-                        coin.copy(
-                            coinPrice = (coin.coinPrice * coin.amount - amountCurrent * price) / (coin.amount - amountCurrent),
-                            amount = coin.amount - amountCurrent
-                        )
-                    )
-                } else deleteAssetInvest(coin)
+            profileManager.updateProfile {
+                it.copy(fiatBalance = it.fiatBalance + price * amountCurrent)
             }
+
+            coin.apply {
+                // обновление истории
+                insertTransactionUseCase(
+                    Transaction(
+                        coinID = assetID,
+                        name = name,
+                        symbol = symbol,
+                        coinPrice = price,
+                        dealPrice = price * amountCurrent,
+                        amount = amountCurrent,
+                        transactionType = TransactionsType.Sell
+                    )
+                )
+            }
+            // обновление портфеля
+            if (amountCurrent < coin.amount) {
+                insertAssetInvestUseCase(
+                    coin.copy(
+                        coinPrice = (coin.coinPrice * coin.amount - amountCurrent * price) / (coin.amount - amountCurrent),
+                        amount = coin.amount - amountCurrent
+                    )
+                )
+            } else deleteAssetInvestUseCase(coin)
+
         }
     }
 
     fun startRealTimeUpdate(onUpdateFields: (result: String) -> Unit): Job =
         viewModelScope.launch(Dispatchers.IO) {
             while (true) {
-                when (val result = networkRepository.getCoinReview(coin.assetID)) {
-                    is ResponseWrapper.Success -> {
+                when (val result = getAllCoinReviewUseCase(coin.assetID)) {
+                    is ResponseResult.Success -> {
                         onUpdateFields(result.value.priceUsd.getWithCurrency())
                     }
 
-                    is ResponseWrapper.NetworkError -> {}
+                    is ResponseResult.NetworkError -> {}
                 }
 
                 delay(5000)

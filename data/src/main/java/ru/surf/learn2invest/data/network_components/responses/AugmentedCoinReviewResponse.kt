@@ -3,7 +3,7 @@ package ru.surf.learn2invest.data.network_components.responses
 /**
  * Структура JSON для парсинга подробной информации об активе
  */
-data class AugmentedCoinReviewResponse(
+internal data class AugmentedCoinReviewResponse(
     val id: String, // идентификатор коина в API
     val rank: Int,
     val symbol: String, // аббревиатура

@@ -3,7 +3,7 @@ package ru.surf.learn2invest.data.network_components.responses
 /**
  * Структура JSON для парсинга иформации о рынке (элемент массива)
  */
-data class CoinReviewResponse(
+internal data class CoinReviewResponse(
     val id: String, // идентификатор коина в API
     val rank: Int,
     val symbol: String, // аббревиатура

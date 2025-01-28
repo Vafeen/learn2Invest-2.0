@@ -1,22 +1,30 @@
 package ru.surf.learn2invest.ui.components.screens.fragments.portfolio
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import ru.surf.learn2invest.data.database_components.DatabaseRepository
-import ru.surf.learn2invest.data.database_components.entity.AssetBalanceHistory
-import ru.surf.learn2invest.data.database_components.entity.AssetInvest
-import ru.surf.learn2invest.data.network_components.NetworkRepository
-import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
+import kotlinx.coroutines.flow.stateIn
+import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.database.usecase.GetAllAssetBalanceHistoryUseCase
+import ru.surf.learn2invest.domain.database.usecase.GetAllAssetInvestUseCase
+import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
+import ru.surf.learn2invest.domain.database.usecase.InsertAssetBalanceHistoryUseCase
+import ru.surf.learn2invest.domain.database.usecase.InsertByLimitAssetBalanceHistoryUseCase
+import ru.surf.learn2invest.domain.domain_models.AssetBalanceHistory
+import ru.surf.learn2invest.domain.domain_models.AssetInvest
+import ru.surf.learn2invest.domain.network.ResponseResult
+import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Calendar
@@ -25,38 +33,34 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PortfolioFragmentViewModel @Inject constructor(
-    var databaseRepository: DatabaseRepository,
-    var networkRepository: NetworkRepository
+    private val profileManager: ProfileManager,
+    private val getAllAssetInvestUseCase: GetAllAssetInvestUseCase,
+    private val getAllAssetBalanceHistoryUseCase: GetAllAssetBalanceHistoryUseCase,
+    private val insertAssetBalanceHistoryUseCase: InsertAssetBalanceHistoryUseCase,
+    private val insertByLimitAssetBalanceHistoryUseCase: InsertByLimitAssetBalanceHistoryUseCase,
+    private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
+    private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
 ) :
     ViewModel() {
+    private val HISTORY_LIMIT_SIZE = 7
 
     private val _chartData = MutableStateFlow<List<Entry>>(emptyList())
     val chartData: StateFlow<List<Entry>> = _chartData
-    val assetBalance: Flow<Float> = databaseRepository.getAllAsFlowProfile()
-        .map { profiles ->
-            if (profiles.isNotEmpty()) {
-                databaseRepository.profile.assetBalance
-            } else {
-                0f
-            }
-        }
-        .flowOn(Dispatchers.IO)
+    private val assetBalance = profileManager.profileFlow
+        .map { profile ->
+            profile.assetBalance
+        }.stateIn(viewModelScope, started = SharingStarted.Lazily, 0f)
 
-    val fiatBalance: Flow<Float> = databaseRepository.getAllAsFlowProfile()
-        .map { profiles ->
-            if (profiles.isNotEmpty()) {
-                databaseRepository.profile.fiatBalance
-            } else {
-                0f
-            }
-        }
-        .flowOn(Dispatchers.IO)
+    val fiatBalance: Flow<Float> = profileManager.profileFlow
+        .map { profile ->
+            profile.fiatBalance
+        }.stateIn(viewModelScope, started = SharingStarted.Lazily, 0f)
 
     val totalBalance: Flow<Float> =
         combine(assetBalance, fiatBalance) { assetBalance, fiatBalance ->
             assetBalance + fiatBalance
         }
-    val assetsFlow: Flow<List<AssetInvest>> = databaseRepository.getAllAsFlowAssetInvest()
+    val assetsFlow: Flow<List<AssetInvest>> = getAllAssetInvestUseCase()
         .flowOn(Dispatchers.IO)
         .onEach { assets ->
             loadPriceChanges(assets)
@@ -70,15 +74,15 @@ class PortfolioFragmentViewModel @Inject constructor(
 
     suspend fun refreshData() {
         checkAndUpdateBalanceHistory()
-        loadPriceChanges(databaseRepository.getAllAsFlowAssetInvest().first())
+        loadPriceChanges(getAllAssetInvestUseCase().first())
     }
 
-    suspend fun getAssetBalanceHistoryDates(): List<Date> {
-        return databaseRepository.getAllAssetBalanceHistory().first().map { it.date }
-    }
+    suspend fun getAssetBalanceHistoryDates(): List<Date> =
+        getAllAssetBalanceHistoryUseCase().first().map { it.date }
+
 
     private suspend fun refreshChartData() {
-        _chartData.value = databaseRepository.getAllAssetBalanceHistory().first()
+        _chartData.value = getAllAssetBalanceHistoryUseCase().first()
             .mapIndexed { index, assetBalanceHistory ->
                 Entry(index.toFloat(), assetBalanceHistory.assetBalance)
             }
@@ -93,7 +97,7 @@ class PortfolioFragmentViewModel @Inject constructor(
 
         val todayDate = today.time
 
-        val todayBalanceHistory = databaseRepository.getAllAssetBalanceHistory().first().find {
+        val todayBalanceHistory = getAllAssetBalanceHistoryUseCase().first().find {
             val historyDate = Calendar.getInstance()
             historyDate.time = it.date
             historyDate.set(Calendar.HOUR_OF_DAY, 0)
@@ -107,12 +111,15 @@ class PortfolioFragmentViewModel @Inject constructor(
         val totalBalance = assetBalance.first() + fiatBalance.first()
 
         if (todayBalanceHistory != null) {
-            databaseRepository.updateAssetBalanceHistory(
-                todayBalanceHistory.copy(assetBalance = totalBalance)
+            insertAssetBalanceHistoryUseCase(
+                todayBalanceHistory.copy(
+                    assetBalance = totalBalance
+                )
             )
         } else {
-            databaseRepository.insertByLimitAssetBalanceHistory(
-                7, AssetBalanceHistory(assetBalance = totalBalance, date = todayDate)
+            insertByLimitAssetBalanceHistoryUseCase(
+                HISTORY_LIMIT_SIZE,
+                AssetBalanceHistory(assetBalance = totalBalance, date = todayDate)
             )
         }
         refreshChartData()
@@ -124,28 +131,23 @@ class PortfolioFragmentViewModel @Inject constructor(
         var initialInvestment = 0f
         var currentPrice: Float
         for (asset in assets) {
-            val response = networkRepository.getCoinReview(asset.assetID)
-            if (response is ResponseWrapper.Success) {
+            val response = getAllCoinReviewUseCase(asset.assetID)
+            if (response is ResponseResult.Success) {
                 currentPrice = response.value.priceUsd
                 priceChanges[asset.symbol] = currentPrice
                 totalCurrentValue += currentPrice * asset.amount
 
-                val investAsset = databaseRepository.getBySymbolAssetInvest(asset.symbol)
-                if (investAsset != null) {
-                    initialInvestment += investAsset.coinPrice * asset.amount
+                getBySymbolAssetInvestUseCase(asset.symbol)?.let {
+                    initialInvestment += it.coinPrice * asset.amount
                 }
+
             }
         }
-
-        databaseRepository.profile.also {
-
-            databaseRepository.updateProfile(
-                it.copy(
-                    assetBalance = totalCurrentValue
-                )
+        profileManager.updateProfile {
+            it.copy(
+                assetBalance = totalCurrentValue
             )
         }
-
         _priceChanges.value = priceChanges
         calculatePortfolioChangePercentage(totalCurrentValue, initialInvestment)
     }

@@ -7,28 +7,34 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.data.database_components.DatabaseRepository
-import ru.surf.learn2invest.data.database_components.entity.SearchedCoin
-import ru.surf.learn2invest.data.network_components.NetworkRepository
-import ru.surf.learn2invest.data.network_components.responses.CoinReviewResponse
-import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
+import ru.surf.learn2invest.domain.database.usecase.ClearSearchedCoinUseCase
+import ru.surf.learn2invest.domain.database.usecase.GetAllSearchedCoinUseCase
+import ru.surf.learn2invest.domain.database.usecase.InsertSearchedCoinUseCase
+import ru.surf.learn2invest.domain.domain_models.CoinReview
+import ru.surf.learn2invest.domain.domain_models.SearchedCoin
+import ru.surf.learn2invest.domain.network.ResponseResult
+import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
+import ru.surf.learn2invest.domain.network.usecase.GetMarketReviewUseCase
+import ru.surf.learn2invest.domain.toCoinReview
 import ru.surf.learn2invest.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_MARKETCAP
 import ru.surf.learn2invest.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PERCENT
 import ru.surf.learn2invest.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PRICE
-import ru.surf.learn2invest.data.network_components.toCoinReviewDto
 import javax.inject.Inject
 
 @HiltViewModel
 class MarketReviewFragmentViewModel @Inject constructor(
-    var databaseRepository: DatabaseRepository, var networkRepository: NetworkRepository
+    private val getMarkerReviewUseCase: GetMarketReviewUseCase,
+    private val insertSearchedCoinUseCase: InsertSearchedCoinUseCase,
+    private val getAllSearchedCoinUseCase: GetAllSearchedCoinUseCase,
+    private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
+    private val clearSearchedCoinUseCase: ClearSearchedCoinUseCase,
 ) : ViewModel() {
-    private var _data: MutableStateFlow<MutableList<CoinReviewResponse>> = MutableStateFlow(
-        mutableListOf()
-    )
-    val data: StateFlow<List<CoinReviewResponse>> get() = _data
+    private var _data: MutableStateFlow<List<CoinReview>> = MutableStateFlow(listOf())
+    val data = _data.asStateFlow()
     private var _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> get() = _isLoading
     private var _isError: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -46,10 +52,9 @@ class MarketReviewFragmentViewModel @Inject constructor(
     private var firstTimePriceFilter = true
     private val _isSearch: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearch: StateFlow<Boolean> get() = _isSearch
-    private var _searchedData: MutableStateFlow<MutableList<CoinReviewResponse>> = MutableStateFlow(
-        mutableListOf()
-    )
-    val searchedData: StateFlow<List<CoinReviewResponse>> get() = _searchedData
+    private var _searchedData: MutableStateFlow<List<CoinReview>> =
+        MutableStateFlow(listOf())
+    val searchedData: StateFlow<List<CoinReview>> get() = _searchedData
     var firstUpdateElement = 0
         private set
     var amountUpdateElement = 0
@@ -63,9 +68,8 @@ class MarketReviewFragmentViewModel @Inject constructor(
 
     private fun initData() {
         viewModelScope.launch(Dispatchers.IO) {
-            when (val result: ResponseWrapper<List<CoinReviewResponse>> =
-                networkRepository.getMarketReview()) {
-                is ResponseWrapper.Success -> {
+            when (val result = getMarkerReviewUseCase()) {
+                is ResponseResult.Success -> {
                     _isLoading.value = false
                     _isError.value = false
                     val temp = result.value.toMutableList()
@@ -76,7 +80,7 @@ class MarketReviewFragmentViewModel @Inject constructor(
                     _data.value = temp
                 }
 
-                is ResponseWrapper.NetworkError -> {
+                is ResponseResult.NetworkError -> {
                     _isLoading.value = false
                     _isError.value = true
                 }
@@ -127,15 +131,13 @@ class MarketReviewFragmentViewModel @Inject constructor(
         if (state) {
             viewModelScope.launch(Dispatchers.IO) {
                 if (searchRequest.isBlank().not()) {
-                    databaseRepository.insertAllSearchedCoin(
-                        SearchedCoin(coinID = searchRequest)
-                    )
+                    insertSearchedCoinUseCase(SearchedCoin(coinID = searchRequest))
                 }
-                databaseRepository.getAllAsFlowSearchedCoin().first()
+                getAllSearchedCoinUseCase().first()
                     .map { tempSearch.add(it.coinID) }
                 _searchedData.update {
                     _data.value.filter { element -> tempSearch.contains(element.name) }.reversed()
-                        .toMutableList()
+
                 }
             }
         }
@@ -143,7 +145,7 @@ class MarketReviewFragmentViewModel @Inject constructor(
 
 
     fun updateData(firstElement: Int, lastElement: Int) {
-        val tempUpdate = mutableListOf<CoinReviewResponse>()
+        val tempUpdate = mutableListOf<CoinReview>()
         isRealtimeUpdate = true
         val updateDestinationLink = if (_isSearch.value) _searchedData
         else _data
@@ -156,33 +158,32 @@ class MarketReviewFragmentViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 for (index in firstElement..lastElement) {
                     when (val result =
-                        networkRepository.getCoinReview(updateDestinationLink.value[index].id)) {
-                        is ResponseWrapper.Success -> {
-                            tempUpdate.add(result.value.toCoinReviewDto())
+                        getAllCoinReviewUseCase(updateDestinationLink.value[index].id)) {
+                        is ResponseResult.Success -> {
+                            tempUpdate.add(result.value.toCoinReview())
                         }
 
-                        is ResponseWrapper.NetworkError -> _isError.value = true
+                        is ResponseResult.NetworkError -> _isError.value = true
                     }
                 }
                 val tempUpdateId = tempUpdate.map { it.id }
                 updateDestinationLink.update {
-                    it.map { element ->
+                    it.mapNotNull { element ->
                         if (tempUpdateId.contains(element.id)) tempUpdate.find { updateElement ->
                             updateElement.id == element.id
                         }
                         else element
-                    } as MutableList<CoinReviewResponse>
+                    }
                 }
             }
-        }
-        else initData()
+        } else initData()
     }
 
     fun clearSearchData() {
         viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.deleteAllSearchedCoin()
+            clearSearchedCoinUseCase()
             _searchedData.update {
-                mutableListOf()
+                listOf()
             }
         }
     }

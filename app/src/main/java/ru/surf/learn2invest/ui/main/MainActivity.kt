@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     private fun skipSplash() {
         lifecycleScope.launch(Dispatchers.Main) {
             val intent =
-                if (viewModel.databaseRepository.profile.let {
+                if (viewModel.profileFlow.value.let {
                         it.firstName != "undefined" && it.lastName != "undefined" && it.hash != null
                     }) {
                     runAnimatedText()
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     private fun runAnimatedText() {
         (ContextCompat.getString(
             this, R.string.hello
-        ) + ", ${viewModel.databaseRepository.profile.firstName}!").let {
+        ) + ", ${viewModel.profileFlow.value.firstName}!").let {
             binding.splashTextView.text = it
         }
         binding.splashTextView.alpha = 0f

@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -18,8 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
-import ru.surf.learn2invest.data.database_components.entity.AssetInvest
 import ru.surf.learn2invest.databinding.DialogSellBinding
+import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.utils.getWithCurrency
@@ -47,7 +46,7 @@ class SellDialog(
 
     override fun initListeners() {
         binding.apply {
-            balanceNum.text = viewModel.databaseRepository.profile.fiatBalance.getWithCurrency()
+            balanceNum.text = viewModel.profileFlow.value.fiatBalance.getWithCurrency()
             buttonSell.isVisible = false
             buttonSell.setOnClickListener {
                 sell()
@@ -102,7 +101,7 @@ class SellDialog(
             })
 
             tradingPassword.isVisible =
-                if (viewModel.databaseRepository.profile.tradingPasswordHash != null && coin.amount > 0) {
+                if (viewModel.profileFlow.value.tradingPasswordHash != null && coin.amount > 0) {
                     tradingPasswordTV.addTextChangedListener(object : TextWatcher {
                         override fun beforeTextChanged(
                             s: CharSequence?, start: Int, count: Int, after: Int
@@ -171,7 +170,7 @@ class SellDialog(
                     } -> {
                     buttonSell.isVisible =
                         tradingPasswordTV.text.toString()
-                            .isTrueTradingPasswordOrIsNotDefined(profile = viewModel.databaseRepository.profile)
+                            .isTrueTradingPasswordOrIsNotDefined(profile = viewModel.profileFlow.value)
                     result.text = buildString {
                         append(
                             ContextCompat.getString(
@@ -211,9 +210,10 @@ class SellDialog(
                 name = name, symbol = symbol, coinPrice = 0f, amount = 0f, assetID = id
             )
             lifecycleScope.launch(Dispatchers.IO) {
-                asset = databaseRepository.getBySymbolAssetInvest(symbol = symbol)
+                viewModel.getBySymbolAssetInvestUseCase(symbol = symbol)?.let {
+                    coin = it
+                }
             }.invokeOnCompletion {
-                if (asset != null) coin = asset as AssetInvest
                 updateFields()
                 realTimeUpdateJob = startRealTimeUpdate {
                     lifecycleScope.launch(Dispatchers.Main) {

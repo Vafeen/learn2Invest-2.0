@@ -44,7 +44,7 @@ class RefillAccountDialog(
         binding.apply {
             updateVisibilityMainItems()
             balanceTextview.text =
-                viewModel.databaseRepository.profile.fiatBalance.getWithCurrency()
+                viewModel.profileFlow.value.fiatBalance.getWithCurrency()
             balanceClear.setOnClickListener {
                 TVEnteringSumOfBalance.text =
                     ContextCompat.getString(dialogContext, R.string.enter_sum)

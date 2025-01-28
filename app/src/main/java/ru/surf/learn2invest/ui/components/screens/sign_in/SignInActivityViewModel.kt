@@ -3,18 +3,16 @@ package ru.surf.learn2invest.ui.components.screens.sign_in
 import android.app.Activity
 import android.content.Intent
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.surf.learn2invest.data.cryptography.FingerprintAuthenticator
-import ru.surf.learn2invest.data.database_components.DatabaseRepository
+import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.domain_models.Profile
 import ru.surf.learn2invest.ui.components.screens.host.HostActivity
 import javax.inject.Inject
 
 @HiltViewModel
 class SignInActivityViewModel @Inject constructor(
-    var databaseRepository: DatabaseRepository,
+    private val profileManager: ProfileManager,
     var fingerprintAuthenticator: FingerprintAuthenticator
 ) :
     ViewModel() {
@@ -23,7 +21,7 @@ class SignInActivityViewModel @Inject constructor(
     var isVerified = false
     var userDataIsChanged = false
     var keyBoardIsWork = true
-
+    val profileFlow = profileManager.profileFlow
 
     fun blockKeyBoard() {
         keyBoardIsWork = false
@@ -40,12 +38,10 @@ class SignInActivityViewModel @Inject constructor(
         if (action != SignINActivityActions.ChangingPIN.action)
             context.startActivity(Intent(context, HostActivity::class.java))
         pinCode = ""
-        if (userDataIsChanged) updateProfile()
         context.finish()
     }
 
-    private fun updateProfile() =
-        viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.updateProfile(databaseRepository.profile)
-        }
+    suspend fun updateProfile(updating: (Profile) -> Profile) {
+        profileManager.updateProfile(updating)
+    }
 }

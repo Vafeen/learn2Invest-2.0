@@ -5,7 +5,7 @@ import ru.surf.learn2invest.domain.converters.OneWayBaseConverter
 import ru.surf.learn2invest.domain.domain_models.CoinReview
 import javax.inject.Inject
 
-class CoinReviewConverter @Inject constructor() :
+internal class CoinReviewConverter @Inject constructor() :
     OneWayBaseConverter<CoinReviewResponse, CoinReview> {
     override fun convert(a: CoinReviewResponse): CoinReview = CoinReview(
         id = a.id,

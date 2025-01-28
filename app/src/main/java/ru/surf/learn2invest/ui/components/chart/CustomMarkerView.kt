@@ -11,7 +11,8 @@ import ru.surf.learn2invest.R
 /**
  * Класс для кастомного указателя цены на графике при клике
  */
-class CustomMarkerView(context: Context, layoutResource: Int) :
+
+class CustomMarkerView (context: Context, layoutResource: Int) :
     MarkerView(context, layoutResource) {
     private var tvContent: TextView = findViewById(R.id.tvContent)
 

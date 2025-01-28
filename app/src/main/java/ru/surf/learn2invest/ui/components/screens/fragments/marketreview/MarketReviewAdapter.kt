@@ -13,10 +13,10 @@ import coil.ImageLoader
 import coil.load
 import dagger.hilt.android.qualifiers.ActivityContext
 import ru.surf.learn2invest.R
-import ru.surf.learn2invest.data.network_components.responses.CoinReviewResponse
+import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_ICON
+import ru.surf.learn2invest.domain.domain_models.CoinReview
 import ru.surf.learn2invest.ui.components.screens.fragments.asset_review.AssetReviewActivity
 import ru.surf.learn2invest.utils.AssetConstants
-import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.utils.getWithCurrency
 import ru.surf.learn2invest.utils.round
 import java.text.NumberFormat
@@ -27,7 +27,7 @@ class MarketReviewAdapter @Inject constructor(
     private val imageLoader: ImageLoader,
     @ActivityContext var context: Context
 ) : RecyclerView.Adapter<MarketReviewAdapter.ViewHolder>() {
-    var data: List<CoinReviewResponse> = listOf()
+    var data: List<CoinReview> = listOf()
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val coinIcon = itemView.findViewById<ImageView>(R.id.coin_icon)
@@ -60,7 +60,7 @@ class MarketReviewAdapter @Inject constructor(
             if (coin.changePercent24Hr >= 0) {
                 coinBottomNumericInfo.setTextColor(coinBottomNumericInfo.context.getColor(R.color.increase))
             } else coinBottomNumericInfo.setTextColor(coinBottomNumericInfo.context.getColor(R.color.recession))
-            coinBottomNumericInfo.text ="${coin.changePercent24Hr.round()}%"
+            coinBottomNumericInfo.text = "${coin.changePercent24Hr.round()}%"
             coinIcon.load(
                 data = "$API_ICON${coin.symbol.lowercase()}.svg",
                 imageLoader = imageLoader

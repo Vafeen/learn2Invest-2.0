@@ -12,12 +12,13 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.surf.learn2invest.domain.network.NetworkRepository
 import javax.inject.Singleton
 
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal class NetworkDIModule {
+internal object NetworkDIModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit = Retrofit.Builder().baseUrl(RetrofitLinks.BASE_URL)
@@ -36,12 +37,12 @@ internal class NetworkDIModule {
 
     @Provides
     @Singleton
-    fun provideNetworkRepository(networkRepositoryImpl: NetworkRepositoryImpl) =
+    fun provideNetworkRepository(networkRepositoryImpl: NetworkRepositoryImpl): NetworkRepository =
         networkRepositoryImpl
 
     @Provides
     @Singleton
-    fun provideCoinAPIService(retrofit: Retrofit) = retrofit.create(
+    fun provideCoinAPIService(retrofit: Retrofit): CoinAPIService = retrofit.create(
         CoinAPIService::class.java
     )
 }

@@ -3,44 +3,41 @@ package ru.surf.learn2invest.ui.components.screens.trading_password
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
-import ru.surf.learn2invest.data.database_components.DatabaseRepository
 import ru.surf.learn2invest.data.cryptography.PasswordHasher
+import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.domain_models.Profile
 import javax.inject.Inject
 
 @HiltViewModel
-class TradingPasswordActivityViewModel @Inject constructor() : ViewModel() {
+class TradingPasswordActivityViewModel @Inject constructor(private val profileManager: ProfileManager) :
+    ViewModel() {
     lateinit var action: TradingPasswordActivityActions
     lateinit var actionName: String
     lateinit var mainButtonAction: String
-
-    @Inject
-    lateinit var databaseRepository: DatabaseRepository
-    fun saveTradingPassword(password: String) {
-        databaseRepository.apply {
-            profile = if (action == TradingPasswordActivityActions.CreateTradingPassword ||
+     val profileFlow = profileManager.profileFlow
+    suspend fun saveTradingPassword(password: String) {
+        updateProfile {
+            if (action == TradingPasswordActivityActions.CreateTradingPassword ||
                 action == TradingPasswordActivityActions.ChangeTradingPassword
             ) {
-                profile.copy(
+                it.copy(
                     tradingPasswordHash = PasswordHasher(
-                        firstName = profile.firstName,
-                        lastName = profile.lastName
+                        firstName = it.firstName,
+                        lastName = it.lastName
                     ).passwordToHash(
                         password = password
                     )
                 )
-            } else profile.copy(tradingPasswordHash = null)
+            } else it.copy(tradingPasswordHash = null)
         }
+
     }
 
-    fun updateProfile() =
-        viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.updateProfile(databaseRepository.profile)
-        }
+    suspend fun updateProfile(updating: (Profile) -> Profile) {
+        profileManager.updateProfile(updating)
+    }
 
     fun initAction(intentAction: String, context: Context): Boolean {
         var isOk = true
