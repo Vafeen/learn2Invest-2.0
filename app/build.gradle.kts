@@ -17,11 +17,6 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
     }
 
     buildTypes {
@@ -53,7 +48,7 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":data"))
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.room.runtime)
+
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
@@ -67,9 +62,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.coil.svg)
     implementation(libs.coil)
-    kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.common)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

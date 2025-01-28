@@ -1,19 +1,19 @@
-package ru.surf.learn2invest.noui.database_components
+package ru.surf.learn2invest.data.database_components
 
 import androidx.lifecycle.LifecycleCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.noui.database_components.dao.AssetBalanceHistoryDao
-import ru.surf.learn2invest.noui.database_components.dao.AssetInvestDao
-import ru.surf.learn2invest.noui.database_components.dao.ProfileDao
-import ru.surf.learn2invest.noui.database_components.dao.SearchedCoinDao
-import ru.surf.learn2invest.noui.database_components.dao.TransactionDao
-import ru.surf.learn2invest.noui.database_components.entity.AssetBalanceHistory
-import ru.surf.learn2invest.noui.database_components.entity.AssetInvest
-import ru.surf.learn2invest.noui.database_components.entity.Profile
-import ru.surf.learn2invest.noui.database_components.entity.SearchedCoin
-import ru.surf.learn2invest.noui.database_components.entity.transaction.Transaction
+import ru.surf.learn2invest.data.database_components.dao.AssetBalanceHistoryDao
+import ru.surf.learn2invest.data.database_components.dao.AssetInvestDao
+import ru.surf.learn2invest.data.database_components.dao.ProfileDao
+import ru.surf.learn2invest.data.database_components.dao.SearchedCoinDao
+import ru.surf.learn2invest.data.database_components.dao.TransactionDao
+import ru.surf.learn2invest.data.database_components.entity.AssetBalanceHistory
+import ru.surf.learn2invest.data.database_components.entity.AssetInvest
+import ru.surf.learn2invest.data.database_components.entity.Profile
+import ru.surf.learn2invest.data.database_components.entity.SearchedCoin
+import ru.surf.learn2invest.data.database_components.entity.transaction.Transaction
 import javax.inject.Inject
 import javax.inject.Singleton
 

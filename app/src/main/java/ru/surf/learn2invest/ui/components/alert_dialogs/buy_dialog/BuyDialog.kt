@@ -17,8 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
+import ru.surf.learn2invest.data.database_components.entity.AssetInvest
 import ru.surf.learn2invest.databinding.DialogBuyBinding
-import ru.surf.learn2invest.noui.database_components.entity.AssetInvest
 import ru.surf.learn2invest.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.utils.getWithCurrency

@@ -40,4 +40,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    //room
+    api(libs.androidx.room.runtime)
+    api(libs.androidx.room.ktx)
 }

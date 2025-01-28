@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import ru.surf.learn2invest.noui.database_components.DatabaseRepository
-import ru.surf.learn2invest.noui.database_components.entity.AssetBalanceHistory
-import ru.surf.learn2invest.noui.database_components.entity.AssetInvest
+import ru.surf.learn2invest.data.database_components.DatabaseRepository
+import ru.surf.learn2invest.data.database_components.entity.AssetBalanceHistory
+import ru.surf.learn2invest.data.database_components.entity.AssetInvest
 import ru.surf.learn2invest.noui.network_components.NetworkRepository
 import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper
 import java.math.BigDecimal

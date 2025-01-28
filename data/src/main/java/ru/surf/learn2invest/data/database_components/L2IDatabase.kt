@@ -1,22 +1,23 @@
-package ru.surf.learn2invest.noui.database_components
+package ru.surf.learn2invest.data.database_components
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import ru.surf.learn2invest.noui.database_components.dao.AssetBalanceHistoryDao
-import ru.surf.learn2invest.noui.database_components.dao.AssetInvestDao
-import ru.surf.learn2invest.noui.database_components.dao.ProfileDao
-import ru.surf.learn2invest.noui.database_components.dao.SearchedCoinDao
-import ru.surf.learn2invest.noui.database_components.dao.TransactionDao
-import ru.surf.learn2invest.noui.database_components.entity.AssetBalanceHistory
-import ru.surf.learn2invest.noui.database_components.entity.AssetInvest
-import ru.surf.learn2invest.noui.database_components.entity.Profile
-import ru.surf.learn2invest.noui.database_components.entity.SearchedCoin
-import ru.surf.learn2invest.noui.database_components.entity.transaction.Transaction
+import ru.surf.learn2invest.data.database_components.dao.AssetBalanceHistoryDao
+import ru.surf.learn2invest.data.database_components.dao.AssetInvestDao
+import ru.surf.learn2invest.data.database_components.dao.ProfileDao
+import ru.surf.learn2invest.data.database_components.dao.SearchedCoinDao
+import ru.surf.learn2invest.data.database_components.dao.TransactionDao
+import ru.surf.learn2invest.data.database_components.entity.AssetBalanceHistory
+import ru.surf.learn2invest.data.database_components.entity.AssetInvest
+import ru.surf.learn2invest.data.database_components.entity.Profile
+import ru.surf.learn2invest.data.database_components.entity.SearchedCoin
+import ru.surf.learn2invest.data.database_components.entity.transaction.Transaction
 
 @Database(
+    exportSchema = true,
     entities = [
         AssetBalanceHistory::class,
         AssetInvest::class,

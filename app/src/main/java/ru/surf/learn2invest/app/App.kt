@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.HiltAndroidApp
-import ru.surf.learn2invest.noui.database_components.DatabaseRepository
+import ru.surf.learn2invest.data.database_components.DatabaseRepository
 import javax.inject.Inject
 
 @HiltAndroidApp

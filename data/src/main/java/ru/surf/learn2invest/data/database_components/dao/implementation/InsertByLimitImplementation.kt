@@ -1,7 +1,7 @@
-package ru.surf.learn2invest.noui.database_components.dao.implementation
+package ru.surf.learn2invest.data.database_components.dao.implementation
 
 import kotlinx.coroutines.flow.first
-import ru.surf.learn2invest.noui.database_components.dao.parent.DataAccessObject
+import ru.surf.learn2invest.data.database_components.dao.parent.DataAccessObject
 
 /**
  * Интерфейс дополнений для основного [DataAccessObject][ru.surf.learn2invest.noui.database_components.dao.parent.DataAccessObject]

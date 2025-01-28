@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.noui.database_components.DatabaseRepository
-import ru.surf.learn2invest.noui.database_components.entity.SearchedCoin
+import ru.surf.learn2invest.data.database_components.DatabaseRepository
+import ru.surf.learn2invest.data.database_components.entity.SearchedCoin
 import ru.surf.learn2invest.noui.network_components.NetworkRepository
 import ru.surf.learn2invest.noui.network_components.responses.CoinReviewResponse
 import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper

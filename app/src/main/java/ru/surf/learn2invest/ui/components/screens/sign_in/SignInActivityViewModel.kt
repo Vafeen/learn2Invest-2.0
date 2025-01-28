@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.surf.learn2invest.data.database_components.DatabaseRepository
 import ru.surf.learn2invest.noui.cryptography.FingerprintAuthenticator
-import ru.surf.learn2invest.noui.database_components.DatabaseRepository
 import ru.surf.learn2invest.ui.components.screens.host.HostActivity
 import javax.inject.Inject
 

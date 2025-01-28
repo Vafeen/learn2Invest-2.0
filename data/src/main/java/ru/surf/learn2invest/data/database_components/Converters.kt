@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.noui.database_components
+package ru.surf.learn2invest.data.database_components
 
 import androidx.room.TypeConverter
 import java.util.Date

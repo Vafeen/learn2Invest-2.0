@@ -7,10 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.noui.database_components.DatabaseRepository
-import ru.surf.learn2invest.noui.database_components.entity.AssetInvest
-import ru.surf.learn2invest.noui.database_components.entity.transaction.Transaction
-import ru.surf.learn2invest.noui.database_components.entity.transaction.TransactionsType
+import ru.surf.learn2invest.data.database_components.DatabaseRepository
+import ru.surf.learn2invest.data.database_components.entity.AssetInvest
+import ru.surf.learn2invest.data.database_components.entity.transaction.Transaction
+import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.noui.network_components.NetworkRepository
 import ru.surf.learn2invest.noui.network_components.responses.ResponseWrapper
 import ru.surf.learn2invest.utils.getWithCurrency

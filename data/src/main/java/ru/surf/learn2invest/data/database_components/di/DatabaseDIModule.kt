@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.noui.dependency_injection
+package ru.surf.learn2invest.data.database_components.di
 
 import android.content.Context
 import androidx.room.Room
@@ -7,12 +7,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.surf.learn2invest.noui.database_components.L2IDatabase
-import ru.surf.learn2invest.noui.database_components.dao.AssetBalanceHistoryDao
-import ru.surf.learn2invest.noui.database_components.dao.AssetInvestDao
-import ru.surf.learn2invest.noui.database_components.dao.ProfileDao
-import ru.surf.learn2invest.noui.database_components.dao.SearchedCoinDao
-import ru.surf.learn2invest.noui.database_components.dao.TransactionDao
+import ru.surf.learn2invest.data.database_components.L2IDatabase
+import ru.surf.learn2invest.data.database_components.dao.AssetBalanceHistoryDao
+import ru.surf.learn2invest.data.database_components.dao.AssetInvestDao
+import ru.surf.learn2invest.data.database_components.dao.ProfileDao
+import ru.surf.learn2invest.data.database_components.dao.SearchedCoinDao
+import ru.surf.learn2invest.data.database_components.dao.TransactionDao
 import javax.inject.Singleton
 
 @Module
@@ -22,11 +22,9 @@ class DatabaseDIModule {
 
     @Provides
     @Singleton
-    fun injectDatabase(@ApplicationContext context: Context): L2IDatabase {
-        return Room.databaseBuilder(
-            context = context, klass = L2IDatabase::class.java, name = NAME
-        ).build()
-    }
+    fun injectDatabase(@ApplicationContext context: Context): L2IDatabase = Room.databaseBuilder(
+        context = context, klass = L2IDatabase::class.java, name = NAME
+    ).build()
 
     @Provides
     @Singleton

@@ -8,8 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
+import ru.surf.learn2invest.data.database_components.DatabaseRepository
 import ru.surf.learn2invest.noui.cryptography.PasswordHasher
-import ru.surf.learn2invest.noui.database_components.DatabaseRepository
 import javax.inject.Inject
 
 @HiltViewModel

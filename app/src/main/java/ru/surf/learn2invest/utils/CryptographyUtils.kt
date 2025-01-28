@@ -3,8 +3,8 @@ package ru.surf.learn2invest.utils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
+import ru.surf.learn2invest.data.database_components.entity.Profile
 import ru.surf.learn2invest.noui.cryptography.PasswordHasher
-import ru.surf.learn2invest.noui.database_components.entity.Profile
 
 
 /**

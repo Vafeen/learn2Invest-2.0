@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.noui.database_components.dao.implementation
+package ru.surf.learn2invest.data.database_components.dao.implementation
 
 import androidx.room.Dao
 

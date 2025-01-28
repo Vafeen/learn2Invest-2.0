@@ -16,8 +16,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
+import ru.surf.learn2invest.data.database_components.entity.Profile
 import ru.surf.learn2invest.databinding.FragmentProfileBinding
-import ru.surf.learn2invest.noui.database_components.entity.Profile
 import ru.surf.learn2invest.ui.components.alert_dialogs.parent.SimpleDialog
 import ru.surf.learn2invest.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.ui.components.screens.sign_in.SignInActivity

@@ -1,13 +1,13 @@
-package ru.surf.learn2invest.noui.database_components.dao
+package ru.surf.learn2invest.data.database_components.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import ru.surf.learn2invest.noui.database_components.dao.implementation.ClearTableImplementation
-import ru.surf.learn2invest.noui.database_components.dao.implementation.FlowGetAllImplementation
-import ru.surf.learn2invest.noui.database_components.dao.implementation.InsertByLimitImplementation
-import ru.surf.learn2invest.noui.database_components.dao.parent.DataAccessObject
-import ru.surf.learn2invest.noui.database_components.entity.SearchedCoin
+import ru.surf.learn2invest.data.database_components.dao.implementation.ClearTableImplementation
+import ru.surf.learn2invest.data.database_components.dao.implementation.FlowGetAllImplementation
+import ru.surf.learn2invest.data.database_components.dao.implementation.InsertByLimitImplementation
+import ru.surf.learn2invest.data.database_components.dao.parent.DataAccessObject
+import ru.surf.learn2invest.data.database_components.entity.SearchedCoin
 
 @Dao
 interface SearchedCoinDao : DataAccessObject<SearchedCoin>,
