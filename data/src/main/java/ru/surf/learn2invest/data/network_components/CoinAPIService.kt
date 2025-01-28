@@ -14,7 +14,7 @@ import ru.surf.learn2invest.data.network_components.responses.CoinReviewResponse
 /**
  * Сервис сетевого взаимодействия
  */
-interface CoinAPIService {
+internal interface CoinAPIService {
 
     // Получение данных о всех активах на рынке
     @GET(API_MARKET_REVIEW)

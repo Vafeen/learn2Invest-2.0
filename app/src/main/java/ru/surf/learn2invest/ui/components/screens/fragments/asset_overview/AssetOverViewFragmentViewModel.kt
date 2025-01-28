@@ -1,25 +1,21 @@
 package ru.surf.learn2invest.ui.components.screens.fragments.asset_overview
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.surf.learn2invest.data.network_components.NetworkRepository
-import ru.surf.learn2invest.data.network_components.responses.ResponseWrapper
+import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.ui.components.chart.LineChartHelper
-import ru.surf.learn2invest.utils.getWithCurrency
 import java.text.NumberFormat
 import java.util.Locale
-import javax.inject.Inject
 
 class AssetOverViewFragmentViewModel @AssistedInject constructor(
     var networkRepository: NetworkRepository,
@@ -34,12 +30,12 @@ class AssetOverViewFragmentViewModel @AssistedInject constructor(
     fun loadChartData(id: String, onDataLoaded: (List<Entry>, String, String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val response = networkRepository.getCoinHistory(id)) {
-                is ResponseWrapper.Success -> {
+                is ResponseResult.Success -> {
                     data = response.value.mapIndexed { index, coinPriceResponse ->
                         Entry(index.toFloat(), coinPriceResponse.priceUsd)
                     }.toMutableList()
                     when (val coinResponse = networkRepository.getCoinReview(id)) {
-                        is ResponseWrapper.Success -> {
+                        is ResponseResult.Success -> {
                             data.add(Entry(data.size.toFloat(), coinResponse.value.priceUsd))
                             marketCap = coinResponse.value.marketCapUsd.toDouble()
                             formattedMarketCap = NumberFormat.getInstance(Locale.US).apply {
@@ -51,11 +47,11 @@ class AssetOverViewFragmentViewModel @AssistedInject constructor(
                             }
                         }
 
-                        is ResponseWrapper.NetworkError -> {}
+                        is ResponseResult.NetworkError -> {}
                     }
                 }
 
-                is ResponseWrapper.NetworkError -> {}
+                is ResponseResult.NetworkError -> {}
             }
         }
     }
@@ -65,7 +61,7 @@ class AssetOverViewFragmentViewModel @AssistedInject constructor(
             while (true) {
                 delay(5000)
                 when (val result = networkRepository.getCoinReview(id)) {
-                    is ResponseWrapper.Success -> {
+                    is ResponseResult.Success -> {
                         if (data.size != 0) {
                             data.removeLast()
                             data.add(Entry(data.size.toFloat(), result.value.priceUsd))
@@ -80,7 +76,7 @@ class AssetOverViewFragmentViewModel @AssistedInject constructor(
                         }
                     }
 
-                    is ResponseWrapper.NetworkError -> {}
+                    is ResponseResult.NetworkError -> {}
                 }
             }
         }

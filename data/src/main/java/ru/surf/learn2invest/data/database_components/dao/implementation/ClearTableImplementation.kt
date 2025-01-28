@@ -7,7 +7,7 @@ import androidx.room.Dao
  * Дополнение: очистка таблицы
  */
 @Dao
-interface ClearTableImplementation {
+internal interface ClearTableImplementation {
 
     /**
      * Очистка таблицы

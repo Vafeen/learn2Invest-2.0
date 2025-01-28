@@ -14,11 +14,11 @@ import coil.ImageLoader
 import coil.load
 import dagger.hilt.android.qualifiers.ActivityContext
 import ru.surf.learn2invest.R
-import ru.surf.learn2invest.data.database_components.entity.transaction.Transaction
+import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.domain.TransactionsType
+import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.ui.components.screens.fragments.asset_review.AssetReviewActivity
 import ru.surf.learn2invest.utils.AssetConstants
-import ru.surf.learn2invest.data.network_components.RetrofitLinks.API_ICON
 import javax.inject.Inject
 
 class HistoryFragmentAdapter @Inject constructor(

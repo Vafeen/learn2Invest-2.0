@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.data.database_components.entity.transaction
+package ru.surf.learn2invest.data.database_components.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -17,7 +17,7 @@ import ru.surf.learn2invest.domain.TransactionsType
  * @param transactionType [Тип транзакции (покупка/продажа)]
  */
 @Entity
-open class Transaction(
+internal class TransactionEntity(
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
     val coinID: String,
     val name: String,

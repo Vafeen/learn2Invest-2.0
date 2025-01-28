@@ -13,18 +13,14 @@ import androidx.room.PrimaryKey
  * @param amount [Колличество ]
  */
 @Entity
-data class AssetInvest(
+internal data class AssetInvestEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val assetID: String,
     val name: String,
     val symbol: String,
     val coinPrice: Float,
     val amount: Float,
-) {
-    override fun toString(): String {
-        return "id=$id name=$name symbol=$symbol price=$coinPrice amount=$amount"
-    }
-}
+)
 
 
 

@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "76e457991e215ed693ddd9a30a0d2f3d",
+    "identityHash": "a3782818b7a0a5ebff22976b23e691a5",
     "entities": [
       {
-        "tableName": "AssetBalanceHistory",
+        "tableName": "AssetBalanceHistoryEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `assetBalance` REAL NOT NULL, `date` INTEGER NOT NULL)",
         "fields": [
           {
@@ -37,7 +37,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "AssetInvest",
+        "tableName": "AssetInvestEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `assetID` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `coinPrice` REAL NOT NULL, `amount` REAL NOT NULL)",
         "fields": [
           {
@@ -87,7 +87,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "Profile",
+        "tableName": "ProfileEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `biometry` INTEGER NOT NULL, `fiatBalance` REAL NOT NULL, `assetBalance` REAL NOT NULL, `hash` TEXT, `tradingPasswordHash` TEXT)",
         "fields": [
           {
@@ -149,7 +149,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "SearchedCoin",
+        "tableName": "SearchedCoinEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `coinID` TEXT NOT NULL)",
         "fields": [
           {
@@ -175,7 +175,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "Transaction",
+        "tableName": "TransactionEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `coinID` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `coinPrice` REAL NOT NULL, `dealPrice` REAL NOT NULL, `amount` REAL NOT NULL, `transactionType` TEXT NOT NULL)",
         "fields": [
           {
@@ -240,7 +240,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '76e457991e215ed693ddd9a30a0d2f3d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a3782818b7a0a5ebff22976b23e691a5')"
     ]
   }
 }

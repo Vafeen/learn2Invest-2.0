@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NetworkDIModule {
+internal class NetworkDIModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit = Retrofit.Builder().baseUrl(RetrofitLinks.BASE_URL)
@@ -33,4 +33,15 @@ class NetworkDIModule {
         ImageLoader.Builder(context = context).components {
             add(SvgDecoder.Factory())
         }.build()
+
+    @Provides
+    @Singleton
+    fun provideNetworkRepository(networkRepositoryImpl: NetworkRepositoryImpl) =
+        networkRepositoryImpl
+
+    @Provides
+    @Singleton
+    fun provideCoinAPIService(retrofit: Retrofit) = retrofit.create(
+        CoinAPIService::class.java
+    )
 }

@@ -6,7 +6,7 @@ import java.util.Date
 /**
  * Функции для конвертации даты в БД и наоборот
  */
-object Converters {
+internal object Converters {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }

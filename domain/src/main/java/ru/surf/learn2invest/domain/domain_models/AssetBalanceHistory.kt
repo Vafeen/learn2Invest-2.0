@@ -1,8 +1,5 @@
-package ru.surf.learn2invest.data.database_components.entity
+package ru.surf.learn2invest.domain.domain_models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import java.util.Date
 
 
@@ -12,9 +9,8 @@ import java.util.Date
  * @param assetBalance [Общий баланс портфеля]
  * @param date [Дата, когда был такой баланс]
  */
-@Entity
 data class AssetBalanceHistory( // баланс портфеля
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val id: Int = 0,
     val assetBalance: Float, // стоимость портфеля
-    @ColumnInfo(name = "date") val date: Date // поле с датой
+    val date: Date // поле с датой
 )
