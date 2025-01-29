@@ -8,6 +8,7 @@ import ru.surf.learn2invest.domain.domain_models.CoinPrice
 import ru.surf.learn2invest.domain.domain_models.CoinReview
 import ru.surf.learn2invest.domain.network.NetworkRepository
 import ru.surf.learn2invest.domain.network.ResponseResult
+import ru.surf.learn2invest.domain.network.RetrofitLinks
 import javax.inject.Inject
 import javax.inject.Singleton
 

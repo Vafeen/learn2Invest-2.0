@@ -13,6 +13,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.surf.learn2invest.domain.network.NetworkRepository
+import ru.surf.learn2invest.domain.network.RetrofitLinks
 import javax.inject.Singleton
 
 
