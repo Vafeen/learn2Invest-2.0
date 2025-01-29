@@ -16,12 +16,15 @@ import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityAssetReviewBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.buy_dialog.BuyDialog
+import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.buy_dialog.BuyDialogViewModel
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.sell_dialog.SellDialog
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_overview.AssetOverviewFragment
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.subhistory.SubHistoryFragment
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
+import javax.inject.Inject
 
 /**
  * Экран обзора актива
@@ -31,6 +34,9 @@ class AssetReviewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAssetReviewBinding
     private lateinit var disposable: Disposable
     private var isOverviewSelected = true
+
+    @Inject
+    lateinit var buyFactory: BuyDialogViewModel.BuyFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,12 +96,9 @@ class AssetReviewActivity : AppCompatActivity() {
         disposable = imageLoader.enqueue(request)
 
         binding.buyAssetBtn.setOnClickListener {
-            BuyDialog(
-                dialogContext = this,
-                id = id,
-                name = name,
-                symbol = symbol
-            ).also {
+            BuyDialog(this, viewModelCreator {
+                buyFactory.createViewModel(id, name, symbol)
+            }.value).also {
                 it.show(supportFragmentManager, it.tag)
             }
         }

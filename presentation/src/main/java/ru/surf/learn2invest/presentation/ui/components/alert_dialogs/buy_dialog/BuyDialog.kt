@@ -4,24 +4,27 @@ import android.app.Dialog
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.domain.domain_models.AssetInvest
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogBuyBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.presentation.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
+import ru.surf.learn2invest.presentation.utils.launchIO
+import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.presentation.utils.textListener
+import ru.surf.learn2invest.presentation.utils.withContextMAIN
 
 
 /**
@@ -34,14 +37,12 @@ import ru.surf.learn2invest.presentation.utils.getWithCurrency
 
 @AndroidEntryPoint
 class BuyDialog(
-    val dialogContext: Context,
-    private val id: String,
-    private val name: String,
-    private val symbol: String,
+    private val dialogContext: Context,
+    private val viewModel: BuyDialogViewModel,
 ) : CustomBottomSheetDialog() {
     private var binding = DialogBuyBinding.inflate(LayoutInflater.from(dialogContext))
     override val dialogTag: String = "buy"
-    private val viewModel: BuyDialogViewModel by viewModels()
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -73,142 +74,158 @@ class BuyDialog(
                 }
             }
 
+
             buttonBuy.isVisible = false
 
             buttonBuy.setOnClickListener {
-                buy()
-                dismiss()
+                lifecycleScope.launchIO {
+                    buy()
+                    dismiss()
+                }
             }
 
             imageButtonPlus.setOnClickListener {
-                enteringNumberOfLots.setText(enteringNumberOfLots.text.let { numOfLotsText ->
-                    (numOfLotsText.toString().toIntOrNull() ?: 0).let {
-                        val balance = viewModel.profileFlow.value.fiatBalance
-                        when {
-                            resultPrice(onFuture = true) <= balance -> {
-                                (it + 1).toString()
-                            }
-
-                            else -> {
-                                it.toString()
-                            }
-                        }
+                lifecycleScope.launchIO {
+                    withContextMAIN {
+                        imageButtonPlus.isEnabled = false
                     }
-                })
+                    viewModel.plusLot()
+                    withContextMAIN {
+                        imageButtonPlus.isEnabled = true
+                    }
+                }
+//                enteringNumberOfLots.setText(enteringNumberOfLots.text.let { numOfLotsText ->
+//                    (numOfLotsText.toString().toIntOrNull() ?: 0).let {
+//                        val balance = viewModel.profileFlow.value.fiatBalance
+//                        when {
+//                            resultPrice(onFuture = true) <= balance -> {
+//                                (it + 1).toString()
+//                            }
+//
+//                            else -> {
+//                                it.toString()
+//                            }
+//                        }
+//                    }
+//                })
             }
 
             imageButtonMinus.setOnClickListener {
-                enteringNumberOfLots.setText(enteringNumberOfLots.text.let { text ->
-                    text.toString().toIntOrNull()?.let {
-                        when {
-                            it == 1 || it == 0 -> {
-                                ""
-                            }
-
-                            it > 1 -> {
-                                (it - 1).toString()
-                            }
-
-                            else -> {
-                                text
-                            }
-                        }
+                lifecycleScope.launchIO {
+                    withContextMAIN {
+                        imageButtonMinus.isEnabled = false
                     }
-                })
+                    viewModel.minusLot()
+                    withContextMAIN {
+                        imageButtonMinus.isEnabled = true
+                    }
+                }
+//                enteringNumberOfLots.setText(enteringNumberOfLots.text.let { text ->
+//                    text.toString().toIntOrNull()?.let {
+//                        when {
+//                            it == 1 || it == 0 -> {
+//                                ""
+//                            }
+//
+//                            it > 1 -> {
+//                                (it - 1).toString()
+//                            }
+//
+//                            else -> {
+//                                text
+//                            }
+//                        }
+//                    }
+//                })
             }
 
-            enteringNumberOfLots.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?, start: Int, count: Int, after: Int
-                ) {
+            enteringNumberOfLots.addTextChangedListener(
+                textListener(afterTextChanged = {
+                    lifecycleScope.launchMAIN {
+                        viewModel.setLot(
+                            binding.enteringNumberOfLots.text.toString().toIntOrNull() ?: 0
+                        )
+                    }
+                })
+            )
+            lifecycleScope.launchMAIN {
+                viewModel.profileFlow.collect {
+                    enteringNumberOfLots.isEnabled = it.fiatBalance != 0f
                 }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-                override fun afterTextChanged(s: Editable?) {
-                    updateFields()
-                }
-            })
-
+            }
+            val mutex = Mutex()
             tradingPassword.isVisible =
                 if (viewModel.profileFlow.value.tradingPasswordHash != null && viewModel.profileFlow.value.fiatBalance != 0f) {
-                    tradingPasswordTV.addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?, start: Int, count: Int, after: Int
-                        ) {
-                        }
-
-                        override fun onTextChanged(
-                            s: CharSequence?, start: Int, before: Int, count: Int
-                        ) {
-                        }
-
-                        override fun afterTextChanged(s: Editable?) {
-                            updateFields()
-                        }
-                    })
+                    tradingPasswordTV.addTextChangedListener(
+                        textListener(afterTextChanged = {
+                            lifecycleScope.launchIO {
+                                mutex.withLock {
+                                    viewModel.setTradingPassword(binding.tradingPassword.editText?.text.toString())
+                                }
+                            }
+                        })
+                    )
                     true
                 } else false
+
+            lifecycleScope.launchMAIN {
+                viewModel.stateFlow.collect { state ->
+                    val willPrice = resultPrice(onFuture = false)
+                    val fiatBalance = viewModel.profileFlow.value.fiatBalance
+                    when {
+                        (viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
+                            viewModel.profileFlow.value,
+                            state.tradingPassword
+                        ) && state.lotsData.lots > 0 && fiatBalance != 0f &&
+                                willPrice <= fiatBalance
+                                ) -> {
+                            binding.buttonBuy.isVisible = true
+                            result.text =
+                                "${dialogContext.getString(R.string.itog)} ${willPrice.getWithCurrency()} "
+                        }
+
+                        (willPrice > fiatBalance || fiatBalance == 0f) -> {
+                            buttonBuy.isVisible = false
+                            result.text = dialogContext.getString(R.string.not_enough_money_for_buy)
+                        }
+
+                        else -> {
+                            buttonBuy.isVisible = false
+                            result.text = ""
+                        }
+                    }
+
+                    binding.priceNumber.text = state.coin.coinPrice.getWithCurrency()
+                }
+            }
+            lifecycleScope.launchMAIN {
+                viewModel.lotsFlow.collect { lotsData ->
+                    if (lotsData.isUpdateTVNeeded) binding.enteringNumberOfLots.setText("${lotsData.lots}")
+                    imageButtonPlus.isVisible =
+                        resultPrice(onFuture = true) <= viewModel.profileFlow.value.fiatBalance
+                    imageButtonMinus.isVisible = lotsData.lots > 0
+                    Log.d("lots", lotsData.toString())
+                }
+            }
         }
     }
 
     override fun dismiss() {
         super.dismiss()
-        viewModel.realTimeUpdateJob.cancel()
+        viewModel.stopUpdatingPriceFlow()
     }
 
-    private fun buy() {
-        val price = binding.priceNumber.text.toString().getFloatFromStringWithCurrency() ?: 0f
+    private suspend fun buy() {
+        val price =
+            binding.priceNumber.text.toString().getFloatFromStringWithCurrency() ?: throw Exception(
+                "Price is null for Buy in BuyDialog"
+            )
         val amountCurrent = binding.enteringNumberOfLots.text.toString().toInt().toFloat()
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.buy(amountCurrent = amountCurrent, price = price)
-        }
+        viewModel.buy(amountCurrent = amountCurrent, price = price)
     }
 
     override fun getDialogView(): View {
         return binding.root
-    }
-
-    private fun updateFields() {
-        val willPrice = resultPrice(onFuture = false)
-        val fiatBalance = viewModel.profileFlow.value.fiatBalance
-
-        binding.apply {
-            when {
-                enteringNumberOfLots.text.toString().toIntOrNull().let {
-                    it != null && it > 0
-                } && fiatBalance != 0f && willPrice <= fiatBalance -> {
-                    buttonBuy.isVisible =
-                        viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
-                            viewModel.profileFlow.value,
-                            tradingPasswordTV.text.toString()
-                        )
-                    result.text = buildString {
-                        append(ContextCompat.getString(dialogContext, R.string.itog))
-                        append(willPrice.getWithCurrency())
-                    }
-                }
-
-                willPrice > fiatBalance || fiatBalance == 0f -> {
-                    buttonBuy.isVisible = false
-                    result.text = ContextCompat.getString(
-//                        dialogContext,
-                        dialogContext,
-                        R.string.not_enough_money_for_buy
-                    )
-                }
-
-                else -> {
-                    buttonBuy.isVisible = false
-                    result.text = ""
-                }
-            }
-            viewModel.apply {
-                imageButtonPlus.isVisible = profileFlow.value.fiatBalance != 0f
-                imageButtonMinus.isVisible = profileFlow.value.fiatBalance != 0f
-                enteringNumberOfLots.isEnabled = profileFlow.value.fiatBalance != 0f
-            }
-        }
     }
 
 
@@ -225,22 +242,10 @@ class BuyDialog(
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel.coin = AssetInvest(
-            name = name, symbol = symbol, coinPrice = 0f, amount = 0f, assetID = id
-        )
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.getBySymbolAssetInvestUseCase.invoke(symbol = symbol)?.let {
-                viewModel.coin = it
-            }
+            viewModel.setAssetIfInDB()
         }.invokeOnCompletion {
-            updateFields()
-            viewModel.realTimeUpdateJob = viewModel.startRealTimeUpdate {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    binding.priceNumber.text = it
-                    updateFields()
-                }
-            }
+            viewModel.startUpdatingPriceFLow()
         }
     }
-
 }
