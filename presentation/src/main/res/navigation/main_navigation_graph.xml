@@ -7,28 +7,28 @@
 
     <fragment
         android:id="@+id/portfolioFragment"
-        android:name="ru.surf.learn2invest.ui.components.screens.fragments.portfolio.PortfolioFragment"
+        android:name="ru.surf.learn2invest.presentation.ui.components.screens.fragments.portfolio.PortfolioFragment"
         android:label="fragment_portfolio"
         tools:layout="@layout/fragment_portfolio">
     </fragment>
 
     <fragment
         android:id="@+id/marketReviewFragment"
-        android:name="ru.surf.learn2invest.ui.components.screens.fragments.marketreview.MarketReviewFragment"
+        android:name="ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment"
         android:label="fragment_market_review"
         tools:layout="@layout/fragment_market_review">
     </fragment>
 
     <fragment
         android:id="@+id/historyFragment"
-        android:name="ru.surf.learn2invest.ui.components.screens.fragments.history.HistoryFragment"
+        android:name="ru.surf.learn2invest.presentation.ui.components.screens.fragments.history.HistoryFragment"
         android:label="fragment_history"
         tools:layout="@layout/fragment_history">
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="ru.surf.learn2invest.ui.components.screens.fragments.profile.ProfileFragment"
+        android:name="ru.surf.learn2invest.presentation.ui.components.screens.fragments.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>
