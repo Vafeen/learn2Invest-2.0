@@ -57,9 +57,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.gson)
     implementation(libs.logging.interceptor)
-    //coil // TODO (mek implementation)
-    api(libs.coil.svg)
-    api(libs.coil)
     // using fingerprint
     implementation(libs.androidx.biometric)
     implementation(libs.biometric)

@@ -45,4 +45,7 @@ dependencies {
     // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    //coil
+    api(libs.coil.svg)
+    api(libs.coil)
 }
