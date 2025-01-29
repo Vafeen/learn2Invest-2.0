@@ -22,7 +22,7 @@ import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.utils.getWithCurrency
-import ru.surf.learn2invest.utils.isTrueTradingPasswordOrIsNotDefined
+
 
 /**
  * Диалог продажи актива
@@ -169,8 +169,10 @@ class SellDialog(
                         it != null && it in 1f..viewModel.coin.amount
                     } -> {
                     buttonSell.isVisible =
-                        tradingPasswordTV.text.toString()
-                            .isTrueTradingPasswordOrIsNotDefined(profile = viewModel.profileFlow.value)
+                        viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
+                            profile = viewModel.profileFlow.value,
+                            password = tradingPasswordTV.text.toString()
+                        )
                     result.text = buildString {
                         append(
                             ContextCompat.getString(
@@ -204,7 +206,6 @@ class SellDialog(
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        var asset: AssetInvest? = null
         viewModel.apply {
             coin = AssetInvest(
                 name = name, symbol = symbol, coinPrice = 0f, amount = 0f, assetID = id

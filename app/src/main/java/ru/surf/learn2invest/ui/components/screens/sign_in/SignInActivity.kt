@@ -13,13 +13,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.R
-import ru.surf.learn2invest.data.cryptography.PasswordHasher
 import ru.surf.learn2invest.databinding.ActivitySignInBinding
+import ru.surf.learn2invest.domain.cryptography.PasswordHasher
 import ru.surf.learn2invest.utils.gotoCenter
 import ru.surf.learn2invest.utils.setNavigationBarColor
 import ru.surf.learn2invest.utils.setStatusBarColor
 import ru.surf.learn2invest.utils.tapOn
-import ru.surf.learn2invest.utils.verifyPIN
+import javax.inject.Inject
 
 /**
  * Активити ввода PIN-кода.
@@ -37,6 +37,8 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
     private val viewModel: SignInActivityViewModel by viewModels()
 
+    @Inject
+    lateinit var passwordHasher: PasswordHasher
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -183,10 +185,7 @@ class SignInActivity : AppCompatActivity() {
 
                         SignINActivityActions.SignIN.action -> {
                             lifecycleScope.launch(Dispatchers.Main) {
-                                val isAuthSucceeded = verifyPIN(
-                                    user = viewModel.profileFlow.value,
-                                    pinCode
-                                )
+                                val isAuthSucceeded = verifyPIN()
                                 animatePINCode(isAuthSucceeded)
                                 if (isAuthSucceeded) onAuthenticationSucceeded(
                                     action = intent.action ?: "",
@@ -213,10 +212,11 @@ class SignInActivity : AppCompatActivity() {
                                     lifecycleScope.launch(Dispatchers.Main) {
                                         viewModel.updateProfile {
                                             it.copy(
-                                                hash = PasswordHasher(
+                                                hash = passwordHasher.passwordToHash(
                                                     firstName = it.firstName,
-                                                    lastName = it.lastName
-                                                ).passwordToHash(pinCode)
+                                                    lastName = it.lastName,
+                                                    password = pinCode
+                                                )
                                             )
                                         }
                                         animatePINCode(truth = true)
@@ -268,11 +268,7 @@ class SignInActivity : AppCompatActivity() {
                                 firstPin == "" && !isVerified -> {
                                     lifecycleScope.launch(Dispatchers.Main) {
                                         //если ввел верно
-                                        isVerified =
-                                            verifyPIN(
-                                                user = viewModel.profileFlow.value,
-                                                pinCode
-                                            )
+                                        isVerified = verifyPIN()
                                         pinCode = ""
                                         animatePINCode(
                                             truth = isVerified, needReturn = true
@@ -312,10 +308,11 @@ class SignInActivity : AppCompatActivity() {
                                             viewModel.userDataIsChanged = true
                                             viewModel.updateProfile {
                                                 it.copy(
-                                                    hash = PasswordHasher(
+                                                    hash = passwordHasher.passwordToHash(
                                                         firstName = it.firstName,
-                                                        lastName = it.lastName
-                                                    ).passwordToHash(viewModel.pinCode)
+                                                        lastName = it.lastName,
+                                                        password = viewModel.pinCode
+                                                    )
                                                 )
                                             }
 

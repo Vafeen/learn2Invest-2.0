@@ -5,28 +5,32 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.surf.learn2invest.R
-import ru.surf.learn2invest.data.cryptography.PasswordHasher
 import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.cryptography.PasswordHasher
+import ru.surf.learn2invest.domain.cryptography.usecase.VerifyTradingPasswordUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
 import javax.inject.Inject
 
 @HiltViewModel
-class TradingPasswordActivityViewModel @Inject constructor(private val profileManager: ProfileManager) :
+class TradingPasswordActivityViewModel @Inject constructor(
+    private val profileManager: ProfileManager,
+    private val passwordHasher: PasswordHasher,
+    val verifyTradingPasswordUseCase: VerifyTradingPasswordUseCase,
+) :
     ViewModel() {
     lateinit var action: TradingPasswordActivityActions
     lateinit var actionName: String
     lateinit var mainButtonAction: String
-     val profileFlow = profileManager.profileFlow
+    val profileFlow = profileManager.profileFlow
     suspend fun saveTradingPassword(password: String) {
         updateProfile {
             if (action == TradingPasswordActivityActions.CreateTradingPassword ||
                 action == TradingPasswordActivityActions.ChangeTradingPassword
             ) {
                 it.copy(
-                    tradingPasswordHash = PasswordHasher(
+                    tradingPasswordHash = passwordHasher.passwordToHash(
                         firstName = it.firstName,
-                        lastName = it.lastName
-                    ).passwordToHash(
+                        lastName = it.lastName,
                         password = password
                     )
                 )

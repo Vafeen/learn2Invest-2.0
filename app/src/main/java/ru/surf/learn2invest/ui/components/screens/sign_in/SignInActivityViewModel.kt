@@ -4,8 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.surf.learn2invest.data.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
+import ru.surf.learn2invest.domain.cryptography.usecase.VerifyPINUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
 import ru.surf.learn2invest.ui.components.screens.host.HostActivity
 import javax.inject.Inject
@@ -13,7 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInActivityViewModel @Inject constructor(
     private val profileManager: ProfileManager,
-    var fingerprintAuthenticator: FingerprintAuthenticator
+    var fingerprintAuthenticator: FingerprintAuthenticator,
+    private val verifyPINUseCase: VerifyPINUseCase,
 ) :
     ViewModel() {
     var pinCode: String = ""
@@ -22,6 +24,7 @@ class SignInActivityViewModel @Inject constructor(
     var userDataIsChanged = false
     var keyBoardIsWork = true
     val profileFlow = profileManager.profileFlow
+    fun verifyPIN(): Boolean = verifyPINUseCase.invoke(profileFlow.value, pinCode)
 
     fun blockKeyBoard() {
         keyBoardIsWork = false

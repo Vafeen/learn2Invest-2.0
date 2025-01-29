@@ -22,7 +22,7 @@ import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.utils.getWithCurrency
-import ru.surf.learn2invest.utils.isTrueTradingPasswordOrIsNotDefined
+
 
 /**
  * Диалог покупки актива
@@ -179,8 +179,9 @@ class BuyDialog(
                     it != null && it > 0
                 } && fiatBalance != 0f && willPrice <= fiatBalance -> {
                     buttonBuy.isVisible =
-                        tradingPasswordTV.text.toString().isTrueTradingPasswordOrIsNotDefined(
-                            profile = viewModel.profileFlow.value
+                        viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
+                            viewModel.profileFlow.value,
+                            tradingPasswordTV.text.toString()
                         )
                     result.text = buildString {
                         append(ContextCompat.getString(dialogContext, R.string.itog))

@@ -24,7 +24,6 @@ import ru.surf.learn2invest.utils.isThisContainsSequenceOrEmpty
 import ru.surf.learn2invest.utils.setNavigationBarColor
 import ru.surf.learn2invest.utils.setStatusBarColor
 import ru.surf.learn2invest.utils.showKeyboard
-import ru.surf.learn2invest.utils.verifyTradingPassword
 
 /**
  * Активити ввода торгового пароля для подтверждения сделок
@@ -134,9 +133,9 @@ class TradingPasswordActivity : AppCompatActivity() {
             imageRule4.setImageDrawable(
                 when (viewModel.action) {
                     TradingPasswordActivityActions.RemoveTradingPassword -> {
-                        if (("${passwordEdit.text}" == "${passwordConfirm.text}") && verifyTradingPassword(
+                        if (("${passwordEdit.text}" == "${passwordConfirm.text}") && viewModel.verifyTradingPasswordUseCase.invoke(
                                 user = viewModel.profileFlow.value,
-                                password = "${passwordEdit.text}"
+                                tradingPassword = "${passwordEdit.text}"
                             )
                         ) ok else error
                     }
@@ -156,9 +155,9 @@ class TradingPasswordActivity : AppCompatActivity() {
             )
 
             imageRule5.setImageDrawable(
-                if (verifyTradingPassword(
+                if (viewModel.verifyTradingPasswordUseCase.invoke(
                         user = viewModel.profileFlow.value,
-                        password = "${passwordLast.text}"
+                        tradingPassword = "${passwordLast.text}"
                     )
                 ) ok else error
             )

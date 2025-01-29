@@ -42,8 +42,4 @@ internal class ProfileManagerImpl @Inject constructor(private val profileReposit
             profileRepository.insert(_profileFlow.value)
         }
     }
-
-    suspend fun enableProfileFlow() {
-
-    }
 }

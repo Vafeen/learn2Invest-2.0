@@ -2,8 +2,8 @@ package ru.surf.learn2invest.ui.components.screens.fragments.profile
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.surf.learn2invest.data.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.database.usecase.ClearAppDatabaseUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
 import javax.inject.Inject

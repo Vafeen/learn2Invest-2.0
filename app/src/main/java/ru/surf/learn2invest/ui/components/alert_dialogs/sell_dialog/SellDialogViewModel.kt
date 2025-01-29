@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.ProfileManager
 import ru.surf.learn2invest.domain.TransactionsType
+import ru.surf.learn2invest.domain.cryptography.usecase.IsTrueTradingPasswordOrIsNotDefinedUseCase
 import ru.surf.learn2invest.domain.database.usecase.DeleteAssetInvestUseCase
 import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
 import ru.surf.learn2invest.domain.database.usecase.InsertAssetInvestUseCase
@@ -29,6 +30,7 @@ class SellDialogViewModel @Inject constructor(
     private val deleteAssetInvestUseCase: DeleteAssetInvestUseCase,
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
     val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
+    val isTrueTradingPasswordOrIsNotDefinedUseCase: IsTrueTradingPasswordOrIsNotDefinedUseCase,
 ) :
     ViewModel() {
     lateinit var realTimeUpdateJob: Job
