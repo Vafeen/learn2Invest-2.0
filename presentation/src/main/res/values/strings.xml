@@ -93,4 +93,6 @@
     <string name="source">Исходный код</string>
     <string name="layout_in_figma">Макет в Figma</string>
     <string name="version_name">Версия: </string>
+    <string name="max_quantity">Максимальное количество</string>
+    <string name="have_quantity">Количество в портфеле</string>
 </resources>

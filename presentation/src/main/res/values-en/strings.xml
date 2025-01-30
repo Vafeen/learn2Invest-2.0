@@ -87,4 +87,6 @@
     <string name="source">Source</string>
     <string name="layout_in_figma">Layout in Figma</string>
     <string name="version_name">Version: </string>
+    <string name="max_quantity">Max amount</string>
+    <string name="have_quantity">Quantity in briefcase</string>
 </resources>
