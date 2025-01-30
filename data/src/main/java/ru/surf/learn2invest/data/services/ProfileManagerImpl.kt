@@ -15,22 +15,20 @@ internal class ProfileManagerImpl @Inject constructor(private val profileReposit
     ProfileManager {
     private val mutex = Mutex()
     private val idOfProfile = 0
-    private val _profileFlow = MutableStateFlow(
-        Profile(
-            id = 0,
-            firstName = "undefined",
-            lastName = "undefined",
-            biometry = false,
-            fiatBalance = 0f,
-            assetBalance = 0f
-        )
+    private val defaultProfile = Profile(
+        id = 0,
+        firstName = "undefined",
+        lastName = "undefined",
+        biometry = false,
+        fiatBalance = 0f,
+        assetBalance = 0f
     )
+    private val _profileFlow = MutableStateFlow(defaultProfile)
 
     override suspend fun initProfile() {
         profileRepository.getAllAsFlow().collect { profList ->
-            if (profList.isNotEmpty()) {
-                _profileFlow.value = profList[idOfProfile]
-            }
+            _profileFlow.value =
+                if (profList.isNotEmpty()) profList[idOfProfile] else defaultProfile
         }
     }
 

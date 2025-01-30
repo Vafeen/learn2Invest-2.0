@@ -60,7 +60,7 @@ class SignInActivity : AppCompatActivity() {
             SignINActivityActions.SignIN.action -> {
                 if (viewModel.profileFlow.value.biometry) {
                     viewModel.fingerprintAuthenticator.auth(
-                        lifecycleCoroutineScope = lifecycleScope,
+                        coroutineScope = lifecycleScope,
                         activity = this@SignInActivity
                     )
                 }
