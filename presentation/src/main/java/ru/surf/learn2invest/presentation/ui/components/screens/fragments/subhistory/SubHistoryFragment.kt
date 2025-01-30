@@ -54,7 +54,6 @@ class SubHistoryFragment : Fragment() {
                     binding.noActionsError.isVisible = true
                 } else {
                     adapter.data = it
-                    adapter.notifyDataSetChanged()
                 }
             }
         }
