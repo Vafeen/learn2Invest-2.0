@@ -24,7 +24,9 @@ import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.launchIO
 import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.textListener
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import ru.surf.learn2invest.presentation.utils.withContextMAIN
+import javax.inject.Inject
 
 
 /**
@@ -38,11 +40,17 @@ import ru.surf.learn2invest.presentation.utils.withContextMAIN
 @AndroidEntryPoint
 class BuyDialog(
     private val dialogContext: Context,
-    private val viewModel: BuyDialogViewModel,
+    id: String,
+    name: String,
+    symbol: String,
 ) : CustomBottomSheetDialog() {
     private var binding = DialogBuyBinding.inflate(LayoutInflater.from(dialogContext))
     override val dialogTag: String = "buy"
-
+    @Inject
+    lateinit var buyFactory: BuyDialogViewModel.BuyFactory
+    private val viewModel by viewModelCreator {
+        buyFactory.createViewModel(id, name, symbol)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
