@@ -8,3 +8,6 @@ fun Context.getStringOrNull(@StringRes resId: Int?): String? {
         getString(it)
     }
 }
+
+internal fun Context.getVersionName(): String? =
+    packageManager.getPackageInfo(packageName, 0).versionName
