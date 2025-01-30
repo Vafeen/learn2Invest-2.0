@@ -1,7 +1,7 @@
 package ru.surf.learn2invest.domain.cryptography
 
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleCoroutineScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 
 /**
@@ -52,9 +52,9 @@ interface FingerprintAuthenticator {
     /**
      * Запускает процесс аутентификации с помощью отпечатка пальца.
      *
-     * @param lifecycleCoroutineScope CoroutineScope для запуска корутин.
+     * @param coroutineScope CoroutineScope для запуска корутин.
      * @param activity Активити, в которой выполняется аутентификация.
      * @return Job, который можно использовать для отмены корутины.
      */
-    fun auth(lifecycleCoroutineScope: LifecycleCoroutineScope, activity: AppCompatActivity): Job
+    fun auth(coroutineScope: CoroutineScope, activity: AppCompatActivity): Job
 }

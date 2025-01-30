@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleCoroutineScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -81,15 +81,15 @@ internal class FingerprintAuthenticatorImpl @Inject constructor() : FingerprintA
     /**
      * Запускает процесс аутентификации с помощью отпечатка пальца.
      *
-     * @param lifecycleCoroutineScope CoroutineScope для запуска корутин.
+     * @param coroutineScope CoroutineScope для запуска корутин.
      * @param activity Активити, в которой выполняется аутентификация.
      * @return Job, который можно использовать для отмены корутины.
      */
     override fun auth(
-        lifecycleCoroutineScope: LifecycleCoroutineScope,
+        coroutineScope: CoroutineScope,
         activity: AppCompatActivity
     ): Job {
-        return lifecycleCoroutineScope.launch(Dispatchers.Main) {
+        return coroutineScope.launch(Dispatchers.Main) {
             if (isBiometricAvailable(activity = activity)) {
                 initFingerPrintAuth(activity = activity)
                 checkAuthenticationFingerprint()
