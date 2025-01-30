@@ -5,20 +5,22 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Configuration
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogRefillAccountBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
+import ru.surf.learn2invest.presentation.utils.launchIO
+import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.tapOn
 
 /**
@@ -42,20 +44,49 @@ class RefillAccountDialog(
 
     override fun initListeners() {
         binding.apply {
-            updateVisibilityMainItems()
-            balanceTextview.text =
-                viewModel.profileFlow.value.fiatBalance.getWithCurrency()
+            lifecycleScope.launchMAIN {
+                viewModel.profileFlow.collect {
+                    balanceTextview.text = it.fiatBalance.getWithCurrency()
+                }
+            }
+            lifecycleScope.launchMAIN {
+                viewModel.enteredBalanceFLow.collect { balanceStr ->
+                    Log.d("s", balanceStr)
+                    val template = requireContext().getString(R.string.enter_sum)
+                    binding.apply {
+                        TVEnteringSumOfBalance.text = balanceStr.ifEmpty { template }
+                        val isThisTemplate = balanceStr == template
+
+                        buttonDot.isVisible =
+                            balanceStr.let { it.isNotEmpty() && !it.contains(".") }
+                        backspace.isVisible = !isThisTemplate
+                        buttonRefill.isVisible = balanceStr.let {
+                            it.isNotEmpty() && !it.endsWith('.') && !isThisTemplate && it.toFloatOrNull()
+                                ?.let { f -> f > 0 } == true
+                        }
+                        balanceClear.isVisible = !isThisTemplate
+                        button0.visibility =
+                            if (balanceStr != "0") View.VISIBLE else View.INVISIBLE // здесь так нужно, иначе верстка сломается
+                    }
+                }
+            }
+
             balanceClear.setOnClickListener {
-                TVEnteringSumOfBalance.text =
-                    ContextCompat.getString(dialogContext, R.string.enter_sum)
+                lifecycleScope.launchMAIN {
+                    balanceClear.isEnabled = false
+                    viewModel.clearBalance()
+                    balanceClear.isEnabled = true
+                }
             }
 
             buttonRefill.setOnClickListener {
-                viewModel.enteredBalanceF = binding.TVEnteringSumOfBalance.text.toString().toFloat()
-                if (viewModel.enteredBalanceF != 0f) viewModel.refill()
-                onCloseCallback()
-                cancel()
+                lifecycleScope.launchIO {
+                    viewModel.refill()
+                    onCloseCallback()
+                    cancel()
+                }
             }
+
             binding.apply {
                 val numberButtons = listOf(
                     button0,
@@ -71,75 +102,37 @@ class RefillAccountDialog(
                 )
 
                 for (index in 0..numberButtons.lastIndex) {
-                    numberButtons[index].setOnClickListener {
-                        updatePin("$index")
-                        (it as TextView).tapOn()
+                    val button = numberButtons[index]
+                    button.setOnClickListener {
+                        lifecycleScope.launchMAIN {
+                            button.isEnabled = false
+                            viewModel.addCharToBalance("$index")
+                            (it as TextView).tapOn()
+                            button.isEnabled = true
+                        }
                     }
                 }
 
                 buttonDot.setOnClickListener {
-                    updatePin(".")
-                    (it as TextView).tapOn()
+                    lifecycleScope.launchMAIN {
+                        buttonDot.isEnabled = false
+                        viewModel.addCharToBalance(".")
+                        (it as TextView).tapOn()
+                        buttonDot.isEnabled = true
+                    }
                 }
-
-                TVEnteringSumOfBalance.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                    }
-
-                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                    }
-
-                    override fun afterTextChanged(p0: Editable?) {
-                        updateVisibilityMainItems()
-                    }
-
-                })
 
                 backspace.setOnClickListener {
-                    TVEnteringSumOfBalance.apply {
-                        TVEnteringSumOfBalance.text =
-                            if (text.length > 1) TVEnteringSumOfBalance.text.substring(
-                                0, TVEnteringSumOfBalance.text.lastIndex
-                            )
-                            else ContextCompat.getString(dialogContext, R.string.enter_sum)
+                    lifecycleScope.launchMAIN {
+                        backspace.isEnabled = false
+                        viewModel.removeLastCharFromBalance()
+                        backspace.isEnabled = true
                     }
                 }
             }
         }
     }
 
-    private fun updatePin(s: String) {
-        binding.apply {
-            TVEnteringSumOfBalance.apply {
-                text = if (text.toString() == ContextCompat.getString(
-                        requireContext(), R.string.enter_sum
-                    )
-                ) {
-                    s
-                } else text.toString() + s
-            }
-        }
-    }
-
-    private fun updateVisibilityMainItems() {
-        binding.apply {
-            val isThisTemplate = TVEnteringSumOfBalance.text.toString() == ContextCompat.getString(
-                requireContext(), R.string.enter_sum
-            )
-            buttonDot.isVisible =
-                TVEnteringSumOfBalance.text.let { !isThisTemplate && !it.contains(".") }
-            backspace.isVisible = !isThisTemplate
-            buttonRefill.isVisible = TVEnteringSumOfBalance.text.let {
-                it.isNotEmpty() && it[it.lastIndex].toString() != "." && !isThisTemplate && it.toString()
-                    .toFloat() > 0f
-            }
-            balanceClear.isVisible = !isThisTemplate
-            button0.visibility =
-                if (TVEnteringSumOfBalance.text.toString() != "0") View.VISIBLE else View.INVISIBLE // здесь так нужно, иначе верстка сломается
-        }
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -159,9 +152,7 @@ class RefillAccountDialog(
         return dialog
     }
 
-    override fun getDialogView(): View {
-        return binding.root
-    }
+    override fun getDialogView(): View = binding.root
 
     fun cancel() {
         dismiss()
