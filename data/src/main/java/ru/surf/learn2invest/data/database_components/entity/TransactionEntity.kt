@@ -24,6 +24,6 @@ internal class TransactionEntity(
     val symbol: String,
     val coinPrice: Float,
     val dealPrice: Float,
-    val amount: Float,
+    val amount: Int,
     val transactionType: TransactionsType
 )

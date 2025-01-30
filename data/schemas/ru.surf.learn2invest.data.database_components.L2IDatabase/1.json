@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a3782818b7a0a5ebff22976b23e691a5",
+    "identityHash": "51615c98a14e5418255c860346086e21",
     "entities": [
       {
         "tableName": "AssetBalanceHistoryEntity",
@@ -38,7 +38,7 @@
       },
       {
         "tableName": "AssetInvestEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `assetID` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `coinPrice` REAL NOT NULL, `amount` REAL NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `assetID` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `coinPrice` REAL NOT NULL, `amount` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -73,7 +73,7 @@
           {
             "fieldPath": "amount",
             "columnName": "amount",
-            "affinity": "REAL",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -176,7 +176,7 @@
       },
       {
         "tableName": "TransactionEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `coinID` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `coinPrice` REAL NOT NULL, `dealPrice` REAL NOT NULL, `amount` REAL NOT NULL, `transactionType` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `coinID` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `coinPrice` REAL NOT NULL, `dealPrice` REAL NOT NULL, `amount` INTEGER NOT NULL, `transactionType` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -217,7 +217,7 @@
           {
             "fieldPath": "amount",
             "columnName": "amount",
-            "affinity": "REAL",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -240,7 +240,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a3782818b7a0a5ebff22976b23e691a5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '51615c98a14e5418255c860346086e21')"
     ]
   }
 }

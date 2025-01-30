@@ -16,7 +16,7 @@ data class AssetInvest(
     val name: String,
     val symbol: String,
     val coinPrice: Float,
-    val amount: Float,
+    val amount: Int,
 )
 
 

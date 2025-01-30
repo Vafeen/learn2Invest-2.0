@@ -2,11 +2,14 @@ package ru.surf.learn2invest.presentation.ui.components.alert_dialogs.sell_dialo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import ru.surf.learn2invest.domain.ProfileManager
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.domain.cryptography.usecase.IsTrueTradingPasswordOrIsNotDefinedUseCase
@@ -18,12 +21,12 @@ import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
-import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import javax.inject.Inject
+import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
+import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.buy_dialog.BuyDialogState
+import ru.surf.learn2invest.presentation.utils.launchIO
 
 
-@HiltViewModel
-class SellDialogViewModel @Inject constructor(
+class SellDialogViewModel @AssistedInject constructor(
     private val profileManager: ProfileManager,
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val insertAssetInvestUseCase: InsertAssetInvestUseCase,
@@ -31,56 +34,110 @@ class SellDialogViewModel @Inject constructor(
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
     val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
     val isTrueTradingPasswordOrIsNotDefinedUseCase: IsTrueTradingPasswordOrIsNotDefinedUseCase,
+    @Assisted("id") val id: String,
+    @Assisted("name") val name: String,
+    @Assisted("symbol") val symbol: String,
 ) :
     ViewModel() {
-    lateinit var realTimeUpdateJob: Job
-    lateinit var coin: AssetInvest
+    private var realTimeUpdateJob: Job? = null
     val profileFlow = profileManager.profileFlow
-    fun sell(price: Float, amountCurrent: Float) {
-        viewModelScope.launch(Dispatchers.IO) {
-            profileManager.updateProfile {
-                it.copy(fiatBalance = it.fiatBalance + price * amountCurrent)
-            }
-
-            coin.apply {
-                // обновление истории
-                insertTransactionUseCase(
-                    Transaction(
-                        coinID = assetID,
-                        name = name,
-                        symbol = symbol,
-                        coinPrice = price,
-                        dealPrice = price * amountCurrent,
-                        amount = amountCurrent,
-                        transactionType = TransactionsType.Sell
-                    )
-                )
-            }
-            // обновление портфеля
-            if (amountCurrent < coin.amount) {
-                insertAssetInvestUseCase(
-                    coin.copy(
-                        coinPrice = (coin.coinPrice * coin.amount - amountCurrent * price) / (coin.amount - amountCurrent),
-                        amount = coin.amount - amountCurrent
-                    )
-                )
-            } else deleteAssetInvestUseCase(coin)
-
+    private val _lotsFlow = MutableStateFlow(LotsData(0))
+    val lotsFlow = _lotsFlow.asStateFlow()
+    private val _tradingPasswordFlow = MutableStateFlow("")
+    val tradingPasswordFlow = _tradingPasswordFlow.asStateFlow()
+    private val _coinFlow = MutableStateFlow(
+        AssetInvest(
+            name = name, symbol = symbol, coinPrice = 0f, amount = 0, assetID = id
+        )
+    )
+    val stateFlow =
+        combine(lotsFlow, tradingPasswordFlow, _coinFlow) { lotsData, tradingPassword, asset ->
+            BuyDialogState(asset, lotsData, tradingPassword)
         }
+
+
+    suspend fun plusLot() {
+        _lotsFlow.emit(LotsData(lots = _lotsFlow.value.lots + 1))
     }
 
-    fun startRealTimeUpdate(onUpdateFields: (result: String) -> Unit): Job =
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun minusLot() {
+        if (_lotsFlow.value.lots > 0)
+            _lotsFlow.emit(LotsData(lots = _lotsFlow.value.lots - 1))
+    }
+
+    suspend fun setLot(lotsNumber: Int) {
+        _lotsFlow.emit(LotsData(lots = lotsNumber, isUpdateTVNeeded = false))
+    }
+
+    suspend fun setTradingPassword(password: String) {
+        _tradingPasswordFlow.emit(password)
+    }
+
+
+    suspend fun sell(price: Float, amountCurrent: Int) {
+        val coin = _coinFlow.value
+
+        profileManager.updateProfile {
+            it.copy(fiatBalance = it.fiatBalance + price * amountCurrent)
+        }
+
+        coin.apply {
+            // обновление истории
+            insertTransactionUseCase(
+                Transaction(
+                    coinID = assetID,
+                    name = name,
+                    symbol = symbol,
+                    coinPrice = price,
+                    dealPrice = price * amountCurrent,
+                    amount = amountCurrent,
+                    transactionType = TransactionsType.Sell
+                )
+            )
+        }
+        // обновление портфеля
+        if (amountCurrent < coin.amount) {
+            insertAssetInvestUseCase(
+                coin.copy(
+                    coinPrice = (coin.coinPrice * coin.amount - amountCurrent * price) / (coin.amount - amountCurrent),
+                    amount = coin.amount - amountCurrent
+                )
+            )
+        } else deleteAssetInvestUseCase(coin)
+    }
+
+    fun startUpdatingPriceFLow() {
+        realTimeUpdateJob = viewModelScope.launchIO {
             while (true) {
-                when (val result = getAllCoinReviewUseCase(coin.assetID)) {
+                when (val result = getAllCoinReviewUseCase.invoke(_coinFlow.value.assetID)) {
                     is ResponseResult.Success -> {
-                        onUpdateFields(result.value.priceUsd.getWithCurrency())
+                        _coinFlow.emit(_coinFlow.value.copy(coinPrice = result.value.priceUsd))
                     }
 
                     is ResponseResult.NetworkError -> {}
                 }
-
                 delay(5000)
             }
         }
+    }
+
+    fun stopUpdatingPriceFlow() {
+        realTimeUpdateJob?.cancel()
+        realTimeUpdateJob = null
+    }
+
+    suspend fun setAssetIfInDB() {
+        getBySymbolAssetInvestUseCase.invoke(symbol = symbol)?.let {
+            _coinFlow.value = it
+        }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun createViewModel(
+            @Assisted("id") id: String,
+            @Assisted("name") name: String,
+            @Assisted("symbol") symbol: String,
+        ): SellDialogViewModel
+    }
 }

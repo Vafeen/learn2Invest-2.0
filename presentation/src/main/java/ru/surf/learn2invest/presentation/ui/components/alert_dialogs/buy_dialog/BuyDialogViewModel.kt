@@ -44,7 +44,7 @@ class BuyDialogViewModel @AssistedInject constructor(
     val tradingPasswordFlow = _tradingPasswordFlow.asStateFlow()
     private val _coinFlow = MutableStateFlow(
         AssetInvest(
-            name = name, symbol = symbol, coinPrice = 0f, amount = 0f, assetID = id
+            name = name, symbol = symbol, coinPrice = 0f, amount = 0, assetID = id
         )
     )
     val stateFlow =
@@ -95,7 +95,7 @@ class BuyDialogViewModel @AssistedInject constructor(
         _lotsFlow.emit(LotsData(lots = lotsNumber, isUpdateTVNeeded = false))
     }
 
-    suspend fun buy(price: Float, amountCurrent: Float) {
+    suspend fun buy(price: Float, amountCurrent: Int) {
         val coin = _coinFlow.value
         val balance = profileFlow.value.fiatBalance
         if (balance != 0f

@@ -14,8 +14,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogBuyBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
@@ -46,6 +44,7 @@ class BuyDialog(
 ) : CustomBottomSheetDialog() {
     private var binding = DialogBuyBinding.inflate(LayoutInflater.from(dialogContext))
     override val dialogTag: String = "buy"
+
     @Inject
     lateinit var factory: BuyDialogViewModel.Factory
     private val viewModel by viewModelCreator {
@@ -102,20 +101,6 @@ class BuyDialog(
                         imageButtonPlus.isEnabled = true
                     }
                 }
-//                enteringNumberOfLots.setText(enteringNumberOfLots.text.let { numOfLotsText ->
-//                    (numOfLotsText.toString().toIntOrNull() ?: 0).let {
-//                        val balance = viewModel.profileFlow.value.fiatBalance
-//                        when {
-//                            resultPrice(onFuture = true) <= balance -> {
-//                                (it + 1).toString()
-//                            }
-//
-//                            else -> {
-//                                it.toString()
-//                            }
-//                        }
-//                    }
-//                })
             }
 
             imageButtonMinus.setOnClickListener {
@@ -128,23 +113,6 @@ class BuyDialog(
                         imageButtonMinus.isEnabled = true
                     }
                 }
-//                enteringNumberOfLots.setText(enteringNumberOfLots.text.let { text ->
-//                    text.toString().toIntOrNull()?.let {
-//                        when {
-//                            it == 1 || it == 0 -> {
-//                                ""
-//                            }
-//
-//                            it > 1 -> {
-//                                (it - 1).toString()
-//                            }
-//
-//                            else -> {
-//                                text
-//                            }
-//                        }
-//                    }
-//                })
             }
 
             enteringNumberOfLots.addTextChangedListener(
@@ -161,15 +129,15 @@ class BuyDialog(
                     enteringNumberOfLots.isEnabled = it.fiatBalance != 0f
                 }
             }
-            val mutex = Mutex()
+//            val mutex = Mutex()
             tradingPassword.isVisible =
                 if (viewModel.profileFlow.value.tradingPasswordHash != null && viewModel.profileFlow.value.fiatBalance != 0f) {
                     tradingPasswordTV.addTextChangedListener(
                         textListener(afterTextChanged = {
                             lifecycleScope.launchIO {
-                                mutex.withLock {
-                                    viewModel.setTradingPassword(binding.tradingPassword.editText?.text.toString())
-                                }
+//                                mutex.withLock {
+                                viewModel.setTradingPassword(binding.tradingPassword.editText?.text.toString())
+//                                }
                             }
                         })
                     )
@@ -184,7 +152,7 @@ class BuyDialog(
                         (viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
                             viewModel.profileFlow.value,
                             state.tradingPassword
-                        ) && state.lotsData.lots > 0 && fiatBalance != 0f &&
+                        ) && state.lotsData.lots > 0f && fiatBalance != 0f &&
                                 willPrice <= fiatBalance
                                 ) -> {
                             binding.buttonBuy.isVisible = true
@@ -228,7 +196,7 @@ class BuyDialog(
             binding.priceNumber.text.toString().getFloatFromStringWithCurrency() ?: throw Exception(
                 "Price is null for Buy in BuyDialog"
             )
-        val amountCurrent = binding.enteringNumberOfLots.text.toString().toInt().toFloat()
+        val amountCurrent = binding.enteringNumberOfLots.text.toString().toInt()
         viewModel.buy(amountCurrent = amountCurrent, price = price)
     }
 
@@ -243,14 +211,14 @@ class BuyDialog(
         binding.apply {
             val priceText = priceNumber.text.toString()
             val price = priceText.getFloatFromStringWithCurrency() ?: 0f
-            val number = enteringNumberOfLots.text.toString().toIntOrNull() ?: 0
+            val number = enteringNumberOfLots.text.toString().toFloatOrNull() ?: 0f
             return price * (number + if (onFuture) 1 else 0)
         }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launchIO {
             viewModel.setAssetIfInDB()
         }.invokeOnCompletion {
             viewModel.startUpdatingPriceFLow()
