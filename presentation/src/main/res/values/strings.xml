@@ -95,4 +95,5 @@
     <string name="version_name">Версия: </string>
     <string name="max_quantity">Максимальное количество</string>
     <string name="have_quantity">Количество в портфеле</string>
+    <string name="pcs">шт</string>
 </resources>
