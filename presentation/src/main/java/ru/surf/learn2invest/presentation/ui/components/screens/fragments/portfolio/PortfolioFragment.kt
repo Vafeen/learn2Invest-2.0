@@ -99,7 +99,7 @@ class PortfolioFragment : Fragment() {
                 adapter.assets = assets
                 binding.assets.isVisible = assets.isNotEmpty()
                 binding.assetsAreEmpty.isVisible = assets.isEmpty()
-                adapter.notifyDataSetChanged()
+//                adapter.notifyDataSetChanged()
 
             }
         }

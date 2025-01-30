@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
@@ -29,6 +30,14 @@ class PortfolioAdapter @Inject constructor(
 ) : RecyclerView.Adapter<PortfolioAdapter.PortfolioViewHolder>() {
 
     var assets: List<AssetInvest> = emptyList()
+        set(value) {
+            val oldList = field
+            val diffCallback = PortfolioAdapterDiffCallback(oldList, value)
+            val diffs = DiffUtil.calculateDiff(diffCallback)
+            field = value
+            diffs.dispatchUpdatesTo(this)
+        }
+
     var priceChanges: Map<String, Float> = emptyMap()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PortfolioViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.coin_item, parent, false)
