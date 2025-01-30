@@ -16,9 +16,11 @@ import ru.surf.learn2invest.domain.cryptography.PasswordHasher
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignInBinding
 import ru.surf.learn2invest.presentation.utils.gotoCenter
+import ru.surf.learn2invest.presentation.utils.launchIO
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import ru.surf.learn2invest.presentation.utils.tapOn
+import ru.surf.learn2invest.presentation.utils.withContextMAIN
 import javax.inject.Inject
 
 /**
@@ -239,10 +241,7 @@ class SignInActivity : AppCompatActivity() {
                                                     action = intent.action ?: "",
                                                     context = this@SignInActivity,
                                                 )
-                                            }.auth(
-                                                lifecycleCoroutineScope = lifecycleScope,
-                                                activity = this@SignInActivity
-                                            )
+                                            }.auth(lifecycleScope, this@SignInActivity)
                                         } else {
                                             onAuthenticationSucceeded(
                                                 action = intent.action ?: "",
@@ -339,7 +338,7 @@ class SignInActivity : AppCompatActivity() {
     private fun initListeners() {
         viewModel.apply {
             fingerprintAuthenticator.setSuccessCallback {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launchIO {
                     if (intent.action == SignINActivityActions.SignUP.action) {
 
                         viewModel.updateProfile {
@@ -348,7 +347,9 @@ class SignInActivity : AppCompatActivity() {
                         userDataIsChanged = true
 
                     }
-                    animatePINCode(truth = true)
+                    withContextMAIN {
+                        animatePINCode(truth = true)
+                    }
                     onAuthenticationSucceeded(
                         action = intent.action ?: "",
                         context = this@SignInActivity,
@@ -395,8 +396,8 @@ class SignInActivity : AppCompatActivity() {
                     if (viewModel.fingerprintAuthenticator.isBiometricAvailable(activity = this@SignInActivity) && viewModel.profileFlow.value.biometry) {
                         fingerprint.setOnClickListener {
                             viewModel.fingerprintAuthenticator.auth(
-                                lifecycleCoroutineScope = lifecycleScope,
-                                activity = this@SignInActivity
+                                lifecycleScope,
+                                this@SignInActivity
                             )
                         }
                         true
