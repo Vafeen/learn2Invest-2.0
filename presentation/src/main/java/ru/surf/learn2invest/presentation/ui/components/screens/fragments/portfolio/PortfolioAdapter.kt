@@ -18,6 +18,7 @@ import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_review.AssetReviewActivity
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
+import ru.surf.learn2invest.presentation.utils.getWithPCS
 import ru.surf.learn2invest.presentation.utils.round
 import javax.inject.Inject
 
@@ -54,7 +55,7 @@ class PortfolioAdapter @Inject constructor(
         RecyclerView.ViewHolder(itemView) {
         private val coinIcon: ImageView = itemView.findViewById(R.id.coin_icon)
         private val coinName: TextView = itemView.findViewById(R.id.coin_name)
-        private val coinSymbol: TextView = itemView.findViewById(R.id.coin_symbol)
+        private val coinQuantity: TextView = itemView.findViewById(R.id.coin_symbol)
         private val coinTopNumericInfo: TextView =
             itemView.findViewById(R.id.coin_top_numeric_info)
         private val coinBottomNumericInfo: TextView =
@@ -62,7 +63,7 @@ class PortfolioAdapter @Inject constructor(
 
         fun bind(asset: AssetInvest, priceChange: Float) {
             coinName.text = asset.name
-            coinSymbol.text = asset.symbol
+            coinQuantity.text = "${asset.amount}".getWithPCS(context)
             coinTopNumericInfo.text = priceChange.getWithCurrency()
             val priceChangePercent = ((priceChange - asset.coinPrice) / asset.coinPrice) * 100
             val roundedPercent = priceChangePercent.round()
