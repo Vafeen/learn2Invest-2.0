@@ -84,20 +84,7 @@ class MarketReviewFragment : Fragment() {
 
         lifecycleScope.launch {
             viewModel.searchedData.collect {
-                if (adapter.data.size != it.size) {
-                    adapter.data = it
-                    adapter.notifyDataSetChanged()
-                } else {
-                    adapter.data = it
-                    if (viewModel.isRealtimeUpdate) {
-                        adapter.notifyItemRangeChanged(
-                            viewModel.firstUpdateElement,
-                            viewModel.amountUpdateElement
-                        )
-                    } else {
-                        adapter.notifyDataSetChanged()
-                    }
-                }
+                adapter.data = it
             }
         }
 

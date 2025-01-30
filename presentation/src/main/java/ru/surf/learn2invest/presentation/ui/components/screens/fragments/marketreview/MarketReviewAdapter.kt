@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
@@ -28,6 +29,13 @@ class MarketReviewAdapter @Inject constructor(
     @ActivityContext var context: Context
 ) : RecyclerView.Adapter<MarketReviewAdapter.ViewHolder>() {
     var data: List<CoinReview> = listOf()
+        set(value) {
+            val oldList = field
+            val diffCallback = MarketReviewAdapterDiffCallback(oldList, value)
+            val diffs = DiffUtil.calculateDiff(diffCallback)
+            field = value
+            diffs.dispatchUpdatesTo(this)
+        }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val coinIcon = itemView.findViewById<ImageView>(R.id.coin_icon)
