@@ -31,7 +31,7 @@ class BuyDialogViewModel @AssistedInject constructor(
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
     private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
     val isTrueTradingPasswordOrIsNotDefinedUseCase: IsTrueTradingPasswordOrIsNotDefinedUseCase,
-    @Assisted val id: String,
+    @Assisted("id") val id: String,
     @Assisted("name") val name: String,
     @Assisted("symbol") val symbol: String,
 ) : ViewModel() {
@@ -143,9 +143,9 @@ class BuyDialogViewModel @AssistedInject constructor(
     }
 
     @AssistedFactory
-    interface BuyFactory {
+    interface Factory {
         fun createViewModel(
-            @Assisted id: String,
+            @Assisted("id") id: String,
             @Assisted("name") name: String,
             @Assisted("symbol") symbol: String,
         ): BuyDialogViewModel

@@ -47,9 +47,9 @@ class BuyDialog(
     private var binding = DialogBuyBinding.inflate(LayoutInflater.from(dialogContext))
     override val dialogTag: String = "buy"
     @Inject
-    lateinit var buyFactory: BuyDialogViewModel.BuyFactory
+    lateinit var factory: BuyDialogViewModel.Factory
     private val viewModel by viewModelCreator {
-        buyFactory.createViewModel(id, name, symbol)
+        factory.createViewModel(id, name, symbol)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
