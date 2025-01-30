@@ -61,7 +61,6 @@ class HistoryFragment : Fragment() {
                 } else {
                     withContext(Dispatchers.Main) {
                         adapter.data = it
-                        adapter.notifyDataSetChanged()
                     }
                 }
             }

@@ -1,9 +1,9 @@
-package ru.surf.learn2invest.presentation.ui.components.screens.fragments.subhistory
+package ru.surf.learn2invest.presentation.ui.components.screens.fragments.common
 
 import androidx.recyclerview.widget.DiffUtil
 import ru.surf.learn2invest.domain.domain_models.Transaction
 
-class SubHistoryAdapterDiffCallback(
+class TransactionAdapterDiffCallback(
     private val oldList: List<Transaction>,
     private val newList: List<Transaction>
 ) : DiffUtil.Callback() {

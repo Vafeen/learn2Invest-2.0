@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
@@ -18,6 +19,7 @@ import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_review.AssetReviewActivity
+import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.TransactionAdapterDiffCallback
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import javax.inject.Inject
 
@@ -26,7 +28,13 @@ class HistoryFragmentAdapter @Inject constructor(
 ) : RecyclerView.Adapter<HistoryFragmentAdapter.ViewHolder>() {
 
     var data: List<Transaction> = listOf()
-
+        set(value) {
+            val oldList = field
+            val diffCallback = TransactionAdapterDiffCallback(oldList, value)
+            val diffs = DiffUtil.calculateDiff(diffCallback)
+            field = value
+            diffs.dispatchUpdatesTo(this)
+        }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val coinIcon: ImageView = itemView.findViewById(R.id.coin_icon)
         val coinTopTextInfo: TextView = itemView.findViewById(R.id.coin_name)
