@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
-import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_review.AssetReviewActivity
+import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.MapDiffCallback
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.getWithPCS
@@ -26,7 +27,7 @@ import javax.inject.Inject
 
 class PortfolioAdapter @Inject constructor(
     private val imageLoader: ImageLoader,
-    @ActivityContext var context: Context
+    @ApplicationContext var context: Context
 ) : RecyclerView.Adapter<PortfolioAdapter.PortfolioViewHolder>() {
 
     var assets: List<AssetInvest> = emptyList()
@@ -39,6 +40,14 @@ class PortfolioAdapter @Inject constructor(
         }
 
     var priceChanges: Map<String, Float> = emptyMap()
+        set(value) {
+            val oldList = field
+            val diffCallback = MapDiffCallback(oldList, value)
+            val diffs = DiffUtil.calculateDiff(diffCallback)
+            field = value
+            diffs.dispatchUpdatesTo(this)
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PortfolioViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.coin_item, parent, false)
         return PortfolioViewHolder(view)

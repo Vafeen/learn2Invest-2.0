@@ -15,8 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentPortfolioBinding
@@ -24,10 +22,11 @@ import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.refill_acco
 import ru.surf.learn2invest.presentation.ui.components.chart.AssetBalanceHistoryFormatter
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.presentation.utils.DevStrLink
+import ru.surf.learn2invest.presentation.utils.getVersionName
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
+import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import java.util.Locale
-import javax.inject.Inject
 
 /**
  * Фрагмент портфеля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
@@ -37,11 +36,8 @@ import javax.inject.Inject
 class PortfolioFragment : Fragment() {
     private lateinit var binding: FragmentPortfolioBinding
     private lateinit var chartHelper: LineChartHelper
-    private lateinit var realTimeUpdateJob: Job
     private val viewModel: PortfolioFragmentViewModel by viewModels()
 
-    @Inject
-    lateinit var adapter: PortfolioAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -85,7 +81,7 @@ class PortfolioFragment : Fragment() {
 
         binding.topUpBtn.setOnClickListener {
             RefillAccountDialog(dialogContext = requireContext()) {
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                viewLifecycleOwner.lifecycleScope.launchMAIN {
                     viewModel.refreshData()
                 }
             }.also {
@@ -94,27 +90,21 @@ class PortfolioFragment : Fragment() {
 
         }
 
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+        viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.assetsFlow.collect { assets ->
-                adapter.assets = assets
+                viewModel.adapter.assets = assets
                 binding.assets.isVisible = assets.isNotEmpty()
                 binding.assetsAreEmpty.isVisible = assets.isEmpty()
-//                adapter.notifyDataSetChanged()
-
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+        viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.priceChanges.collect { priceChanges ->
-                adapter.priceChanges = priceChanges
-                adapter.notifyItemRangeChanged(
-                    (binding.assets.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition(),
-                    (binding.assets.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                )
+                viewModel.adapter.priceChanges = priceChanges
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+        viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.portfolioChangePercentage.collect { percentage ->
                 binding.percent.apply {
                     text = if (percentage == 0f) "%.2f%%".format(Locale.getDefault(), percentage)
@@ -153,26 +143,20 @@ class PortfolioFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        realTimeUpdateJob = startRealtimeUpdate()
+        viewModel.startUpdatingPriceFLow()
     }
 
     override fun onStop() {
         super.onStop()
-        realTimeUpdateJob.cancel()
+        viewModel.stopUpdatingPriceFlow()
         closeDrawer()
     }
 
-    private fun startRealtimeUpdate() = viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-        while (true) {
-            viewModel.refreshData()
-            delay(5000)
-        }
-    }
 
     private fun setupAssetsRecyclerView() {
         binding.assets.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.assets.adapter = adapter
+        binding.assets.adapter = viewModel.adapter
     }
 
     private fun openDrawer() {
@@ -215,18 +199,10 @@ class PortfolioFragment : Fragment() {
                 openLink(DevStrLink.FIGMA)
             }
 
-            versionCode.text = getVersionName()
+            versionCode.text = requireContext().getVersionName()
         }
     }
 
-    private fun getVersionName(): String? {
-        val packageManager = requireContext().packageManager
-        val packageName = requireContext().packageName
-        val packageInfo = packageManager.getPackageInfo(packageName, 0)
-        val appVersion = packageInfo.versionName
-        return appVersion
-
-    }
 
     private fun openLink(link: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))

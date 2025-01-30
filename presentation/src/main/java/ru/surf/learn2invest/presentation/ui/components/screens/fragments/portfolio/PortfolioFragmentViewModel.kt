@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,6 +27,7 @@ import ru.surf.learn2invest.domain.domain_models.AssetBalanceHistory
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
+import ru.surf.learn2invest.presentation.utils.launchIO
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Calendar
@@ -40,6 +43,7 @@ class PortfolioFragmentViewModel @Inject constructor(
     private val insertByLimitAssetBalanceHistoryUseCase: InsertByLimitAssetBalanceHistoryUseCase,
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
     private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
+    val adapter: PortfolioAdapter,
 ) :
     ViewModel() {
     private val HISTORY_LIMIT_SIZE = 7
@@ -71,7 +75,7 @@ class PortfolioFragmentViewModel @Inject constructor(
 
     private val _portfolioChangePercentage = MutableStateFlow(0f)
     val portfolioChangePercentage: StateFlow<Float> get() = _portfolioChangePercentage
-
+    private var realTimeUpdateJob: Job? = null
     suspend fun refreshData() {
         checkAndUpdateBalanceHistory()
         loadPriceChanges(getAllAssetInvestUseCase().first())
@@ -80,6 +84,20 @@ class PortfolioFragmentViewModel @Inject constructor(
     suspend fun getAssetBalanceHistoryDates(): List<Date> =
         getAllAssetBalanceHistoryUseCase().first().map { it.date }
 
+
+    fun startUpdatingPriceFLow() {
+        realTimeUpdateJob = viewModelScope.launchIO {
+            while (true) {
+                refreshData()
+                delay(5000)
+            }
+        }
+    }
+
+    fun stopUpdatingPriceFlow() {
+        realTimeUpdateJob?.cancel()
+        realTimeUpdateJob = null
+    }
 
     private suspend fun refreshChartData() {
         _chartData.value = getAllAssetBalanceHistoryUseCase().first()
