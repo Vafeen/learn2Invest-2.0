@@ -1,5 +1,6 @@
 package ru.surf.learn2invest.presentation.utils
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.app.Activity
@@ -29,11 +30,28 @@ fun ImageView.isOk(): Boolean = this.drawable == Icons.ok
 
 fun TextView.tapOn() {
     val rotating = ValueAnimator.ofFloat(0f, 360f).also {
-        it.duration = 500
+        it.duration = 250
         it.addUpdateListener { animator ->
             val rotateValue = animator.animatedValue as Float
             this.rotation = rotateValue
         }
+        it.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+
+            }
+        })
     }
 
     val flexBackground = ValueAnimator.ofFloat(1f, 0f, 1f).also {
