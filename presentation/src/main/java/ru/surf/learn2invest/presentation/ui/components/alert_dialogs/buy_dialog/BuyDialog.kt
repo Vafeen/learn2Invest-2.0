@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -146,13 +145,15 @@ class BuyDialog(
 
             lifecycleScope.launchMAIN {
                 viewModel.stateFlow.collect { state ->
-                    val willPrice = resultPrice(onFuture = false)
+                    val lotsData = state.lotsData
+                    val coin = state.coin
+                    val willPrice = lotsData.lots * coin.coinPrice
                     val fiatBalance = viewModel.profileFlow.value.fiatBalance
                     when {
                         (viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
                             viewModel.profileFlow.value,
                             state.tradingPassword
-                        ) && state.lotsData.lots > 0f && fiatBalance != 0f &&
+                        ) && lotsData.lots > 0f && fiatBalance != 0f &&
                                 willPrice <= fiatBalance
                                 ) -> {
                             binding.buttonBuy.isVisible = true
@@ -170,6 +171,11 @@ class BuyDialog(
                             result.text = ""
                         }
                     }
+                    val maxQuantity = maxQuantity(price = coin.coinPrice, balance = state.balance)
+                    maxQuantityNumber.text = "$maxQuantity"
+                    imageButtonPlus.isVisible =
+                        lotsData.lots < maxQuantity
+                    imageButtonMinus.isVisible = lotsData.lots > 0
 
                     binding.priceNumber.text = state.coin.coinPrice.getWithCurrency()
                 }
@@ -177,10 +183,7 @@ class BuyDialog(
             lifecycleScope.launchMAIN {
                 viewModel.lotsFlow.collect { lotsData ->
                     if (lotsData.isUpdateTVNeeded) binding.enteringNumberOfLots.setText("${lotsData.lots}")
-                    imageButtonPlus.isVisible =
-                        resultPrice(onFuture = true) <= viewModel.profileFlow.value.fiatBalance
-                    imageButtonMinus.isVisible = lotsData.lots > 0
-                    Log.d("lots", lotsData.toString())
+
                 }
             }
         }
@@ -204,17 +207,17 @@ class BuyDialog(
         return binding.root
     }
 
-
-    private fun resultPrice(
-        onFuture: Boolean
-    ): Float {
-        binding.apply {
-            val priceText = priceNumber.text.toString()
-            val price = priceText.getFloatFromStringWithCurrency() ?: 0f
-            val number = enteringNumberOfLots.text.toString().toFloatOrNull() ?: 0f
-            return price * (number + if (onFuture) 1 else 0)
-        }
-    }
+    private fun maxQuantity(price: Float, balance: Float): Int = (balance / price).toInt()
+//    private fun resultPrice(
+//        onFuture: Boolean
+//    ): Float {
+//        binding.apply {
+//            val priceText = priceNumber.text.toString()
+//            val price = priceText.getFloatFromStringWithCurrency() ?: 0f
+//            val number = enteringNumberOfLots.text.toString().toFloatOrNull() ?: 0f
+//            return price * (number + if (onFuture) 1 else 0)
+//        }
+//    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

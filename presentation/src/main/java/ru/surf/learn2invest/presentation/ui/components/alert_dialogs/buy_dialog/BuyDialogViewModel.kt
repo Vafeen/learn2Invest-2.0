@@ -48,8 +48,13 @@ class BuyDialogViewModel @AssistedInject constructor(
         )
     )
     val stateFlow =
-        combine(lotsFlow, tradingPasswordFlow, _coinFlow) { lotsData, tradingPassword, asset ->
-            BuyDialogState(asset, lotsData, tradingPassword)
+        combine(
+            lotsFlow,
+            tradingPasswordFlow,
+            _coinFlow,
+            profileFlow
+        ) { lotsData, tradingPassword, asset, profile ->
+            BuyDialogState(asset, lotsData, tradingPassword, profile.fiatBalance)
         }
 
     fun startUpdatingPriceFLow() {

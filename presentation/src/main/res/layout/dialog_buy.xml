@@ -44,6 +44,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/coin_amount_card"
+            android:layout_width="238dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/tabs_in_dialogs_shape"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/price_card" />
+
+        <TextView
+            android:text="@string/max_quantity"
+            android:layout_width="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_dialogs_card_content_start"
+            android:layout_marginTop="@dimen/margin_dialogs_card_content_top_u_verhnego"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/coin_amount_card"
+            app:layout_constraintTop_toTopOf="@+id/coin_amount_card" />
+
+        <TextView
+            android:id="@+id/max_quantity_number"
+            android:layout_width="131dp"
+            android:layout_height="24dp"
+            android:layout_marginHorizontal="@dimen/margin_dialogs_card_content_start"
+            android:layout_marginTop="@dimen/margin_dialogs_card_content_top_u_nizhnego"
+            android:textAppearance="@style/Text.Medium.14"
+            app:layout_constraintStart_toStartOf="@+id/coin_amount_card"
+            app:layout_constraintTop_toTopOf="@+id/coin_amount_card"
+            tools:text="@string/example_price" />
 
         <View
             android:id="@+id/entering_sum_of_balance_card"
@@ -53,7 +83,7 @@
             android:background="@drawable/tabs_in_dialogs_shape"
             app:layout_constraintEnd_toEndOf="@+id/price_card"
             app:layout_constraintStart_toStartOf="@+id/price_card"
-            app:layout_constraintTop_toBottomOf="@+id/price_card" />
+            app:layout_constraintTop_toBottomOf="@+id/coin_amount_card" />
 
         <TextView
             android:id="@+id/number_textview"

@@ -22,7 +22,6 @@ import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
-import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.buy_dialog.BuyDialogState
 import ru.surf.learn2invest.presentation.utils.launchIO
 
 
@@ -32,7 +31,7 @@ class SellDialogViewModel @AssistedInject constructor(
     private val insertAssetInvestUseCase: InsertAssetInvestUseCase,
     private val deleteAssetInvestUseCase: DeleteAssetInvestUseCase,
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
-    val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
+    private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
     val isTrueTradingPasswordOrIsNotDefinedUseCase: IsTrueTradingPasswordOrIsNotDefinedUseCase,
     @Assisted("id") val id: String,
     @Assisted("name") val name: String,
@@ -52,7 +51,7 @@ class SellDialogViewModel @AssistedInject constructor(
     )
     val stateFlow =
         combine(lotsFlow, tradingPasswordFlow, _coinFlow) { lotsData, tradingPassword, asset ->
-            BuyDialogState(asset, lotsData, tradingPassword)
+            SellDialogState(asset, lotsData, tradingPassword)
         }
 
 
