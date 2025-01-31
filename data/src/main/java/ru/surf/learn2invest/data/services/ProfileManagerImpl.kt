@@ -2,6 +2,7 @@ package ru.surf.learn2invest.data.services
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.surf.learn2invest.domain.ProfileManager
@@ -24,8 +25,14 @@ internal class ProfileManagerImpl @Inject constructor(private val profileReposit
         assetBalance = 0f
     )
     private val _profileFlow = MutableStateFlow(defaultProfile)
-
     override suspend fun initProfile() {
+        profileRepository.getAllAsFlow().first().let { profList ->
+            _profileFlow.value =
+                if (profList.isNotEmpty()) profList[idOfProfile] else defaultProfile
+        }
+    }
+
+    override suspend fun initProfileFlow() {
         profileRepository.getAllAsFlow().collect { profList ->
             _profileFlow.value =
                 if (profList.isNotEmpty()) profList[idOfProfile] else defaultProfile

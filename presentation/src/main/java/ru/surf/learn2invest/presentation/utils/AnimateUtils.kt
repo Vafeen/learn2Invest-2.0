@@ -25,6 +25,29 @@ object Icons {
     var error: Drawable? = null
 }
 
+internal fun animatorListener(
+    onAnimationStart: ((animation: Animator) -> Unit)? = null,
+    onAnimationEnd: ((animation: Animator) -> Unit)? = null,
+    onAnimationCancel: ((animation: Animator) -> Unit)? = null,
+    onAnimationRepeat: ((animation: Animator) -> Unit)? = null
+) = object : Animator.AnimatorListener {
+    override fun onAnimationStart(animation: Animator) {
+        onAnimationStart?.invoke(animation)
+    }
+
+    override fun onAnimationEnd(animation: Animator) {
+        onAnimationEnd?.invoke(animation)
+    }
+
+    override fun onAnimationCancel(animation: Animator) {
+        onAnimationCancel?.invoke(animation)
+    }
+
+    override fun onAnimationRepeat(animation: Animator) {
+        onAnimationRepeat?.invoke(animation)
+    }
+}
+
 
 fun ImageView.isOk(): Boolean = this.drawable == Icons.ok
 
@@ -35,23 +58,6 @@ fun TextView.tapOn() {
             val rotateValue = animator.animatedValue as Float
             this.rotation = rotateValue
         }
-        it.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-
-            }
-        })
     }
 
     val flexBackground = ValueAnimator.ofFloat(1f, 0f, 1f).also {

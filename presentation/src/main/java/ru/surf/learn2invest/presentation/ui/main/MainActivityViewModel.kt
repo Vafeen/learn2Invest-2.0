@@ -7,11 +7,16 @@ import ru.surf.learn2invest.domain.domain_models.Profile
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
+internal class MainActivityViewModel @Inject constructor(
     private val profileManager: ProfileManager
 ) : ViewModel() {
     val profileFlow = profileManager.profileFlow
     suspend fun updateProfile(updating: (Profile) -> Profile) {
         profileManager.updateProfile(updating)
     }
+
+    suspend fun initProfile() {
+        profileManager.initProfile()
+    }
+
 }
