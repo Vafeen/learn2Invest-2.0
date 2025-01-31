@@ -35,6 +35,7 @@ class HistoryFragmentAdapter @Inject constructor(
             field = value
             diffs.dispatchUpdatesTo(this)
         }
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val coinIcon: ImageView = itemView.findViewById(R.id.coin_icon)
         val coinTopTextInfo: TextView = itemView.findViewById(R.id.coin_name)
@@ -43,11 +44,9 @@ class HistoryFragmentAdapter @Inject constructor(
         val coinBottomNumericInfo: TextView = itemView.findViewById(R.id.coin_bottom_numeric_info)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.coin_item, parent, false)
-        return ViewHolder(itemView)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.coin_item, parent, false))
+
 
     override fun getItemCount(): Int = data.size
 

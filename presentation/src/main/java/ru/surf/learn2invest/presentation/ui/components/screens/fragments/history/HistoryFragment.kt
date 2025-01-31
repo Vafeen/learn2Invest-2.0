@@ -10,12 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentHistoryBinding
+import ru.surf.learn2invest.presentation.utils.launchIO
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.withContextMAIN
 import javax.inject.Inject
 
 /**
@@ -51,15 +50,13 @@ class HistoryFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launchIO {
             viewModel.data.collect {
-                if (it.isEmpty()) {
-                    withContext(Dispatchers.Main) {
+                withContextMAIN {
+                    if (it.isEmpty()) {
                         binding.historyRecyclerview.isVisible = false
                         binding.noActionsTv.isVisible = true
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
+                    } else {
                         adapter.data = it
                     }
                 }
