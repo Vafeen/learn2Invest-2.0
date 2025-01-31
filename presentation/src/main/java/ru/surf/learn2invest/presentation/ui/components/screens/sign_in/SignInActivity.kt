@@ -218,68 +218,61 @@ internal class SignInActivity : AppCompatActivity() {
 
                             }
 
-//                        SignINActivityActions.ChangingPIN.action -> {
-//                            when {
-//                                // вводит старый пароль
-//                                firstPin == "" && !isVerified -> {
-//                                    lifecycleScope.launch(Dispatchers.Main) {
-//                                        //если ввел верно
-//                                        isVerified = verifyPIN()
-//                                        pinCode = ""
-//                                        animatePINCode(
-//                                            truth = isVerified, needReturn = true
-//                                        )
-//                                        if (isVerified) binding.enterPin.text =
-//                                            ContextCompat.getString(
-//                                                this@SignInActivity, R.string.enter_new_pin
-//                                            )
-//                                        unBlockKeyBoard()
-//                                    }
-//                                }
+                            SignINActivityActions.ChangingPIN.action -> {
+                                when {
+                                    // вводит старый пароль
+                                    firstPin == "" && !isVerified -> {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            isVerified = verifyPIN()
+                                            animatePINCode(truth = isVerified, needReturn = true)
+                                            viewModel.clearPIN()
+                                            if (isVerified) binding.enterPin.text =
+                                                this@SignInActivity.getString(R.string.enter_new_pin)
+                                        }
+                                    }
+
+                                    //вводит новый
+                                    firstPin == "" && isVerified -> {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            firstPin = pin
+                                            delay(500)
+                                            viewModel.clearPIN()
+                                            binding.enterPin.text = ContextCompat.getString(
+                                                this@SignInActivity, R.string.repeat_pin
+                                            )
+                                            viewModel.unblockKeyBoard()
+                                        }
+                                    }
 //
-//                                //вводит новый
-//                                firstPin == "" && isVerified -> {
-//                                    lifecycleScope.launch(Dispatchers.Main) {
-//                                        firstPin = pinCode
-//                                        pinCode = ""
-//                                        delay(500)
-//                                        binding.enterPin.text = ContextCompat.getString(
-//                                            this@SignInActivity, R.string.repeat_pin
-//                                        )
-//                                        unBlockKeyBoard()
-//                                    }
-//
-//                                }
-//
-//                                // повторяет
-//                                firstPin != "" && isVerified -> {
-//                                    lifecycleScope.launch(Dispatchers.Main) {
-//                                        val truth = pinCode == firstPin
-//                                        if (truth) {
-//                                            viewModel.updateProfile {
-//                                                it.copy(
-//                                                    hash = passwordHasher.passwordToHash(
-//                                                        firstName = it.firstName,
-//                                                        lastName = it.lastName,
-//                                                        password = viewModel.pinCode
+//                                    // повторяет
+//                                    firstPin != "" && isVerified -> {
+//                                        lifecycleScope.launch(Dispatchers.Main) {
+//                                            val truth = pinCode == firstPin
+//                                            if (truth) {
+//                                                viewModel.updateProfile {
+//                                                    it.copy(
+//                                                        hash = passwordHasher.passwordToHash(
+//                                                            firstName = it.firstName,
+//                                                            lastName = it.lastName,
+//                                                            password = viewModel.pinCode
+//                                                        )
 //                                                    )
-//                                                )
+//                                                }
+//
 //                                            }
 //
+//                                            animatePINCode(
+//                                                truth = truth, needReturn = true
+//                                            )
+//                                            pinCode = ""
+//                                            if (truth) onAuthenticationSucceeded(
+//                                                action = intent.action ?: "",
+//                                                context = this@SignInActivity,
+//                                            )
 //                                        }
-//
-//                                        animatePINCode(
-//                                            truth = truth, needReturn = true
-//                                        )
-//                                        pinCode = ""
-//                                        if (truth) onAuthenticationSucceeded(
-//                                            action = intent.action ?: "",
-//                                            context = this@SignInActivity,
-//                                        )
 //                                    }
-//                                }
-//                            }
-//                        }
+                                }
+                            }
                         }
                     }
                 }
