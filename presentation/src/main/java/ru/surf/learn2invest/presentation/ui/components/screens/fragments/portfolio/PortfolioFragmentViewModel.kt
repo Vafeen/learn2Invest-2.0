@@ -43,7 +43,6 @@ class PortfolioFragmentViewModel @Inject constructor(
     private val insertByLimitAssetBalanceHistoryUseCase: InsertByLimitAssetBalanceHistoryUseCase,
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
     private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
-    val adapter: PortfolioAdapter,
 ) :
     ViewModel() {
     private val HISTORY_LIMIT_SIZE = 7

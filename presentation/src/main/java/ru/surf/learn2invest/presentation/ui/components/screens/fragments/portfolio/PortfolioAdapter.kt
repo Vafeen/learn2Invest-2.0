@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.qualifiers.ActivityContext
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.presentation.R
@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 class PortfolioAdapter @Inject constructor(
     private val imageLoader: ImageLoader,
-    @ApplicationContext var context: Context
+    @ActivityContext var context: Context
 ) : RecyclerView.Adapter<PortfolioAdapter.PortfolioViewHolder>() {
 
     var assets: List<AssetInvest> = emptyList()

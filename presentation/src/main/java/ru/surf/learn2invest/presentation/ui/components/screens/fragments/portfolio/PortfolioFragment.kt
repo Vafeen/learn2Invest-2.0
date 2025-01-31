@@ -27,6 +27,7 @@ import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import java.util.Locale
+import javax.inject.Inject
 
 /**
  * Фрагмент портфеля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
@@ -38,6 +39,8 @@ class PortfolioFragment : Fragment() {
     private lateinit var chartHelper: LineChartHelper
     private val viewModel: PortfolioFragmentViewModel by viewModels()
 
+    @Inject
+    lateinit var adapter: PortfolioAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -92,7 +95,7 @@ class PortfolioFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.assetsFlow.collect { assets ->
-                viewModel.adapter.assets = assets
+                adapter.assets = assets
                 binding.assets.isVisible = assets.isNotEmpty()
                 binding.assetsAreEmpty.isVisible = assets.isEmpty()
             }
@@ -100,7 +103,7 @@ class PortfolioFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.priceChanges.collect { priceChanges ->
-                viewModel.adapter.priceChanges = priceChanges
+                adapter.priceChanges = priceChanges
             }
         }
 
@@ -156,7 +159,7 @@ class PortfolioFragment : Fragment() {
     private fun setupAssetsRecyclerView() {
         binding.assets.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.assets.adapter = viewModel.adapter
+        binding.assets.adapter = adapter
     }
 
     private fun openDrawer() {
