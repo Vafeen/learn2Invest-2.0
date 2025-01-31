@@ -59,5 +59,4 @@ dependencies {
     implementation(libs.logging.interceptor)
     // using fingerprint
     implementation(libs.androidx.biometric)
-    implementation(libs.biometric)
 }
