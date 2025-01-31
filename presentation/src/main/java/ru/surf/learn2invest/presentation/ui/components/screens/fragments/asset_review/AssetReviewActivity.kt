@@ -57,15 +57,19 @@ class AssetReviewActivity : AppCompatActivity() {
         updateButtonColors()
 
         binding.assetReviewBtn.setOnClickListener {
-            isOverviewSelected = true
-            updateButtonColors()
-            goToFragment(AssetOverviewFragment.newInstance(id))
+            if (!isOverviewSelected) {
+                isOverviewSelected = true
+                updateButtonColors()
+                goToFragment(AssetOverviewFragment.newInstance(id))
+            }
         }
 
         binding.assetHistoryBtn.setOnClickListener {
-            isOverviewSelected = false
-            updateButtonColors()
-            goToFragment(SubHistoryFragment.newInstance(symbol))
+            if (isOverviewSelected) {
+                isOverviewSelected = false
+                updateButtonColors()
+                goToFragment(SubHistoryFragment.newInstance(symbol))
+            }
         }
 
         binding.coinName.text = name
