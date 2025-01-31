@@ -10,7 +10,7 @@ import ru.surf.learn2invest.domain.domain_models.Transaction
 import javax.inject.Inject
 
 @HiltViewModel
-class HistoryFragmentViewModel @Inject constructor(getAllTransactionUseCase: GetAllTransactionUseCase) :
+internal class HistoryFragmentViewModel @Inject constructor(getAllTransactionUseCase: GetAllTransactionUseCase) :
     ViewModel() {
     val data: Flow<List<Transaction>> =
         getAllTransactionUseCase().map { it.reversed() }

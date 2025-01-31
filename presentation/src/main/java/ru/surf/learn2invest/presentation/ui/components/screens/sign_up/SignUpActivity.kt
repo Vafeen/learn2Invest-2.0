@@ -4,8 +4,6 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -15,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -24,14 +21,17 @@ import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignUpBinding
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInActivity
+import ru.surf.learn2invest.presentation.utils.launchIO
+import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.textListener
 
 /** Активити регистрации пользователя
  */
 
 @AndroidEntryPoint
-class SignUpActivity : AppCompatActivity() {
+internal class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
 
     private val viewModel: SignUpActivityViewModel by viewModels()
@@ -47,13 +47,6 @@ class SignUpActivity : AppCompatActivity() {
         setupNameEditText()
         setupLastnameEditText()
 
-        binding.inputNameEditText.addTextChangedListener {
-            validateFields()
-        }
-
-        binding.inputLastnameEditText.addTextChangedListener {
-            validateFields()
-        }
 
         binding.signupBtn.setOnClickListener {
             signUpButtonClick()
@@ -68,24 +61,38 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.inputLastnameEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                return@setOnEditorActionListener onDoneClicked()
+                return@setOnEditorActionListener onDoneClicked(viewModel.lastNameFlow.value)
             }
             false
         }
 
         applyThemeColors()
+        lifecycleScope.launchMAIN {
+            viewModel.firstnameFlow.collect {
+                validateFirstname(it)
+            }
+        }
+        lifecycleScope.launchMAIN {
+            viewModel.lastNameFlow.collect {
+                validateLastname(it)
+            }
+        }
+        lifecycleScope.launchMAIN {
+            viewModel.stateFlow.collect { state ->
+                binding.signupBtn.isEnabled =
+                    validateFirstname(state.firstName) && validateLastname(state.lastName)
+                applyThemeColors()
+            }
+        }
     }
 
     private fun setupNameEditText() {
-        binding.inputNameEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.name = s.toString()
+        binding.inputNameEditText.setText(viewModel.firstnameFlow.value)
+        binding.inputNameEditText.addTextChangedListener(textListener(onTextChanged = { s, _, _, _ ->
+            lifecycleScope.launchIO {
+                viewModel.updateFirstname(s.toString())
             }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        }))
         with(binding.inputNameEditText) {
             requestFocus()
             showKeyboard()
@@ -93,21 +100,16 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun setupLastnameEditText() {
-        binding.inputLastnameEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.lastname = s.toString()
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        binding.inputLastnameEditText.setText(viewModel.lastNameFlow.value)
+        binding.inputLastnameEditText.addTextChangedListener(
+            textListener(onTextChanged = { s, _, _, _ ->
+                lifecycleScope.launchIO {
+                    viewModel.updateLastName(s.toString())
+                }
+            })
+        )
     }
 
-    private fun validateFields() {
-        binding.signupBtn.isEnabled = validateName() && validateLastname()
-        applyThemeColors()
-    }
 
     private fun applyThemeColors() {
         val isDarkTheme =
@@ -130,62 +132,60 @@ class SignUpActivity : AppCompatActivity() {
         )
     }
 
-    private fun validateName(): Boolean {
-        return when {
-            viewModel.name.isEmpty() -> {
-                false
-            }
+    private fun validateFirstname(firstname: String): Boolean = when {
+        firstname.isEmpty() -> {
+            false
+        }
 
-            viewModel.name.trim() != viewModel.name -> {
-                binding.nameErrorTextView.text =
-                    ContextCompat.getString(this, R.string.contains_spaces)
-                binding.nameErrorTextView.isVisible = true
-                false
-            }
+        firstname.trim() != firstname -> {
+            binding.nameErrorTextView.text =
+                ContextCompat.getString(this, R.string.contains_spaces)
+            binding.nameErrorTextView.isVisible = true
+            false
+        }
 
-            viewModel.name.length > viewModel.lengthLimit -> {
-                binding.nameErrorTextView.text =
-                    ContextCompat.getString(this, R.string.limit_len_exceeded)
-                binding.nameErrorTextView.isVisible = true
-                false
-            }
+        firstname.length > viewModel.lengthLimit -> {
+            binding.nameErrorTextView.text =
+                ContextCompat.getString(this, R.string.limit_len_exceeded)
+            binding.nameErrorTextView.isVisible = true
+            false
+        }
 
-            else -> {
-                binding.nameErrorTextView.isVisible = false
-                true
-            }
+        else -> {
+            binding.nameErrorTextView.isVisible = false
+            true
         }
     }
 
-    private fun validateLastname(): Boolean {
-        return when {
-            viewModel.lastname.isEmpty() -> {
-                false
-            }
 
-            viewModel.lastname.trim() != viewModel.lastname -> {
-                binding.lastnameErrorTextView.text =
-                    ContextCompat.getString(this, R.string.contains_spaces)
-                binding.lastnameErrorTextView.isVisible = true
-                false
-            }
+    private fun validateLastname(lastName: String): Boolean = when {
+        lastName.isEmpty() -> {
+            false
+        }
 
-            viewModel.lastname.length > viewModel.lengthLimit -> {
-                binding.lastnameErrorTextView.text =
-                    ContextCompat.getString(this, R.string.limit_len_exceeded)
-                binding.lastnameErrorTextView.isVisible = true
-                false
-            }
+        lastName.trim() != lastName -> {
+            binding.lastnameErrorTextView.text =
+                ContextCompat.getString(this, R.string.contains_spaces)
+            binding.lastnameErrorTextView.isVisible = true
+            false
+        }
 
-            else -> {
-                binding.lastnameErrorTextView.isVisible = false
-                true
-            }
+        lastName.length > viewModel.lengthLimit -> {
+            binding.lastnameErrorTextView.text =
+                ContextCompat.getString(this, R.string.limit_len_exceeded)
+            binding.lastnameErrorTextView.isVisible = true
+            false
+        }
+
+        else -> {
+            binding.lastnameErrorTextView.isVisible = false
+            true
         }
     }
+
 
     private fun onNextClicked(): Boolean {
-        if (viewModel.name.isEmpty()) {
+        if (viewModel.firstnameFlow.value.isEmpty()) {
             binding.nameErrorTextView.text = ContextCompat.getString(this, R.string.empty_error)
             binding.nameErrorTextView.isVisible = true
             return true
@@ -194,8 +194,8 @@ class SignUpActivity : AppCompatActivity() {
         return false
     }
 
-    private fun onDoneClicked(): Boolean {
-        if (viewModel.lastname.isEmpty()) {
+    private fun onDoneClicked(lastName: String): Boolean {
+        if (lastName.isEmpty()) {
             binding.lastnameErrorTextView.text = ContextCompat.getString(this, R.string.empty_error)
             binding.lastnameErrorTextView.isVisible = true
             return true
@@ -210,8 +210,8 @@ class SignUpActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.updateProfile {
                 it.copy(
-                    firstName = viewModel.name,
-                    lastName = viewModel.lastname
+                    firstName = viewModel.firstnameFlow.value,
+                    lastName = viewModel.lastNameFlow.value
                 )
             }
             startActivity(Intent(this@SignUpActivity, SignInActivity::class.java).apply {

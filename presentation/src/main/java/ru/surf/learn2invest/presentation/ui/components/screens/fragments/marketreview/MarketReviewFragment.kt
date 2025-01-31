@@ -30,7 +30,7 @@ import javax.inject.Inject
  * Фрагмент обзора рынка в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
 @AndroidEntryPoint
-class MarketReviewFragment : Fragment() {
+internal class MarketReviewFragment : Fragment() {
     private val binding by lazy { FragmentMarketReviewBinding.inflate(layoutInflater) }
     private val viewModel: MarketReviewFragmentViewModel by viewModels()
 

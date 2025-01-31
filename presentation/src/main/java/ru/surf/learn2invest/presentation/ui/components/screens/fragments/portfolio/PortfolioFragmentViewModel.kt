@@ -35,7 +35,7 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class PortfolioFragmentViewModel @Inject constructor(
+internal class PortfolioFragmentViewModel @Inject constructor(
     private val profileManager: ProfileManager,
     private val getAllAssetInvestUseCase: GetAllAssetInvestUseCase,
     private val getAllAssetBalanceHistoryUseCase: GetAllAssetBalanceHistoryUseCase,

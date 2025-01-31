@@ -5,6 +5,6 @@ import com.github.mikephil.charting.charts.LineChart
 /**
  * Интерфейс для кастомных классов отображения даты на графике
  */
-interface CustomDateValueFormatter {
+internal interface CustomDateValueFormatter {
     fun getFormattedValue(value: Float, chart: LineChart): String
 }

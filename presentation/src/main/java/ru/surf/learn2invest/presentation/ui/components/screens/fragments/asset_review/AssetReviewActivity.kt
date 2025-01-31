@@ -27,7 +27,7 @@ import ru.surf.learn2invest.presentation.utils.setStatusBarColor
  * Экран обзора актива
  */
 @AndroidEntryPoint
-class AssetReviewActivity : AppCompatActivity() {
+internal class AssetReviewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAssetReviewBinding
     private lateinit var disposable: Disposable
     private var isOverviewSelected = true

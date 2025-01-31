@@ -13,7 +13,7 @@ import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
  * Главный экран приложения с BottomBar
  */
 @AndroidEntryPoint
-class HostActivity : AppCompatActivity() {
+internal class HostActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHostBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -34,7 +34,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-class PortfolioFragment : Fragment() {
+internal class PortfolioFragment : Fragment() {
     private lateinit var binding: FragmentPortfolioBinding
     private lateinit var chartHelper: LineChartHelper
     private val viewModel: PortfolioFragmentViewModel by viewModels()

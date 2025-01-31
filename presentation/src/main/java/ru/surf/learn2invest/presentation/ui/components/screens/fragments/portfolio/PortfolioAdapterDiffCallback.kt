@@ -3,7 +3,7 @@ package ru.surf.learn2invest.presentation.ui.components.screens.fragments.portfo
 import androidx.recyclerview.widget.DiffUtil
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 
-class PortfolioAdapterDiffCallback(
+internal class PortfolioAdapterDiffCallback(
     private val oldList: List<AssetInvest>,
     private val newList: List<AssetInvest>
 ) : DiffUtil.Callback() {

@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class RefillAccountDialogViewModel @Inject constructor(
+internal class RefillAccountDialogViewModel @Inject constructor(
     private val profileManager: ProfileManager
 ) :
     ViewModel() {

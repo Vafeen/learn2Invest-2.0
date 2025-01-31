@@ -24,7 +24,7 @@ import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
 import ru.surf.learn2invest.presentation.utils.launchIO
 
 
-class BuyDialogViewModel @AssistedInject constructor(
+internal class BuyDialogViewModel @AssistedInject constructor(
     private val profileManager: ProfileManager,
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val insertAssetInvestUseCase: InsertAssetInvestUseCase,

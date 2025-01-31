@@ -24,7 +24,7 @@ import java.text.NumberFormat
 import java.util.Locale
 import javax.inject.Inject
 
-class MarketReviewAdapter @Inject constructor(
+internal class MarketReviewAdapter @Inject constructor(
     private val imageLoader: ImageLoader,
     @ActivityContext var context: Context
 ) : RecyclerView.Adapter<MarketReviewAdapter.ViewHolder>() {

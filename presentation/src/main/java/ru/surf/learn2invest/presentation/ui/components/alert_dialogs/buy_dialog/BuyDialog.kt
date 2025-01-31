@@ -35,7 +35,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-class BuyDialog(
+internal class BuyDialog(
     private val dialogContext: Context,
     id: String,
     name: String,
@@ -208,16 +208,6 @@ class BuyDialog(
     }
 
     private fun maxQuantity(price: Float, balance: Float): Int = (balance / price).toInt()
-//    private fun resultPrice(
-//        onFuture: Boolean
-//    ): Float {
-//        binding.apply {
-//            val priceText = priceNumber.text.toString()
-//            val price = priceText.getFloatFromStringWithCurrency() ?: 0f
-//            val number = enteringNumberOfLots.text.toString().toFloatOrNull() ?: 0f
-//            return price * (number + if (onFuture) 1 else 0)
-//        }
-//    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

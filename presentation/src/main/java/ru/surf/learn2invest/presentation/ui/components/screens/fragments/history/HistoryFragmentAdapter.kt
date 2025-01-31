@@ -23,7 +23,7 @@ import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import javax.inject.Inject
 
-class HistoryFragmentAdapter @Inject constructor(
+internal class HistoryFragmentAdapter @Inject constructor(
     private val imageLoader: ImageLoader, @ActivityContext var context: Context
 ) : RecyclerView.Adapter<HistoryFragmentAdapter.ViewHolder>() {
 

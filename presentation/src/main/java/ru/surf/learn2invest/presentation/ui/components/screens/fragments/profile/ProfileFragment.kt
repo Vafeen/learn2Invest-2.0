@@ -20,7 +20,7 @@ import ru.surf.learn2invest.presentation.utils.setStatusBarColor
  * Фрагмент профиля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
 @AndroidEntryPoint
-class ProfileFragment : Fragment() {
+internal class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     val viewModel: ProfileFragmentViewModel by viewModels()
 

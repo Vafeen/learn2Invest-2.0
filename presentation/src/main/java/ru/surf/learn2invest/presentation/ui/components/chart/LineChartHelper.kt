@@ -16,7 +16,7 @@ import ru.surf.learn2invest.presentation.R
 /**
  * Класс, который отвечает за внешнее отображение графика и обновление данных по точкам
  */
-class LineChartHelper(
+internal class LineChartHelper(
     private val context: Context,
     private val dateFormatterStrategy: CustomDateValueFormatter
 ) {

@@ -22,7 +22,7 @@ import ru.surf.learn2invest.presentation.utils.withContextIO
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileFragmentViewModel @Inject constructor(
+internal class ProfileFragmentViewModel @Inject constructor(
     private val profileManager: ProfileManager,
     private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase,
     private val fingerprintAuthenticator: FingerprintAuthenticator

@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 /**
  * Класс для удобной реализации BottomSheetDialogs
  */
-abstract class CustomBottomSheetDialog() : BottomSheetDialogFragment() {
+internal abstract class CustomBottomSheetDialog() : BottomSheetDialogFragment() {
     abstract val dialogTag: String
 
     /**

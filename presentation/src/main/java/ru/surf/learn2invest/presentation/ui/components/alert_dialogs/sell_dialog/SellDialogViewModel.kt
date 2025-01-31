@@ -25,7 +25,7 @@ import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
 import ru.surf.learn2invest.presentation.utils.launchIO
 
 
-class SellDialogViewModel @AssistedInject constructor(
+internal class SellDialogViewModel @AssistedInject constructor(
     private val profileManager: ProfileManager,
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val insertAssetInvestUseCase: InsertAssetInvestUseCase,
@@ -41,9 +41,9 @@ class SellDialogViewModel @AssistedInject constructor(
     private var realTimeUpdateJob: Job? = null
     val profileFlow = profileManager.profileFlow
     private val _lotsFlow = MutableStateFlow(LotsData(0))
-    val lotsFlow = _lotsFlow.asStateFlow()
+    private val lotsFlow = _lotsFlow.asStateFlow()
     private val _tradingPasswordFlow = MutableStateFlow("")
-    val tradingPasswordFlow = _tradingPasswordFlow.asStateFlow()
+    private val tradingPasswordFlow = _tradingPasswordFlow.asStateFlow()
     private val _coinFlow = MutableStateFlow(
         AssetInvest(
             name = name, symbol = symbol, coinPrice = 0f, amount = 0, assetID = id

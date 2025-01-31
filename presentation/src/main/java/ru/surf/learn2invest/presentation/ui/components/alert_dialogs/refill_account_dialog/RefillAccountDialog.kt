@@ -29,7 +29,7 @@ import ru.surf.learn2invest.presentation.utils.tapOn
  * @param onCloseCallback [Callback по закрытию диалога]
  */
 @AndroidEntryPoint
-class RefillAccountDialog(
+internal class RefillAccountDialog(
     val dialogContext: Context, private val onCloseCallback: () -> Unit,
 ) : CustomBottomSheetDialog() {
 

@@ -27,7 +27,7 @@ import ru.surf.learn2invest.presentation.utils.launchIO
 import javax.inject.Inject
 
 @HiltViewModel
-class MarketReviewFragmentViewModel @Inject constructor(
+internal class MarketReviewFragmentViewModel @Inject constructor(
     private val getMarkerReviewUseCase: GetMarketReviewUseCase,
     private val insertSearchedCoinUseCase: InsertSearchedCoinUseCase,
     private val getAllSearchedCoinUseCase: GetAllSearchedCoinUseCase,

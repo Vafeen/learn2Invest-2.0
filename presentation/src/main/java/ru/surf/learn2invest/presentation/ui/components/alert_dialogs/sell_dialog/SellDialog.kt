@@ -33,7 +33,7 @@ import javax.inject.Inject
  * @param symbol [Абревиатура (BTC)]
  */
 @AndroidEntryPoint
-class SellDialog(
+internal class SellDialog(
     val dialogContext: Context,
     private val lifecycleScope: LifecycleCoroutineScope,
     private val id: String,

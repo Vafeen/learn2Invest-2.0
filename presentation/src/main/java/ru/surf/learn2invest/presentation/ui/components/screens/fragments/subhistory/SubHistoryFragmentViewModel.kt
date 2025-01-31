@@ -10,7 +10,7 @@ import ru.surf.learn2invest.domain.database.usecase.GetFilteredBySymbolTransacti
 import ru.surf.learn2invest.domain.domain_models.Transaction
 
 
-class SubHistoryFragmentViewModel @AssistedInject constructor(
+internal class SubHistoryFragmentViewModel @AssistedInject constructor(
     getFilteredBySymbolTransactionUseCase: GetFilteredBySymbolTransactionUseCase,
     @Assisted val symbol: String
 ) : ViewModel() {

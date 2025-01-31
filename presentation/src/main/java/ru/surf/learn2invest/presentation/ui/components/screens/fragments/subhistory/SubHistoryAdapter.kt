@@ -19,8 +19,8 @@ import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.TransactionAdapterDiffCallback
 import javax.inject.Inject
 
-class SubHistoryAdapter @Inject constructor(
-    val loader: ImageLoader,
+internal class SubHistoryAdapter @Inject constructor(
+    private val loader: ImageLoader,
     @ActivityContext var context: Context
 ) : RecyclerView.Adapter<SubHistoryAdapter.ViewHolder>() {
     var data: List<Transaction> = listOf()

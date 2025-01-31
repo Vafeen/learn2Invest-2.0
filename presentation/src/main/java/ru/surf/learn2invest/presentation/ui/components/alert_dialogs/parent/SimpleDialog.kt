@@ -17,7 +17,7 @@ import ru.surf.learn2invest.presentation.utils.getStringOrNull
  * @param onPositiveButtonClick [событие нажатия на позитивную кнопку]
  * @param onNegativeButtonClick [событие нажатия на негативную кнопку]
  */
-class SimpleDialog(
+internal class SimpleDialog(
     context: Context,
     @StringRes titleRes: Int? = null,
     @StringRes messageRes: Int? = null,

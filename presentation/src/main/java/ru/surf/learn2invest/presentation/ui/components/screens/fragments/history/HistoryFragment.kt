@@ -21,7 +21,7 @@ import javax.inject.Inject
  * Фрагмент истории сделок в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
 @AndroidEntryPoint
-class HistoryFragment : Fragment() {
+internal class HistoryFragment : Fragment() {
     private lateinit var binding: FragmentHistoryBinding
     private val viewModel: HistoryFragmentViewModel by viewModels()
 

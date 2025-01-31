@@ -22,7 +22,7 @@ import javax.inject.Inject
  * Фрагмент обзора актива в [AssetReviewActivity][ru.surf.learn2invest.ui.components.screens.fragments.asset_review.AssetReviewActivity]
  */
 @AndroidEntryPoint
-class AssetOverviewFragment : Fragment() {
+internal class AssetOverviewFragment : Fragment() {
     private lateinit var binding: FragmentAssetOverviewBinding
 
     @Inject

@@ -25,7 +25,7 @@ import ru.surf.learn2invest.presentation.utils.round
 import javax.inject.Inject
 
 
-class PortfolioAdapter @Inject constructor(
+internal class PortfolioAdapter @Inject constructor(
     private val imageLoader: ImageLoader,
     @ActivityContext var context: Context
 ) : RecyclerView.Adapter<PortfolioAdapter.PortfolioViewHolder>() {

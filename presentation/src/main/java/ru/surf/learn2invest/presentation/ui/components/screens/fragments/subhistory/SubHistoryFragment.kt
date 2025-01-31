@@ -20,7 +20,7 @@ import javax.inject.Inject
  * Фрагмент истории сделок с одним активом в [AssetReviewActivity][ru.surf.learn2invest.ui.components.screens.fragments.asset_review.AssetReviewActivity]
  */
 @AndroidEntryPoint
-class SubHistoryFragment : Fragment() {
+internal class SubHistoryFragment : Fragment() {
     private lateinit var binding: FragmentAssetHistoryBinding
 
     @Inject
