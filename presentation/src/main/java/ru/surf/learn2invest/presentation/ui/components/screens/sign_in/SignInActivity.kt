@@ -10,7 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.cryptography.PasswordHasher
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignInBinding
@@ -20,6 +22,7 @@ import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import ru.surf.learn2invest.presentation.utils.tapOn
+import ru.surf.learn2invest.presentation.utils.withContextIO
 import javax.inject.Inject
 
 /**
@@ -135,8 +138,9 @@ internal class SignInActivity : AppCompatActivity() {
             }
 
             lifecycleScope.launchMAIN {
-                viewModel.pinFlow.collect {
-                    if (it.length == 4) {
+                viewModel.pinFlow.collect { pin ->
+                    if (pin.length == 4) {
+                        viewModel.blockKeyBoard()
                         when (intent.action) {
                             SignINActivityActions.SignIN.action -> {
                                 lifecycleScope.launchMAIN {
@@ -150,69 +154,70 @@ internal class SignInActivity : AppCompatActivity() {
                                 }
                             }
 
-//                        SignINActivityActions.SignUP.action -> {
-//                            when {
-//                                firstPin == "" -> {
-//                                    firstPin = pinCode
-//                                    pinCode = ""
-//                                    lifecycleScope.launch(Dispatchers.Main) {
-//                                        delay(500)
-//                                        binding.enterPin.text = getString(R.string.repeat_pin)
-//                                        unBlockKeyBoard()
-//                                    }
-//                                }
-//
-//                                firstPin == pinCode -> {
-//                                    lifecycleScope.launch(Dispatchers.Main) {
-//                                        viewModel.updateProfile {
-//                                            it.copy(
-//                                                hash = passwordHasher.passwordToHash(
-//                                                    firstName = it.firstName,
-//                                                    lastName = it.lastName,
-//                                                    password = pinCode
-//                                                )
-//                                            )
-//                                        }
-//                                        animatePINCode(truth = true)
-//                                        if (viewModel.fingerprintAuthenticator.isBiometricAvailable(
-//                                                activity = this@SignInActivity
-//                                            )
-//                                        ) {
-//                                            viewModel.fingerprintAuthenticator.setSuccessCallback {
-//                                                lifecycleScope.launch {
-//                                                    viewModel.updateProfile {
-//                                                        it.copy(biometry = true)
-//                                                    }
-//                                                    onAuthenticationSucceeded(
-//                                                        action = intent.action ?: "",
-//                                                        context = this@SignInActivity,
-//                                                    )
-//                                                }
-//                                            }.setCancelCallback {
-//                                                onAuthenticationSucceeded(
-//                                                    action = intent.action ?: "",
-//                                                    context = this@SignInActivity,
-//                                                )
-//                                            }.auth(lifecycleScope, this@SignInActivity)
-//                                        } else {
-//                                            onAuthenticationSucceeded(
-//                                                action = intent.action ?: "",
-//                                                context = this@SignInActivity,
-//                                            )
-//                                        }
-//                                    }
-//                                }
-//
-//                                firstPin != pinCode -> {
-//                                    lifecycleScope.launch(Dispatchers.Main) {
-//                                        pinCode = ""
-//                                        animatePINCode(truth = false)
-//                                    }
-//                                }
-//                            }
-//
-//                        }
-//
+                            SignINActivityActions.SignUP.action -> {
+                                when {
+                                    firstPin == "" -> {
+                                        firstPin = pin
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            delay(500)
+                                            viewModel.clearPIN()
+                                            binding.enterPin.text = getString(R.string.repeat_pin)
+                                            viewModel.unblockKeyBoard()
+                                        }
+                                    }
+
+                                    firstPin == pin -> {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            withContextIO {
+                                                viewModel.updateProfile {
+                                                    it.copy(
+                                                        hash = passwordHasher.passwordToHash(
+                                                            firstName = it.firstName,
+                                                            lastName = it.lastName,
+                                                            password = pin
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                            animatePINCode(truth = true)
+                                            val auth = {
+                                                viewModel.onAuthenticationSucceeded(
+                                                    action = intent.action ?: "",
+                                                    context = this@SignInActivity,
+                                                )
+                                            }
+                                            if (viewModel.fingerprintAuthenticator.isBiometricAvailable(
+                                                    activity = this@SignInActivity
+                                                )
+                                            ) {
+                                                viewModel.fingerprintAuthenticator.setSuccessCallback {
+                                                    lifecycleScope.launchMAIN {
+                                                        withContextIO {
+                                                            viewModel.updateProfile {
+                                                                it.copy(biometry = true)
+                                                            }
+                                                        }
+                                                        auth()
+                                                    }
+                                                }.setCancelCallback {
+                                                    auth()
+                                                }.auth(lifecycleScope, this@SignInActivity)
+                                            } else {
+                                                auth()
+                                            }
+                                        }
+                                    }
+
+                                    firstPin != pin -> {
+                                        lifecycleScope.launchMAIN {
+                                            animatePINCode(truth = false)
+                                            viewModel.clearPIN()
+                                        }
+                                    }
+                                }
+
+                            }
+
 //                        SignINActivityActions.ChangingPIN.action -> {
 //                            when {
 //                                // вводит старый пароль
@@ -287,8 +292,7 @@ internal class SignInActivity : AppCompatActivity() {
                             it.copy(biometry = true)
                         }
                     }
-
-                    onAuthenticationSucceeded(
+                    viewModel.onAuthenticationSucceeded(
                         action = intent.action ?: "",
                         context = this@SignInActivity,
                     )
