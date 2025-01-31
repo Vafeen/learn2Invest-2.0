@@ -1,6 +1,7 @@
 package ru.surf.learn2invest.presentation.ui.components.screens.sign_in
 
 import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,7 @@ import ru.surf.learn2invest.domain.ProfileManager
 import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.cryptography.usecase.VerifyPINUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
+import ru.surf.learn2invest.presentation.ui.components.screens.host.HostActivity
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,8 +24,6 @@ internal class SignInActivityViewModel @Inject constructor(
     var firstPin: String = ""
     var isVerified = false
     val profileFlow = profileManager.profileFlow
-    private val _centerTextFlow = MutableStateFlow("")
-    val centerTextFlow = _centerTextFlow.asStateFlow()
     private val _pinFlow = MutableStateFlow("")
     val pinFlow = _pinFlow.asStateFlow()
     private val _keyBoardIsWorkFLow = MutableStateFlow(true)
@@ -43,15 +43,17 @@ internal class SignInActivityViewModel @Inject constructor(
     fun blockKeyBoard() {
         _keyBoardIsWorkFLow.update { false }
     }
+
     fun unblockKeyBoard() {
         _keyBoardIsWorkFLow.update { true }
     }
+
     fun onAuthenticationSucceeded(
         action: String,
         context: Activity
     ) {
-//        if (action != SignINActivityActions.ChangingPIN.action)
-//            context.startActivity(Intent(context, HostActivity::class.java))
+        if (action != SignINActivityActions.ChangingPIN.action)
+            context.startActivity(Intent(context, HostActivity::class.java))
         context.finish()
     }
 
