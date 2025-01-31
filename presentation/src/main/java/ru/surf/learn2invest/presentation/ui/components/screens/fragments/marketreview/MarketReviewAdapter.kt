@@ -45,11 +45,11 @@ class MarketReviewAdapter @Inject constructor(
         val coinBottomNumericInfo = itemView.findViewById<TextView>(R.id.coin_bottom_numeric_info)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
+        itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.coin_item, parent, false)
-        return ViewHolder(itemView)
-    }
+    )
+
 
     override fun getItemCount() = data.size
 

@@ -21,8 +21,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentMarketReviewBinding
+import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import javax.inject.Inject
 
 
 /**
@@ -33,8 +33,6 @@ class MarketReviewFragment : Fragment() {
     private val binding by lazy { FragmentMarketReviewBinding.inflate(layoutInflater) }
     private val viewModel: MarketReviewFragmentViewModel by viewModels()
 
-    @Inject
-    lateinit var adapter: MarketReviewAdapter
     private lateinit var realTimeUpdateJob: Job
 
     override fun onCreateView(
@@ -47,9 +45,9 @@ class MarketReviewFragment : Fragment() {
         }
 
         binding.marketReviewRecyclerview.layoutManager = LinearLayoutManager(this.requireContext())
-        binding.marketReviewRecyclerview.adapter = adapter
+        binding.marketReviewRecyclerview.adapter = viewModel.adapter
 
-        lifecycleScope.launch {
+        lifecycleScope.launchMAIN {
             viewModel.filterOrder.collect {
                 binding.apply {
                     if (it) {
@@ -63,16 +61,17 @@ class MarketReviewFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchMAIN {
             viewModel.isLoading.collect {
                 binding.apply {
                     marketReviewRecyclerview.isVisible = it.not()
                     binding.progressBar.isVisible = it
                 }
+
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchMAIN {
             viewModel.isError.collect {
                 binding.apply {
                     marketReviewRecyclerview.isVisible = it.not()
@@ -82,24 +81,16 @@ class MarketReviewFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchMAIN {
             viewModel.searchedData.collect {
-                adapter.data = it
+                viewModel.adapter.data = it
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchMAIN {
             viewModel.data.collect {
                 if (it.isNotEmpty()) {
-                    adapter.data = it
-                    if (viewModel.isRealtimeUpdate) {
-                        adapter.notifyItemRangeChanged(
-                            viewModel.firstUpdateElement,
-                            viewModel.amountUpdateElement
-                        )
-                    } else {
-                        adapter.notifyDataSetChanged()
-                    }
+                    viewModel.adapter.data = it
                     binding.searchEditText.setAdapter(
                         ArrayAdapter(this@MarketReviewFragment.requireContext(),
                             android.R.layout.simple_expandable_list_item_1,
@@ -109,7 +100,7 @@ class MarketReviewFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchMAIN {
             viewModel.filterState.collect {
                 binding.apply {
                     val isDarkTheme =
@@ -167,7 +158,7 @@ class MarketReviewFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchMAIN {
             viewModel.isSearch.collect {
                 binding.apply {
                     youSearch.isVisible = it
@@ -178,10 +169,8 @@ class MarketReviewFragment : Fragment() {
                     filterByChangePercent24Hr.isVisible = it.not()
                     searchEditText.text.clear()
                     if (it) searchEditText.hint = ""
-                    if (it) {
-                        adapter.data = viewModel.searchedData.value
-                    } else adapter.data = viewModel.data.value
-                    adapter.notifyDataSetChanged()
+                    if (it) viewModel.adapter.data = viewModel.searchedData.value
+                    else viewModel.adapter.data = viewModel.data.value
                 }
             }
         }

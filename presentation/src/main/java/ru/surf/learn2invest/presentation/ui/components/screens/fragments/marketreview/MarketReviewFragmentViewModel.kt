@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +24,7 @@ import ru.surf.learn2invest.domain.toCoinReview
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_MARKETCAP
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PERCENT
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PRICE
+import ru.surf.learn2invest.presentation.utils.launchIO
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +34,9 @@ class MarketReviewFragmentViewModel @Inject constructor(
     private val getAllSearchedCoinUseCase: GetAllSearchedCoinUseCase,
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
     private val clearSearchedCoinUseCase: ClearSearchedCoinUseCase,
+    var adapter: MarketReviewAdapter,
 ) : ViewModel() {
+    private var realTimeUpdateJob: Job? = null
     private var _data: MutableStateFlow<List<CoinReview>> = MutableStateFlow(listOf())
     val data = _data.asStateFlow()
     private var _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
@@ -67,7 +71,7 @@ class MarketReviewFragmentViewModel @Inject constructor(
     }
 
     private fun initData() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             when (val result = getMarkerReviewUseCase()) {
                 is ResponseResult.Success -> {
                     _isLoading.value = false
@@ -124,17 +128,16 @@ class MarketReviewFragmentViewModel @Inject constructor(
     }
 
     fun setSearchState(state: Boolean, searchRequest: String = "") {
-        val tempSearch = mutableListOf<String>()
+        var tempSearch = listOf<String>()
         _isSearch.update {
             state
         }
         if (state) {
-            viewModelScope.launch(Dispatchers.IO) {
-                if (searchRequest.isBlank().not()) {
+            viewModelScope.launchIO {
+                if (searchRequest.isNotBlank()) {
                     insertSearchedCoinUseCase(SearchedCoin(coinID = searchRequest))
                 }
-                getAllSearchedCoinUseCase().first()
-                    .map { tempSearch.add(it.coinID) }
+                tempSearch = getAllSearchedCoinUseCase().first().map { it.coinID }
                 _searchedData.update {
                     _data.value.filter { element -> tempSearch.contains(element.name) }.reversed()
 
@@ -180,7 +183,7 @@ class MarketReviewFragmentViewModel @Inject constructor(
     }
 
     fun clearSearchData() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             clearSearchedCoinUseCase()
             _searchedData.update {
                 listOf()
