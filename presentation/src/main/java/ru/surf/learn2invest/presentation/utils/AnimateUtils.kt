@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
@@ -51,9 +50,10 @@ internal fun animatorListener(
 
 fun ImageView.isOk(): Boolean = this.drawable == Icons.ok
 
-fun TextView.tapOn() {
+fun View.tapOn() {
+    val duration = 500L
     val rotating = ValueAnimator.ofFloat(0f, 360f).also {
-        it.duration = 250
+        it.duration = duration
         it.addUpdateListener { animator ->
             val rotateValue = animator.animatedValue as Float
             this.rotation = rotateValue
@@ -61,7 +61,7 @@ fun TextView.tapOn() {
     }
 
     val flexBackground = ValueAnimator.ofFloat(1f, 0f, 1f).also {
-        it.duration = 800
+        it.duration = duration
         it.addUpdateListener { animator ->
             val rotateValue = animator.animatedValue as Float
             this.alpha = rotateValue
