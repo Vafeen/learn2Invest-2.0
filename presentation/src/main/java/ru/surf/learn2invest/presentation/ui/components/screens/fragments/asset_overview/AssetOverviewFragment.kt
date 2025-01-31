@@ -11,8 +11,11 @@ import ru.surf.learn2invest.presentation.databinding.FragmentAssetOverviewBindin
 import ru.surf.learn2invest.presentation.ui.components.chart.Last7DaysFormatter
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.presentation.utils.AssetConstants
+import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
+import java.text.NumberFormat
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -42,13 +45,15 @@ class AssetOverviewFragment : Fragment() {
         viewModel.chartHelper.setupChart(binding.chart)
         viewModel.loadChartData()
         lifecycleScope.launchMAIN {
-            viewModel.formattedPriceFlow.collect {
-                binding.price.text = it
+            viewModel.formattedMarketCapFlow.collect {
+                binding.capitalisation.text = NumberFormat.getInstance(Locale.US).apply {
+                    maximumFractionDigits = 0
+                }.format(it).getWithCurrency()
             }
         }
         lifecycleScope.launchMAIN {
-            viewModel.formattedMarketCapFlow.collect {
-                binding.capitalisation.text = it
+            viewModel.formattedPriceFlow.collect {
+                binding.price.text = String.format(Locale.US, "%.8f", it).getWithCurrency()
             }
         }
         return binding.root

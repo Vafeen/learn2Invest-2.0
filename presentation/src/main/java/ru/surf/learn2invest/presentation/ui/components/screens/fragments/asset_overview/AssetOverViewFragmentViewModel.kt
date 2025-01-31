@@ -15,10 +15,7 @@ import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import ru.surf.learn2invest.domain.network.usecase.GetCoinHistoryUseCase
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
-import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.launchIO
-import java.text.NumberFormat
-import java.util.Locale
 
 class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val getCoinHistoryUseCase: GetCoinHistoryUseCase,
@@ -28,8 +25,8 @@ class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private var data = listOf<Entry>()
     lateinit var chartHelper: LineChartHelper
     private var realTimeUpdateJob: Job? = null
-    private val _formattedMarketCapFlow = MutableStateFlow("")
-    private val _formattedPriceFlow = MutableStateFlow("")
+    private val _formattedMarketCapFlow = MutableStateFlow(0f)
+    private val _formattedPriceFlow = MutableStateFlow(0f)
     val formattedMarketCapFlow = _formattedMarketCapFlow.asStateFlow()
     val formattedPriceFlow = _formattedPriceFlow.asStateFlow()
 
@@ -41,15 +38,9 @@ class AssetOverViewFragmentViewModel @AssistedInject constructor(
             data.plus(Entry(0f, coinResponse.value.priceUsd))
         }
 
-        _formattedMarketCapFlow.emit(
-            NumberFormat.getInstance(Locale.US).apply {
-                maximumFractionDigits = 0
-            }.format(coinResponse.value.marketCapUsd.toDouble()).getWithCurrency()
-        )
+        _formattedMarketCapFlow.emit(coinResponse.value.marketCapUsd)
 
-        _formattedPriceFlow.emit(
-            String.format(Locale.US, "%.8f", coinResponse.value.priceUsd).getWithCurrency()
-        )
+        _formattedPriceFlow.emit(coinResponse.value.priceUsd)
 
         chartHelper.updateData(data)
     }
