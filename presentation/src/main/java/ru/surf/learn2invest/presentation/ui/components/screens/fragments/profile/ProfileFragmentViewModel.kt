@@ -44,7 +44,7 @@ class ProfileFragmentViewModel @Inject constructor(
     suspend fun deleteProfile(activity: AppCompatActivity) {
         activity.finish()
         withContextIO {
-            clearDB()
+           clearAppDatabaseUseCase()
         }
         activity.startActivity(
             Intent(
@@ -60,7 +60,7 @@ class ProfileFragmentViewModel @Inject constructor(
             assetBalance = 0f
         )
         withContextIO {
-            clearDB()
+            clearAppDatabaseUseCase()
             updateProfile {
                 savedProfile
             }
@@ -98,7 +98,6 @@ class ProfileFragmentViewModel @Inject constructor(
         }
     }
 
-    private suspend fun clearDB() = clearAppDatabaseUseCase()
 
     fun changePIN(context: Context) {
         context.startActivity(Intent(context, SignInActivity::class.java).also {
