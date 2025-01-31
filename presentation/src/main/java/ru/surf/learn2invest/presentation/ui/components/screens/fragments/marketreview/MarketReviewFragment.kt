@@ -23,6 +23,7 @@ import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentMarketReviewBinding
 import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import javax.inject.Inject
 
 
 /**
@@ -35,6 +36,8 @@ class MarketReviewFragment : Fragment() {
 
     private lateinit var realTimeUpdateJob: Job
 
+    @Inject
+    lateinit var adapter: MarketReviewAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,7 +48,7 @@ class MarketReviewFragment : Fragment() {
         }
 
         binding.marketReviewRecyclerview.layoutManager = LinearLayoutManager(this.requireContext())
-        binding.marketReviewRecyclerview.adapter = viewModel.adapter
+        binding.marketReviewRecyclerview.adapter = adapter
 
         lifecycleScope.launchMAIN {
             viewModel.filterOrder.collect {
@@ -83,14 +86,14 @@ class MarketReviewFragment : Fragment() {
 
         lifecycleScope.launchMAIN {
             viewModel.searchedData.collect {
-                viewModel.adapter.data = it
+                adapter.data = it
             }
         }
 
         lifecycleScope.launchMAIN {
             viewModel.data.collect {
                 if (it.isNotEmpty()) {
-                    viewModel.adapter.data = it
+                    adapter.data = it
                     binding.searchEditText.setAdapter(
                         ArrayAdapter(this@MarketReviewFragment.requireContext(),
                             android.R.layout.simple_expandable_list_item_1,
@@ -169,8 +172,8 @@ class MarketReviewFragment : Fragment() {
                     filterByChangePercent24Hr.isVisible = it.not()
                     searchEditText.text.clear()
                     if (it) searchEditText.hint = ""
-                    if (it) viewModel.adapter.data = viewModel.searchedData.value
-                    else viewModel.adapter.data = viewModel.data.value
+                    if (it) adapter.data = viewModel.searchedData.value
+                    else adapter.data = viewModel.data.value
                 }
             }
         }

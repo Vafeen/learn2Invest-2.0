@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,9 +33,7 @@ class MarketReviewFragmentViewModel @Inject constructor(
     private val getAllSearchedCoinUseCase: GetAllSearchedCoinUseCase,
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
     private val clearSearchedCoinUseCase: ClearSearchedCoinUseCase,
-    var adapter: MarketReviewAdapter,
 ) : ViewModel() {
-    private var realTimeUpdateJob: Job? = null
     private var _data: MutableStateFlow<List<CoinReview>> = MutableStateFlow(listOf())
     val data = _data.asStateFlow()
     private var _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
