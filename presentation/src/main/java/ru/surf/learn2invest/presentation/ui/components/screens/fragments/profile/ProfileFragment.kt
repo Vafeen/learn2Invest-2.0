@@ -10,13 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentProfileBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.SimpleDialog
 import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import javax.inject.Inject
 
 /**
  * Фрагмент профиля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
@@ -26,8 +24,6 @@ class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     val viewModel: ProfileFragmentViewModel by viewModels()
 
-    @Inject
-    lateinit var fingerprintAuthenticator: FingerprintAuthenticator
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -52,8 +48,7 @@ class ProfileFragment : Fragment() {
 
     private fun initListeners() {
         binding.also { fr ->
-            fr.biometryBtn.isVisible =
-                fingerprintAuthenticator.isBiometricAvailable(activity = activity as AppCompatActivity)
+            fr.biometryBtn.isVisible = viewModel.isBiometricAvailable(activity = activity as AppCompatActivity)
             fr.deleteProfileTV.setOnClickListener {
                 SimpleDialog(
                     context = requireContext(),

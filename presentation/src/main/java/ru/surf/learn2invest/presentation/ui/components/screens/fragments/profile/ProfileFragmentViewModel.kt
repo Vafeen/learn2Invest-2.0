@@ -98,11 +98,14 @@ class ProfileFragmentViewModel @Inject constructor(
         }
     }
 
-    suspend fun clearDB() = clearAppDatabaseUseCase()
+    private suspend fun clearDB() = clearAppDatabaseUseCase()
 
     fun changePIN(context: Context) {
         context.startActivity(Intent(context, SignInActivity::class.java).also {
             it.action = SignINActivityActions.ChangingPIN.action
         })
     }
+
+    fun isBiometricAvailable(activity: AppCompatActivity): Boolean =
+        fingerprintAuthenticator.isBiometricAvailable(activity)
 }
