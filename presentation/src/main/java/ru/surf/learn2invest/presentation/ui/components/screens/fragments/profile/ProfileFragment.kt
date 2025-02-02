@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentProfileBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.SimpleDialog
-import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 
 /**

@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.presentation.utils
+package ru.surf.learn2invest.domain.utils
 
 import android.animation.Animator
 import android.animation.AnimatorSet
@@ -14,9 +14,7 @@ import androidx.core.animation.doOnStart
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.LifecycleCoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  * Создает слушателя анимации для обработки событий анимации.
@@ -26,11 +24,11 @@ import kotlinx.coroutines.launch
  * @param onAnimationCancel Функция, вызываемая при отмене анимации.
  * @param onAnimationRepeat Функция, вызываемая при повторении анимации.
  */
-internal fun animatorListener(
+fun animatorListener(
     onAnimationStart: ((animation: Animator) -> Unit)? = null,
     onAnimationEnd: ((animation: Animator) -> Unit)? = null,
     onAnimationCancel: ((animation: Animator) -> Unit)? = null,
-    onAnimationRepeat: ((animation: Animator) -> Unit)? = null
+    onAnimationRepeat: ((animation: Animator) -> Unit)? = null,
 ) = object : Animator.AnimatorListener {
     override fun onAnimationStart(animation: Animator) {
         onAnimationStart?.invoke(animation)
@@ -91,7 +89,7 @@ fun ImageView.gotoCenter(
     truePIN: Boolean,
     needReturn: Boolean,
     lifecycleScope: LifecycleCoroutineScope,
-    doAfter: () -> Unit = {}
+    doAfter: () -> Unit = {},
 ) {
     val home = (this.layoutParams as ConstraintLayout.LayoutParams).horizontalBias
 
@@ -124,7 +122,7 @@ fun ImageView.gotoCenter(
     gotoCenter.start() // Запуск анимации перемещения к центру.
 
     gotoCenter.doOnEnd {
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launchMAIN {
             this@gotoCenter.drawable.setTint(
                 if (truePIN) {
                     Color.GREEN // Установка цвета в зеленый при верном PIN-коде.

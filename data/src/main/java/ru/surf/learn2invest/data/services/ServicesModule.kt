@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.services.ProfileManager
 import javax.inject.Singleton
 
 @Module

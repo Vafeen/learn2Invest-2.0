@@ -16,11 +16,11 @@ import ru.surf.learn2invest.presentation.databinding.DialogSellBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.presentation.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import ru.surf.learn2invest.presentation.utils.launchIO
-import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.textListener
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
-import ru.surf.learn2invest.presentation.utils.withContextMAIN
+import ru.surf.learn2invest.domain.utils.withContextMAIN
 import javax.inject.Inject
 
 

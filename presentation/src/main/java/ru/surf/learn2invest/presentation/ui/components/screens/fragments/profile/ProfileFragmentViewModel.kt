@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.database.usecase.ClearAppDatabaseUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
@@ -17,8 +17,8 @@ import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInAct
 import ru.surf.learn2invest.presentation.ui.components.screens.trading_password.TradingPasswordActivity
 import ru.surf.learn2invest.presentation.ui.components.screens.trading_password.TradingPasswordActivityActions
 import ru.surf.learn2invest.presentation.ui.main.MainActivity
-import ru.surf.learn2invest.presentation.utils.launchIO
-import ru.surf.learn2invest.presentation.utils.withContextIO
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.withContextIO
 import javax.inject.Inject
 
 @HiltViewModel

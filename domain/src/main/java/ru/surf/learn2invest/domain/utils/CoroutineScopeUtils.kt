@@ -1,4 +1,4 @@
-package ru.surf.learn2invest.presentation.utils
+package ru.surf.learn2invest.domain.utils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

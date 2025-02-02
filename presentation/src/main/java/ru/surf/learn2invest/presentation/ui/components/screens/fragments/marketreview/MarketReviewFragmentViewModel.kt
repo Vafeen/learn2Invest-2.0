@@ -23,7 +23,7 @@ import ru.surf.learn2invest.domain.toCoinReview
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_MARKETCAP
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PERCENT
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PRICE
-import ru.surf.learn2invest.presentation.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchIO
 import javax.inject.Inject
 
 @HiltViewModel

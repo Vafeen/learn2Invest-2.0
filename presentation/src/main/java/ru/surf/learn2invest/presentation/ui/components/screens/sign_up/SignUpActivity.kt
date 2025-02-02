@@ -21,8 +21,8 @@ import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignUpBinding
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInActivity
-import ru.surf.learn2invest.presentation.utils.launchIO
-import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import ru.surf.learn2invest.presentation.utils.textListener

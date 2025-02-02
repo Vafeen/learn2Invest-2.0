@@ -24,7 +24,7 @@ import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.presentation.utils.DevStrLink
 import ru.surf.learn2invest.presentation.utils.getVersionName
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import java.util.Locale
 import javax.inject.Inject

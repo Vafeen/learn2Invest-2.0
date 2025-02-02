@@ -12,7 +12,7 @@ import ru.surf.learn2invest.presentation.ui.components.chart.Last7DaysFormatter
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import java.text.NumberFormat
 import java.util.Locale

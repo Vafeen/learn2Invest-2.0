@@ -1,6 +1,5 @@
 package ru.surf.learn2invest.presentation.ui.main
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -8,13 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityMainBinding
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInActivity
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_up.SignUpActivity
-import ru.surf.learn2invest.presentation.utils.animatorListener
-import ru.surf.learn2invest.presentation.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 
@@ -63,12 +61,16 @@ internal class MainActivity : AppCompatActivity() {
      */
     private fun runAnimatedText(onEnd: () -> Unit) {
         binding.splashTextView.alpha = 0f
-        binding.splashTextView.text = "${this.getString(R.string.hello)}, ${viewModel.profileFlow.value.firstName}!"
-        ObjectAnimator.ofFloat(binding.splashTextView, "alpha", 0f, 1f).also {
-            it.duration = 2000 // Длительность анимации в миллисекундах
-            it.addListener(animatorListener(onAnimationEnd = {
-                onEnd()
-            }))
-        }.start()
+        binding.splashTextView.text =
+            "${this.getString(R.string.hello)}, ${viewModel.profileFlow.value.firstName}!"
+        viewModel.animateAlpha(
+            view = binding.splashTextView,
+            duration = 2000,
+            onEnd = onEnd,
+            values = floatArrayOf(
+                0f,
+                1f
+            )
+        )
     }
 }

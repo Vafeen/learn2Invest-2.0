@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.database.usecase.GetAllAssetBalanceHistoryUseCase
 import ru.surf.learn2invest.domain.database.usecase.GetAllAssetInvestUseCase
 import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
@@ -27,7 +27,7 @@ import ru.surf.learn2invest.domain.domain_models.AssetBalanceHistory
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
-import ru.surf.learn2invest.presentation.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchIO
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Calendar

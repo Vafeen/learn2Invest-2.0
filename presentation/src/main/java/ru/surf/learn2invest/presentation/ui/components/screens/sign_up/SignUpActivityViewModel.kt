@@ -5,7 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.domain_models.Profile
 import javax.inject.Inject
 

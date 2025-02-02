@@ -13,11 +13,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityTradingPasswordBinding
-import ru.surf.learn2invest.presentation.utils.hideKeyboard
-import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.hideKeyboard
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import ru.surf.learn2invest.presentation.utils.showKeyboard
+import ru.surf.learn2invest.domain.utils.showKeyboard
 import ru.surf.learn2invest.presentation.utils.textListener
 
 /**

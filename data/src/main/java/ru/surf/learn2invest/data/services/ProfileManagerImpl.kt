@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.database.repository.ProfileRepository
 import ru.surf.learn2invest.domain.domain_models.Profile
 import javax.inject.Inject

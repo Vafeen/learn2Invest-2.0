@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentHistoryBinding
-import ru.surf.learn2invest.presentation.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import ru.surf.learn2invest.presentation.utils.withContextMAIN
+import ru.surf.learn2invest.domain.utils.withContextMAIN
 import javax.inject.Inject
 
 /**

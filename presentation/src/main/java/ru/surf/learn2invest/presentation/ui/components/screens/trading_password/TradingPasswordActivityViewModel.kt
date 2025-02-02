@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import ru.surf.learn2invest.domain.ProfileManager
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.cryptography.usecase.GetHashedPasswordUseCase
 import ru.surf.learn2invest.domain.cryptography.usecase.VerifyTradingPasswordUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile

@@ -16,13 +16,13 @@ import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.cryptography.PasswordHasher
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignInBinding
-import ru.surf.learn2invest.presentation.utils.gotoCenter
-import ru.surf.learn2invest.presentation.utils.launchIO
-import ru.surf.learn2invest.presentation.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.gotoCenter
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import ru.surf.learn2invest.presentation.utils.tapOn
-import ru.surf.learn2invest.presentation.utils.withContextIO
+import ru.surf.learn2invest.domain.utils.tapOn
+import ru.surf.learn2invest.domain.utils.withContextIO
 import javax.inject.Inject
 
 /**

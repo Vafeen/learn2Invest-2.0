@@ -15,7 +15,7 @@ import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import ru.surf.learn2invest.domain.network.usecase.GetCoinHistoryUseCase
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
-import ru.surf.learn2invest.presentation.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchIO
 
 internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val getCoinHistoryUseCase: GetCoinHistoryUseCase,

@@ -19,9 +19,9 @@ import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogRefillAccountBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import ru.surf.learn2invest.presentation.utils.launchIO
-import ru.surf.learn2invest.presentation.utils.launchMAIN
-import ru.surf.learn2invest.presentation.utils.tapOn
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.tapOn
 
 /**
  * Диалог пополнения баланса
