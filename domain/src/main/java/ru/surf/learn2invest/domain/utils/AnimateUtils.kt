@@ -4,17 +4,10 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.app.Activity
-import android.graphics.Color
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.animation.doOnEnd
-import androidx.core.animation.doOnStart
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.LifecycleCoroutineScope
-import kotlinx.coroutines.delay
 
 /**
  * Создает слушателя анимации для обработки событий анимации.
@@ -77,70 +70,6 @@ fun View.tapOn() {
     }.start()
 }
 
-/**
- * Метод анимирования движения точки на [SignINActivityActions][ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions] к центру.
- *
- * @param truePIN Указывает, является ли PIN-код верным.
- * @param needReturn Указывает, нужно ли вернуть точки на свои места после анимации.
- * @param lifecycleScope Область видимости для выполнения асинхронных операций.
- * @param doAfter Callback для выполнения действий после завершения анимации.
- */
-fun ImageView.gotoCenter(
-    truePIN: Boolean,
-    needReturn: Boolean,
-    lifecycleScope: LifecycleCoroutineScope,
-    doAfter: () -> Unit = {},
-) {
-    val home = (this.layoutParams as ConstraintLayout.LayoutParams).horizontalBias
-
-    // Анимация перемещения к центру
-    val gotoCenter = ValueAnimator.ofFloat(home, 0.5f).also {
-        it.duration = 300
-        it.addUpdateListener { animator ->
-            val biasValue = animator.animatedValue as Float
-            val params = this.layoutParams as ConstraintLayout.LayoutParams
-            params.horizontalBias = biasValue
-            this.layoutParams = params
-        }
-    }
-
-    // Анимация возврата на исходную позицию
-    val goPoDomam = ValueAnimator.ofFloat(0.5f, home).also {
-        it.duration = 300
-        it.addUpdateListener { animator ->
-            val biasValue = animator.animatedValue as Float
-            val params = this.layoutParams as ConstraintLayout.LayoutParams
-            params.horizontalBias = biasValue
-            this.layoutParams = params
-        }
-    }
-
-    goPoDomam.doOnEnd {
-        doAfter() // Выполнение действий после завершения возврата на исходную позицию.
-    }
-
-    gotoCenter.start() // Запуск анимации перемещения к центру.
-
-    gotoCenter.doOnEnd {
-        lifecycleScope.launchMAIN {
-            this@gotoCenter.drawable.setTint(
-                if (truePIN) {
-                    Color.GREEN // Установка цвета в зеленый при верном PIN-коде.
-                } else {
-                    Color.RED // Установка цвета в красный при неверном PIN-коде.
-                }
-            )
-            delay(800) // Задержка перед возвратом или изменением цвета.
-
-            if (needReturn || !truePIN) {
-                goPoDomam.doOnStart {
-                    this@gotoCenter.drawable.setTint(Color.WHITE) // Сброс цвета до белого перед возвратом.
-                }
-                goPoDomam.start() // Запуск анимации возврата на исходную позицию.
-            }
-        }
-    }
-}
 
 /**
  * Отображает клавиатуру для текущего представления.

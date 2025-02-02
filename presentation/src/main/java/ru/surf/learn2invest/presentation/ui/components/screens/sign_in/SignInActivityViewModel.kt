@@ -2,15 +2,18 @@ package ru.surf.learn2invest.presentation.ui.components.screens.sign_in
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import ru.surf.learn2invest.domain.services.ProfileManager
+import ru.surf.learn2invest.domain.animator.usecase.AnimateDotsUseCase
 import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.cryptography.usecase.VerifyPINUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.presentation.ui.components.screens.host.HostActivity
 import javax.inject.Inject
 
@@ -19,6 +22,7 @@ internal class SignInActivityViewModel @Inject constructor(
     private val profileManager: ProfileManager,
     var fingerprintAuthenticator: FingerprintAuthenticator,
     private val verifyPINUseCase: VerifyPINUseCase,
+    private val animateDotsUseCase: AnimateDotsUseCase,
 ) :
     ViewModel() {
     var firstPin: String = ""
@@ -50,7 +54,7 @@ internal class SignInActivityViewModel @Inject constructor(
 
     fun onAuthenticationSucceeded(
         action: String,
-        context: Activity
+        context: Activity,
     ) {
         if (action != SignINActivityActions.ChangingPIN.action)
             context.startActivity(Intent(context, HostActivity::class.java))
@@ -64,6 +68,20 @@ internal class SignInActivityViewModel @Inject constructor(
     fun addSymbolToPin(symbol: String) {
         _pinFlow.update { if (it.length < 4) "$it$symbol" else it }
         paintDotsDependsOnPIN()
+    }
+
+    suspend fun animatePINCode(
+        dot1: ImageView,
+        dot2: ImageView,
+        dot3: ImageView,
+        dot4: ImageView,
+        needReturn: Boolean,
+        truePIN: Boolean,
+        onEnd: () -> Unit,
+    ) {
+        blockKeyBoard()
+        delay(100)
+        animateDotsUseCase.invoke(dot1, dot2, dot3, dot4, needReturn, truePIN, onEnd)
     }
 
     fun removeLastSymbolFromPIN() {

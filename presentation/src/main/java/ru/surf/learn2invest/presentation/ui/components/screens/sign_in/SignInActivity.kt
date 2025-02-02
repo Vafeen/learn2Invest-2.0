@@ -14,15 +14,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.cryptography.PasswordHasher
-import ru.surf.learn2invest.presentation.R
-import ru.surf.learn2invest.presentation.databinding.ActivitySignInBinding
-import ru.surf.learn2invest.domain.utils.gotoCenter
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.domain.utils.launchMAIN
-import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
-import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import ru.surf.learn2invest.domain.utils.tapOn
 import ru.surf.learn2invest.domain.utils.withContextIO
+import ru.surf.learn2invest.presentation.R
+import ru.surf.learn2invest.presentation.databinding.ActivitySignInBinding
+import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
+import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import javax.inject.Inject
 
 /**
@@ -85,27 +84,6 @@ internal class SignInActivity : AppCompatActivity() {
                 binding.fingerprint.isVisible = false
             }
         }
-    }
-
-    private suspend fun animatePINCode(truth: Boolean, needReturn: Boolean = false) {
-        viewModel.blockKeyBoard()
-        delay(100)
-        binding.apply {
-            dot1.gotoCenter(truePIN = truth,
-                needReturn = needReturn,
-                lifecycleScope = lifecycleScope,
-                doAfter = { viewModel.unblockKeyBoard() })
-            dot2.gotoCenter(
-                truePIN = truth, needReturn = needReturn, lifecycleScope = lifecycleScope
-            )
-            dot3.gotoCenter(
-                truePIN = truth, needReturn = needReturn, lifecycleScope = lifecycleScope
-            )
-            dot4.gotoCenter(
-                truePIN = truth, needReturn = needReturn, lifecycleScope = lifecycleScope
-            )
-        }
-        delay(800)
     }
 
 
@@ -225,14 +203,15 @@ internal class SignInActivity : AppCompatActivity() {
                 // ввод старго пина
                 viewModel.firstPin == "" && !viewModel.isVerified -> {
                     viewModel.isVerified = viewModel.verifyPIN()
-                    animatePINCode(
-                        truth = viewModel.isVerified,
-                        needReturn = true
-                    )
-                    viewModel.clearPIN()
-                    if (viewModel.isVerified) binding.enterPin.text =
-                        this@SignInActivity.getString(R.string.enter_new_pin)
-
+                    viewModel.animatePINCode(
+                        binding.dot1, binding.dot2, binding.dot3, binding.dot4,
+                        needReturn = true, truePIN = viewModel.isVerified
+                    ) {
+                        viewModel.clearPIN()
+                        if (viewModel.isVerified) binding.enterPin.text =
+                            this@SignInActivity.getString(R.string.enter_new_pin)
+                        viewModel.unblockKeyBoard()
+                    }
                 }
 
                 //ввод нового
@@ -261,17 +240,20 @@ internal class SignInActivity : AppCompatActivity() {
                         }
                     }
 
-                    animatePINCode(
-                        truth = truth, needReturn = true
-                    )
-
-                    if (truth) {
-                        viewModel.onAuthenticationSucceeded(
-                            action = intent.action ?: "",
-                            context = this@SignInActivity,
-                        )
-                    } else viewModel.clearPIN()
-                    viewModel.unblockKeyBoard()
+                    viewModel.animatePINCode(
+                        binding.dot1, binding.dot2, binding.dot3, binding.dot4,
+                        needReturn = !truth, truePIN = truth
+                    ) {
+                        if (truth) {
+                            viewModel.onAuthenticationSucceeded(
+                                action = intent.action ?: "",
+                                context = this@SignInActivity,
+                            )
+                        } else {
+                            viewModel.clearPIN()
+                            viewModel.unblockKeyBoard()
+                        }
+                    }
                 }
             }
         }
@@ -279,13 +261,22 @@ internal class SignInActivity : AppCompatActivity() {
 
     private suspend fun signInActions() {
         val isAuthSucceeded = viewModel.verifyPIN()
-        animatePINCode(isAuthSucceeded)
-        if (isAuthSucceeded) viewModel.onAuthenticationSucceeded(
-            action = intent.action ?: "",
-            context = this@SignInActivity,
-        )
-        else viewModel.clearPIN()
+        viewModel.animatePINCode(
+            binding.dot1, binding.dot2, binding.dot3, binding.dot4,
+            needReturn = !isAuthSucceeded, truePIN = isAuthSucceeded
+        ) {
+            if (isAuthSucceeded) {
+                viewModel.onAuthenticationSucceeded(
+                    action = intent.action ?: "",
+                    context = this@SignInActivity,
+                )
+            } else {
+                viewModel.clearPIN()
+                viewModel.unblockKeyBoard()
+            }
+        }
     }
+
 
     private fun signUpActions(pin: String) {
         when {
@@ -312,39 +303,49 @@ internal class SignInActivity : AppCompatActivity() {
                             )
                         }
                     }
-                    animatePINCode(truth = true)
-                    val auth = {
-                        viewModel.onAuthenticationSucceeded(
-                            action = intent.action ?: "",
-                            context = this@SignInActivity,
-                        )
-                    }
-                    if (viewModel.fingerprintAuthenticator.isBiometricAvailable(
-                            activity = this@SignInActivity
-                        )
+                    viewModel.animatePINCode(
+                        binding.dot1, binding.dot2, binding.dot3, binding.dot4,
+                        needReturn = false, truePIN = true
                     ) {
-                        viewModel.fingerprintAuthenticator.setSuccessCallback {
-                            lifecycleScope.launchMAIN {
-                                withContextIO {
-                                    viewModel.updateProfile {
-                                        it.copy(biometry = true)
+                        val auth = {
+                            viewModel.onAuthenticationSucceeded(
+                                action = intent.action ?: "",
+                                context = this@SignInActivity,
+                            )
+                        }
+                        if (viewModel.fingerprintAuthenticator.isBiometricAvailable(
+                                activity = this@SignInActivity
+                            )
+                        ) {
+                            viewModel.fingerprintAuthenticator.setSuccessCallback {
+                                lifecycleScope.launchMAIN {
+                                    withContextIO {
+                                        viewModel.updateProfile {
+                                            it.copy(biometry = true)
+                                        }
                                     }
+                                    auth()
                                 }
+                            }.setCancelCallback {
                                 auth()
-                            }
-                        }.setCancelCallback {
+                            }.auth(lifecycleScope, this@SignInActivity)
+                        } else {
                             auth()
-                        }.auth(lifecycleScope, this@SignInActivity)
-                    } else {
-                        auth()
+                        }
                     }
+
                 }
             }
 
             viewModel.firstPin != pin -> {
                 lifecycleScope.launchMAIN {
-                    animatePINCode(truth = false)
-                    viewModel.clearPIN()
+                    viewModel.animatePINCode(
+                        binding.dot1, binding.dot2, binding.dot3, binding.dot4,
+                        needReturn = true, truePIN = false
+                    ) {
+                        viewModel.clearPIN()
+                        viewModel.unblockKeyBoard()
+                    }
                 }
             }
         }
