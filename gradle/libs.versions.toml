@@ -1,67 +1,26 @@
 [versions]
-accompanistPermissions = "0.31.1-alpha" # Accompanist Permissions
-agp = "8.8.0" # Android Gradle Plugin
-biometric = "1.1.0" # AndroidX Biometric
-hiltAndroid = "2.52" # Hilt Android
-kotlin = "1.9.23" # Kotlin
-coreKtx = "1.15.0" # AndroidX Core KTX
-appcompat = "1.7.0" # AndroidX AppCompat
-material = "1.12.0" # Material Design
-activity = "1.10.0" # AndroidX Activity
-constraintlayout = "2.2.0" # ConstraintLayout
-
-# Room
-mpandroidchart = "v3.1.0" # MPAndroidChart
-roomCommon = "2.6.1" # Room Common
-roomKtx = "2.6.1" # Room KTX
-retrofit = "2.11.0" # Retrofit
-converterGson = "2.11.0" # Retrofit Gson Converter
-gson = "2.10.1" # Gson
-loggingInterceptor = "5.0.0-alpha.14" # OkHttp Logging Interceptor
-navigationFragment = "2.8.6" # Navigation Fragment
-navigationUiKtx = "2.8.6" # Navigation UI KTX
-navigationFragmentKtx = "2.8.6" # Navigation Fragment KTX
-lifecycleProcess = "2.8.7" # Lifecycle Process
-coilSvg = "2.6.0" # Coil SVG
-coil = "2.6.0" # Coil
-junit = "4.13.2" # JUnit
-junitVersion = "1.2.1" # AndroidX JUnit
-espressoCore = "3.6.1" # Espresso Core
+agp = "8.8.0"
+kotlin = "1.9.24"
+coreKtx = "1.15.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
+material = "1.12.0"
+activity = "1.10.0"
+constraintlayout = "2.2.0"
 
 [libraries]
-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" } # Accompanist Permissions
-androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" } # AndroidX Biometric
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" } # AndroidX Core KTX
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" } # Hilt Android
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" } # Hilt Android Compiler
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" } # AndroidX AppCompat
-material = { group = "com.google.android.material", name = "material", version.ref = "material" } # Material Design
-androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" } # AndroidX Activity
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" } # ConstraintLayout
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCommon" } # Room Compiler
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomCommon" } # Room Runtime
-androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" } # Room Common
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" } # Room KTX
-mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" } # MPAndroidChart
-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" } # Retrofit
-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" } # Retrofit Gson Converter
-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" } # Gson
-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptor" } # OkHttp Logging Interceptor
-androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" } # Navigation Fragment
-androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" } # Navigation UI KTX
-androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" } # Navigation Fragment KTX
-androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" } # Lifecycle Process
-coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coilSvg" } # Coil SVG
-coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" } # Coil
-junit = { group = "junit", name = "junit", version.ref = "junit" } # JUnit
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" } # AndroidX JUnit
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" } # Espresso Core
-
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" } # Android Application Plugin
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" } # Kotlin Android Plugin
-# kapt for Room
-org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" } # Kotlin KAPT Plugin
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" } # Hilt Android Plugin
-android-library = { id = "com.android.library", version.ref = "agp" } # Android Library Plugin
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
