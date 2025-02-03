@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="591dp"
+    android:background="@drawable/bottom_sheet_style">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="591dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints">
+
+
+        <ImageView
+            android:id="@+id/backspace"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:foreground="@drawable/backspace"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="delete"
+            android:textAppearance="@style/Text.Bold.30"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/button_0"
+            app:layout_constraintEnd_toEndOf="@+id/button_9"
+            app:layout_constraintStart_toStartOf="@+id/button_9"
+            app:layout_constraintTop_toTopOf="@+id/button_0" />
+
+        <TextView
+            android:id="@+id/button_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="0"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_8" />
+
+        <TextView
+            android:id="@+id/button_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="4"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintBottom_toBottomOf="@+id/button_5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/button_5" />
+
+        <TextView
+            android:id="@+id/button_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="5"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_2" />
+
+        <TextView
+            android:id="@+id/button_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="8"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_5" />
+
+        <TextView
+            android:id="@+id/button_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="3"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintBottom_toBottomOf="@+id/button_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.75"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/button_2" />
+
+        <TextView
+            android:id="@+id/button_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="6"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintBottom_toBottomOf="@+id/button_5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.75"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/button_5" />
+
+        <TextView
+            android:id="@+id/button_9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="9"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintBottom_toBottomOf="@+id/button_8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.75"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/button_8" />
+
+        <TextView
+            android:id="@+id/button_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="1"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintBottom_toBottomOf="@+id/button_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/button_2" />
+
+        <TextView
+            android:id="@+id/button_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="2"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/entering_balance_card" />
+
+        <TextView
+            android:id="@+id/button_7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="7"
+            android:textAppearance="@style/Text.Bold.30"
+            android:textColor="?attr/colorOnBackground"
+            app:layout_constraintBottom_toBottomOf="@id/button_8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_8" />
+
+        <TextView
+            android:id="@+id/button_dot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pindotstyle"
+            android:backgroundTint="@color/transparent"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="."
+            android:textAppearance="@style/Text.Bold.30"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/button_0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/button_0" />
+
+        <View
+            android:id="@+id/balance_card"
+            android:layout_width="238dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/tabs_in_dialogs_shape"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_od_dialog" />
+
+
+        <TextView
+            android:id="@+id/name_od_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:text="@string/refill_account"
+            android:textAppearance="@style/Text.Regular.16"
+            android:textColor="?attr/colorOnBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/entering_balance_card"
+            android:layout_width="238dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/tabs_in_dialogs_shape"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/balance_card" />
+
+        <TextView
+            android:id="@+id/TV_entering_sum_of_balance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_dialogs_card_content_start"
+            android:layout_marginTop="@dimen/margin_dialogs_card_content_top_u_odinokogo"
+            android:layout_marginEnd="@dimen/margin_dialogs_card_content_end_for_icon"
+            android:background="@drawable/tabs_in_dialogs_shape"
+            android:inputType="numberDecimal"
+            android:text="@string/enter_sum"
+            android:textAppearance="@style/Text.Regular.14"
+            app:layout_constraintEnd_toEndOf="@+id/entering_balance_card"
+            app:layout_constraintStart_toStartOf="@+id/entering_balance_card"
+            app:layout_constraintTop_toTopOf="@+id/entering_balance_card" />
+
+        <View
+            android:id="@+id/dollar_view"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="@dimen/margin_dialogs_card_content_start"
+            android:background="@drawable/dollar_cash"
+            app:layout_constraintBottom_toBottomOf="@+id/balance_card"
+            app:layout_constraintStart_toStartOf="@+id/balance_card"
+            app:layout_constraintTop_toTopOf="@+id/balance_card"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <TextView
+            android:id="@+id/account_textview"
+            android:layout_width="131dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="@dimen/margin_dialogs_card_content_top_u_verhnego"
+            android:text="@string/account"
+            android:textAppearance="@style/Text.Medium.14"
+            app:layout_constraintStart_toEndOf="@+id/dollar_view"
+            app:layout_constraintTop_toTopOf="@+id/balance_card" />
+
+
+        <TextView
+            android:id="@+id/balance_textview"
+            android:layout_width="131dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="@dimen/margin_dialogs_card_content_top_u_nizhnego"
+            android:text="@string/example_balance"
+            android:textAppearance="@style/Text.Medium.14"
+            android:textColor="?attr/colorOnBackground"
+            app:layout_constraintStart_toStartOf="@+id/account_textview"
+            app:layout_constraintTop_toTopOf="@+id/balance_card" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_refill"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/view_background"
+            android:gravity="center"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="@string/refill"
+            android:textAllCaps="true"
+            android:textAppearance="@style/Text.SemiBold.14"
+            android:textColor="#000000"
+            android:visibility="gone"
+            app:cornerRadius="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_0" />
+
+        <ImageButton
+            android:id="@+id/balance_clear"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/circle_close"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/TV_entering_sum_of_balance"
+            app:layout_constraintStart_toEndOf="@+id/TV_entering_sum_of_balance"
+            app:layout_constraintTop_toTopOf="@+id/TV_entering_sum_of_balance" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

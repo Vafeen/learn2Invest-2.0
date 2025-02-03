@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(project(":data"))
+    implementation(project(":presentation"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
