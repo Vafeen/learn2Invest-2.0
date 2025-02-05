@@ -6,21 +6,23 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.core.content.ContextCompat
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.withContextMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogSellBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
+import ru.surf.learn2invest.presentation.utils.NoArgException
 import ru.surf.learn2invest.presentation.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import ru.surf.learn2invest.domain.utils.launchIO
-import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.textListener
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
-import ru.surf.learn2invest.domain.utils.withContextMAIN
 import javax.inject.Inject
 
 
@@ -34,23 +36,20 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 internal class SellDialog(
-    val dialogContext: Context,
-    private val lifecycleScope: LifecycleCoroutineScope,
-    private val id: String,
-    private val name: String,
-    private val symbol: String,
 ) : CustomBottomSheetDialog() {
     override val dialogTag: String = "sell"
-    private var binding = DialogSellBinding.inflate(LayoutInflater.from(dialogContext))
+    private lateinit var binding: DialogSellBinding
 
     @Inject
     lateinit var factory: SellDialogViewModel.Factory
-
-    private val viewModel: SellDialogViewModel by viewModelCreator {
+    private val viewModel by viewModelCreator {
+        val id = arguments?.getString(ID_KEY) ?: throw NoArgException(ID_KEY)
+        val name = arguments?.getString(NAME_KEY) ?: throw NoArgException(NAME_KEY)
+        val symbol = arguments?.getString(SYMBOL_KEY) ?: throw NoArgException(SYMBOL_KEY)
         factory.createViewModel(id, name, symbol)
     }
 
-    override fun initListeners() {
+    fun initListeners() {
         binding.apply {
             lifecycleScope.launchMAIN {
                 viewModel.profileFlow.collect {
@@ -114,8 +113,7 @@ internal class SellDialog(
                     when {
                         state.coin.amount == 0 -> {
                             buttonSell.isVisible = false
-                            result.text =
-                                dialogContext.getString(R.string.no_asset_for_sale)
+                            result.text = requireContext().getString(R.string.no_asset_for_sale)
                         }
 
                         state.coin.amount > 0f && lotsData.lots in 1..state.coin.amount
@@ -126,7 +124,7 @@ internal class SellDialog(
                                     password = tradingPasswordTV.text.toString()
                                 )
                             result.text =
-                                "${dialogContext.getString(R.string.itog)} ${resultPrice.getWithCurrency()}"
+                                "${requireContext().getString(R.string.itog)} ${resultPrice.getWithCurrency()}"
                         }
 
                         else -> {
@@ -160,17 +158,23 @@ internal class SellDialog(
         viewModel.sell(price, amountCurrent)
     }
 
-    override fun getDialogView(): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        binding = DialogSellBinding.inflate(inflater)
+        initListeners()
         return binding.root
     }
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener {
             val window = dialog.window
             if (window != null) {
-                window.navigationBarColor = ContextCompat.getColor(
-                    dialogContext,
+                window.navigationBarColor = requireContext().getColor(
                     if (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
                         R.color.sheet_background_dark
                     } else {
@@ -189,6 +193,19 @@ internal class SellDialog(
             viewModel.setAssetIfInDB()
         }.invokeOnCompletion {
             viewModel.startUpdatingPriceFLow()
+        }
+    }
+
+    companion object {
+        private const val ID_KEY = "ID_KEY"
+        private const val NAME_KEY = "NAME_KEY"
+        private const val SYMBOL_KEY = "SYMBOL_KEY"
+        fun newInstance(
+            id: String,
+            name: String,
+            symbol: String,
+        ) = SellDialog().apply {
+            arguments = bundleOf(ID_KEY to id, NAME_KEY to name, SYMBOL_KEY to symbol)
         }
     }
 }

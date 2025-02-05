@@ -4,9 +4,7 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.request.Disposable
@@ -51,9 +49,7 @@ internal class AssetReviewActivity : AppCompatActivity() {
             finish()
         }
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, AssetOverviewFragment.newInstance(id))
-            .commit()
+        goToFragment(AssetOverviewFragment.newInstance(id))
 
         updateButtonColors()
 
@@ -100,15 +96,7 @@ internal class AssetReviewActivity : AppCompatActivity() {
         }
 
         binding.sellAssetBtn.setOnClickListener {
-            SellDialog(
-                dialogContext = this,
-                lifecycleScope = lifecycleScope,
-                id = id,
-                name = name,
-                symbol = symbol
-            ).also {
-                it.show(supportFragmentManager, it.dialogTag)
-            }
+            SellDialog.newInstance(id, name, symbol).showDialog(supportFragmentManager)
         }
     }
 
@@ -116,14 +104,10 @@ internal class AssetReviewActivity : AppCompatActivity() {
         val isDarkTheme =
             resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-        val accentColor = ContextCompat.getColor(
-            this,
-            if (isDarkTheme) R.color.accent_background_dark else R.color.accent_background
-        )
-        val defaultColor = ContextCompat.getColor(
-            this,
-            if (isDarkTheme) R.color.accent_button_dark else R.color.view_background
-        )
+        val accentColor =
+            getColor(if (isDarkTheme) R.color.accent_background_dark else R.color.accent_background)
+        val defaultColor =
+            getColor(if (isDarkTheme) R.color.accent_button_dark else R.color.view_background)
 
         binding.assetReviewBtn.backgroundTintList = ColorStateList.valueOf(
             if (isOverviewSelected) accentColor else defaultColor
