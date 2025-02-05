@@ -6,23 +6,26 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.withContextMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogBuyBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
+import ru.surf.learn2invest.presentation.utils.NoArgException
 import ru.surf.learn2invest.presentation.utils.getFloatFromStringWithCurrency
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import ru.surf.learn2invest.domain.utils.launchIO
-import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.textListener
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
-import ru.surf.learn2invest.domain.utils.withContextMAIN
 import javax.inject.Inject
 
 
@@ -35,18 +38,16 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-internal class BuyDialog(
-    private val dialogContext: Context,
-    id: String,
-    name: String,
-    symbol: String,
-) : CustomBottomSheetDialog() {
-    private var binding = DialogBuyBinding.inflate(LayoutInflater.from(dialogContext))
+internal class BuyDialog : CustomBottomSheetDialog() {
+    private lateinit var binding: DialogBuyBinding
     override val dialogTag: String = "buy"
 
     @Inject
     lateinit var factory: BuyDialogViewModel.Factory
     private val viewModel by viewModelCreator {
+        val id = arguments?.getString(ID_KEY) ?: throw NoArgException(ID_KEY)
+        val name = arguments?.getString(NAME_KEY) ?: throw NoArgException(NAME_KEY)
+        val symbol = arguments?.getString(SYMBOL_KEY) ?: throw NoArgException(SYMBOL_KEY)
         factory.createViewModel(id, name, symbol)
     }
 
@@ -62,7 +63,7 @@ internal class BuyDialog(
         val window = dialog.window
         if (window != null) {
             window.navigationBarColor = ContextCompat.getColor(
-                dialogContext,
+                requireContext(),
                 if (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
                     R.color.sheet_background_dark
                 } else {
@@ -72,7 +73,17 @@ internal class BuyDialog(
         }
     }
 
-    override fun initListeners() {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        binding = DialogBuyBinding.inflate(inflater)
+        initListeners()
+        return binding.root
+    }
+
+    private fun initListeners() {
         binding.apply {
             lifecycleScope.launch(Dispatchers.Main) {
                 viewModel.profileFlow.collect {
@@ -158,12 +169,12 @@ internal class BuyDialog(
                                 ) -> {
                             binding.buttonBuy.isVisible = true
                             result.text =
-                                "${dialogContext.getString(R.string.itog)} ${willPrice.getWithCurrency()} "
+                                "${requireContext().getString(R.string.itog)} ${willPrice.getWithCurrency()} "
                         }
 
                         (willPrice > fiatBalance || fiatBalance == 0f) -> {
                             buttonBuy.isVisible = false
-                            result.text = dialogContext.getString(R.string.not_enough_money_for_buy)
+                            result.text = requireContext().getString(R.string.not_enough_money_for_buy)
                         }
 
                         else -> {
@@ -203,9 +214,6 @@ internal class BuyDialog(
         viewModel.buy(amountCurrent = amountCurrent, price = price)
     }
 
-    override fun getDialogView(): View {
-        return binding.root
-    }
 
     private fun maxQuantity(price: Float, balance: Float): Int = (balance / price).toInt()
 
@@ -215,6 +223,19 @@ internal class BuyDialog(
             viewModel.setAssetIfInDB()
         }.invokeOnCompletion {
             viewModel.startUpdatingPriceFLow()
+        }
+    }
+
+    companion object {
+        private const val ID_KEY = "ID_KEY"
+        private const val NAME_KEY = "NAME_KEY"
+        private const val SYMBOL_KEY = "SYMBOL_KEY"
+        fun newInstance(
+            id: String,
+            name: String,
+            symbol: String,
+        ) = BuyDialog().apply {
+            arguments = bundleOf(ID_KEY to id, NAME_KEY to name, SYMBOL_KEY to symbol)
         }
     }
 }
