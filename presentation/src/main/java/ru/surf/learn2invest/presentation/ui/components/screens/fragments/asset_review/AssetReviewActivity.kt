@@ -20,7 +20,6 @@ import ru.surf.learn2invest.presentation.ui.components.screens.fragments.subhist
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import ru.surf.learn2invest.presentation.utils.showDialog
 
 /**
  * Экран обзора актива

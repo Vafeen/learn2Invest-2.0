@@ -50,7 +50,7 @@
     <string name="review_text">Обзор</string>
     <string name="no_interest_error">Вы не интересовались\nданным активом</string>
     <string name="repeat_pin">Повторите PIN-код</string>
-    <string name="reset_stats">    Вы точно хотите\nсбросить статистику?</string>
+    <string name="reset_stats">Вы точно хотите\nсбросить статистику?</string>
     <string name="create_trading_password">Создать торговый пароль</string>
     <string name="create_pin">"Придумайте PIN-код"</string>
     <string name="enter_old_pin">Введите старый PIN-код</string>

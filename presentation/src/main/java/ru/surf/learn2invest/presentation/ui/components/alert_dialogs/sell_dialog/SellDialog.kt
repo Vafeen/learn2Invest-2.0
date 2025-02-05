@@ -35,8 +35,7 @@ import javax.inject.Inject
  * @param symbol [Абревиатура (BTC)]
  */
 @AndroidEntryPoint
-internal class SellDialog(
-) : CustomBottomSheetDialog() {
+internal class SellDialog : CustomBottomSheetDialog() {
     override val dialogTag: String = "sell"
     private lateinit var binding: DialogSellBinding
 

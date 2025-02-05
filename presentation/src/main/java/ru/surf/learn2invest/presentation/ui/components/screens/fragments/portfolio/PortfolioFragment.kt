@@ -26,7 +26,6 @@ import ru.surf.learn2invest.presentation.utils.DevStrLink
 import ru.surf.learn2invest.presentation.utils.getVersionName
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import ru.surf.learn2invest.presentation.utils.showDialog
 import java.util.Locale
 import javax.inject.Inject
 

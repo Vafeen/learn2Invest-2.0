@@ -7,25 +7,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.database.usecase.ClearAppDatabaseUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
+import ru.surf.learn2invest.domain.services.ProfileManager
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.withContextIO
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInActivity
 import ru.surf.learn2invest.presentation.ui.components.screens.trading_password.TradingPasswordActivity
 import ru.surf.learn2invest.presentation.ui.components.screens.trading_password.TradingPasswordActivityActions
 import ru.surf.learn2invest.presentation.ui.main.MainActivity
-import ru.surf.learn2invest.domain.utils.launchIO
-import ru.surf.learn2invest.domain.utils.withContextIO
 import javax.inject.Inject
 
 @HiltViewModel
 internal class ProfileFragmentViewModel @Inject constructor(
     private val profileManager: ProfileManager,
     private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase,
-    private val fingerprintAuthenticator: FingerprintAuthenticator
+    private val fingerprintAuthenticator: FingerprintAuthenticator,
 ) : ViewModel() {
     val profileFlow = profileManager.profileFlow
     suspend fun updateProfile(updating: (Profile) -> Profile) {
@@ -34,7 +34,7 @@ internal class ProfileFragmentViewModel @Inject constructor(
 
     private fun startIntentWithAction(
         context: Context,
-        tradingPasswordActivityActions: TradingPasswordActivityActions
+        tradingPasswordActivityActions: TradingPasswordActivityActions,
     ) = context.startActivity(
         Intent(
             context,
@@ -42,10 +42,10 @@ internal class ProfileFragmentViewModel @Inject constructor(
         ).also { it.action = tradingPasswordActivityActions.action })
 
     suspend fun deleteProfile(activity: AppCompatActivity) {
-        activity.finish()
         withContextIO {
-           clearAppDatabaseUseCase()
+            clearAppDatabaseUseCase()
         }
+        activity.finish()
         activity.startActivity(
             Intent(
                 activity,

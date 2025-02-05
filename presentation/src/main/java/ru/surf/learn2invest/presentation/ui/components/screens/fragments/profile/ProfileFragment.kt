@@ -10,10 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentProfileBinding
-import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.SimpleDialog
-import ru.surf.learn2invest.domain.utils.launchMAIN
+import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.delete_profile.DeleteProfileDialog
+import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.reset_stats.ResetStatsDialog
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 
 /**
@@ -50,33 +51,11 @@ internal class ProfileFragment : Fragment() {
         binding.also { fr ->
             fr.biometryBtn.isVisible = viewModel.isBiometricAvailable(activity = activity as AppCompatActivity)
             fr.deleteProfileTV.setOnClickListener {
-                SimpleDialog(
-                    context = requireContext(),
-                    messageRes = R.string.asking_to_delete_profile,
-                    positiveButtonTitleRes = R.string.yes_exactly,
-                    negativeButtonTitleRes = R.string.no,
-                    isCancelable = true,
-                    onPositiveButtonClick = {
-                        lifecycleScope.launchMAIN {
-                            viewModel.deleteProfile(activity as AppCompatActivity)
-                        }
-                    },
-                ).show()
+                DeleteProfileDialog().showDialog(parentFragmentManager)
             }
 
             fr.resetStatsBtn.setOnClickListener {
-                SimpleDialog(
-                    context = requireContext(),
-                    messageRes = R.string.reset_stats,
-                    positiveButtonTitleRes = R.string.yes_exactly,
-                    negativeButtonTitleRes = R.string.no,
-                    isCancelable = true,
-                    onPositiveButtonClick = {
-                        lifecycleScope.launchMAIN {
-                            viewModel.resetStats(requireContext())
-                        }
-                    }
-                ).show()
+                ResetStatsDialog().showDialog(parentFragmentManager)
             }
 
             fr.biometryBtn.setOnClickListener {
