@@ -7,14 +7,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.domain.utils.withContextMAIN
@@ -62,8 +59,7 @@ internal class BuyDialog : CustomBottomSheetDialog() {
     private fun updateNavigationBarColor(dialog: BottomSheetDialog) {
         val window = dialog.window
         if (window != null) {
-            window.navigationBarColor = ContextCompat.getColor(
-                requireContext(),
+            window.navigationBarColor = requireContext().getColor(
                 if (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
                     R.color.sheet_background_dark
                 } else {
@@ -85,7 +81,7 @@ internal class BuyDialog : CustomBottomSheetDialog() {
 
     private fun initListeners() {
         binding.apply {
-            lifecycleScope.launch(Dispatchers.Main) {
+            lifecycleScope.launchMAIN {
                 viewModel.profileFlow.collect {
                     balanceNum.text = it.fiatBalance.getWithCurrency()
                 }
@@ -174,7 +170,8 @@ internal class BuyDialog : CustomBottomSheetDialog() {
 
                         (willPrice > fiatBalance || fiatBalance == 0f) -> {
                             buttonBuy.isVisible = false
-                            result.text = requireContext().getString(R.string.not_enough_money_for_buy)
+                            result.text =
+                                requireContext().getString(R.string.not_enough_money_for_buy)
                         }
 
                         else -> {
@@ -207,11 +204,9 @@ internal class BuyDialog : CustomBottomSheetDialog() {
 
     private suspend fun buy() {
         val price =
-            binding.priceNumber.text.toString().getFloatFromStringWithCurrency() ?: throw Exception(
-                "Price is null for Buy in BuyDialog"
-            )
+            binding.priceNumber.text.toString().getFloatFromStringWithCurrency()
         val amountCurrent = binding.enteringNumberOfLots.text.toString().toInt()
-        viewModel.buy(amountCurrent = amountCurrent, price = price)
+        if (price != null) viewModel.buy(amountCurrent = amountCurrent, price = price)
     }
 
 

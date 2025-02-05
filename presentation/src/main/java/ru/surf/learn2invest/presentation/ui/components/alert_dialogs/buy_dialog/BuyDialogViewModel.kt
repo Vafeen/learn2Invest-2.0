@@ -10,7 +10,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.domain.cryptography.usecase.IsTrueTradingPasswordOrIsNotDefinedUseCase
 import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
@@ -20,8 +19,9 @@ import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
-import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
 
 
 internal class BuyDialogViewModel @AssistedInject constructor(
@@ -41,7 +41,6 @@ internal class BuyDialogViewModel @AssistedInject constructor(
     private val _lotsFlow = MutableStateFlow(LotsData(0))
     val lotsFlow = _lotsFlow.asStateFlow()
     private val _tradingPasswordFlow = MutableStateFlow("")
-    val tradingPasswordFlow = _tradingPasswordFlow.asStateFlow()
     private val _coinFlow = MutableStateFlow(
         AssetInvest(
             name = name, symbol = symbol, coinPrice = 0f, amount = 0, assetID = id
@@ -50,7 +49,7 @@ internal class BuyDialogViewModel @AssistedInject constructor(
     val stateFlow =
         combine(
             lotsFlow,
-            tradingPasswordFlow,
+            _tradingPasswordFlow,
             _coinFlow,
             profileFlow
         ) { lotsData, tradingPassword, asset, profile ->
