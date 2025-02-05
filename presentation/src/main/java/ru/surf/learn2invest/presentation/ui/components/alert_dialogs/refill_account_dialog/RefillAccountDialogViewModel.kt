@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.update
 import ru.surf.learn2invest.domain.services.ProfileManager
 import javax.inject.Inject
 
-
 @HiltViewModel
 internal class RefillAccountDialogViewModel @Inject constructor(
-    private val profileManager: ProfileManager
+    private val profileManager: ProfileManager,
 ) :
     ViewModel() {
     val profileFlow = profileManager.profileFlow

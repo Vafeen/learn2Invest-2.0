@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentPortfolioBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.refill_account_dialog.RefillAccountDialog
@@ -24,8 +25,8 @@ import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.presentation.utils.DevStrLink
 import ru.surf.learn2invest.presentation.utils.getVersionName
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.showDialog
 import java.util.Locale
 import javax.inject.Inject
 
@@ -43,7 +44,7 @@ internal class PortfolioFragment : Fragment() {
     lateinit var adapter: PortfolioAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         activity?.apply {
             setStatusBarColor(
@@ -83,14 +84,7 @@ internal class PortfolioFragment : Fragment() {
         }
 
         binding.topUpBtn.setOnClickListener {
-            RefillAccountDialog(dialogContext = requireContext()) {
-                viewLifecycleOwner.lifecycleScope.launchMAIN {
-                    viewModel.refreshData()
-                }
-            }.also {
-                it.show(parentFragmentManager, it.dialogTag)
-            }
-
+            RefillAccountDialog().showDialog(parentFragmentManager)
         }
 
         viewLifecycleOwner.lifecycleScope.launchMAIN {
