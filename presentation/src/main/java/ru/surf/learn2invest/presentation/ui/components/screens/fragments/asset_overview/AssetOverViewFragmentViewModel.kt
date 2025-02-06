@@ -10,17 +10,25 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
 import ru.surf.learn2invest.domain.domain_models.AugmentedCoinReview
 import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import ru.surf.learn2invest.domain.network.usecase.GetCoinHistoryUseCase
-import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
+import ru.surf.learn2invest.presentation.utils.finResult
+import ru.surf.learn2invest.presentation.utils.formatAsPrice
+import ru.surf.learn2invest.presentation.utils.getWithCurrency
+import ru.surf.learn2invest.presentation.utils.priceChangesStr
 
 internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val getCoinHistoryUseCase: GetCoinHistoryUseCase,
     private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
-    @Assisted var id: String
+    getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
+    @Assisted("id") var id: String,
+    @Assisted("symbol") val symbol: String,
 ) : ViewModel() {
     private var data = listOf<Entry>()
     lateinit var chartHelper: LineChartHelper
@@ -29,6 +37,19 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val _formattedPriceFlow = MutableStateFlow(0f)
     val formattedMarketCapFlow = _formattedMarketCapFlow.asStateFlow()
     val formattedPriceFlow = _formattedPriceFlow.asStateFlow()
+    val coinInfoFlow =
+        combine(formattedPriceFlow, getBySymbolAssetInvestUseCase.invoke(symbol)) { price, asset ->
+            if (asset != null) {
+                CoinInfoState.Data(
+                    finResult = finResult(asset, price),
+                    coinPriceChangesResult = priceChangesStr(asset, price),
+                    coinCostResult = (price * asset.amount).formatAsPrice(2).getWithCurrency(),
+                    coinCount = "${asset.amount}",
+                )
+            } else CoinInfoState.EmptyResult
+        }
+
+
 
     private suspend fun updateChartData(coinResponse: ResponseResult.Success<AugmentedCoinReview>) {
         data = if (data.isNotEmpty()) {
@@ -78,6 +99,9 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun createAssetOverViewFragmentViewModel(id: String): AssetOverViewFragmentViewModel
+        fun createAssetOverViewFragmentViewModel(
+            @Assisted("id") id: String,
+            @Assisted("symbol") symbol: String,
+        ): AssetOverViewFragmentViewModel
     }
 }

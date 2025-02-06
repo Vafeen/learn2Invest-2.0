@@ -1,5 +1,6 @@
 package ru.surf.learn2invest.data.database_components.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.surf.learn2invest.data.converters.AssetInvestConverter
@@ -8,10 +9,11 @@ import ru.surf.learn2invest.domain.database.repository.AssetInvestRepository
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import javax.inject.Inject
 import javax.inject.Singleton
+
 @Singleton
 internal class AssetInvestRepositoryImpl @Inject constructor(
     private val assetInvestDao: AssetInvestDao,
-    private val assetInvestConverter: AssetInvestConverter
+    private val assetInvestConverter: AssetInvestConverter,
 ) : AssetInvestRepository {
 
     override fun getAllAsFlow(): Flow<List<AssetInvest>> =
@@ -31,6 +33,9 @@ internal class AssetInvestRepositoryImpl @Inject constructor(
     override suspend fun delete(vararg entities: AssetInvest) =
         assetInvestDao.deleteAll(assetInvestConverter.convertBAList(entities.toList()))
 
-    override suspend fun getBySymbol(symbol: String): AssetInvest? =
-        assetInvestDao.getBySymbol(symbol)?.let { assetInvestConverter.convertAB(it) }
+    override fun getBySymbol(symbol: String): Flow<AssetInvest?> =
+        assetInvestDao.getBySymbol(symbol).map {
+            Log.d("db", it.toString())
+            if (it != null) assetInvestConverter.convertAB(it) else null
+        }
 }

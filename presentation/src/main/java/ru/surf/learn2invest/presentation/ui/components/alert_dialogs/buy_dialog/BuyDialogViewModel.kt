@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.domain.cryptography.usecase.IsTrueTradingPasswordOrIsNotDefinedUseCase
 import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
@@ -72,7 +73,7 @@ internal class BuyDialogViewModel @AssistedInject constructor(
     }
 
     suspend fun setAssetIfInDB() {
-        getBySymbolAssetInvestUseCase.invoke(symbol = symbol)?.let {
+        getBySymbolAssetInvestUseCase.invoke(symbol = symbol).first()?.let {
             _coinFlow.value = it
         }
     }

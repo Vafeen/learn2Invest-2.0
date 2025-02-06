@@ -23,6 +23,6 @@ internal interface AssetInvestDao : DataAccessObject<AssetInvestEntity>,
      * @param symbol [symbol, который должен быть у искомой сущности]
      */
     @Query("select * from assetinvestentity where symbol=:symbol")
-    suspend fun getBySymbol(symbol: String): AssetInvestEntity?
+    fun getBySymbol(symbol: String): Flow<AssetInvestEntity?>
 }
 

@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import ru.surf.learn2invest.domain.services.ProfileManager
+import kotlinx.coroutines.flow.first
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.domain.cryptography.usecase.IsTrueTradingPasswordOrIsNotDefinedUseCase
 import ru.surf.learn2invest.domain.database.usecase.DeleteAssetInvestUseCase
@@ -21,8 +21,9 @@ import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.domain.network.ResponseResult
 import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
-import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
 
 
 internal class SellDialogViewModel @AssistedInject constructor(
@@ -126,7 +127,7 @@ internal class SellDialogViewModel @AssistedInject constructor(
     }
 
     suspend fun setAssetIfInDB() {
-        getBySymbolAssetInvestUseCase.invoke(symbol = symbol)?.let {
+        getBySymbolAssetInvestUseCase.invoke(symbol = symbol).first()?.let {
             _coinFlow.value = it
         }
     }

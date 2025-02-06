@@ -48,7 +48,7 @@ internal class AssetReviewActivity : AppCompatActivity() {
             finish()
         }
 
-        goToFragment(AssetOverviewFragment.newInstance(id))
+        goToFragment(AssetOverviewFragment.newInstance(id, symbol))
 
         updateButtonColors()
 
@@ -56,7 +56,7 @@ internal class AssetReviewActivity : AppCompatActivity() {
             if (!isOverviewSelected) {
                 isOverviewSelected = true
                 updateButtonColors()
-                goToFragment(AssetOverviewFragment.newInstance(id))
+                goToFragment(AssetOverviewFragment.newInstance(id, symbol))
             }
         }
 

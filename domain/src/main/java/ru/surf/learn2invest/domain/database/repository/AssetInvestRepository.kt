@@ -9,6 +9,6 @@ interface AssetInvestRepository {
     suspend fun insert(vararg entities: AssetInvest)
     suspend fun delete(entity: AssetInvest)
     suspend fun delete(vararg entities: AssetInvest)
-    suspend fun getBySymbol(symbol: String): AssetInvest?
+    fun getBySymbol(symbol: String): Flow<AssetInvest?>
 }
 
