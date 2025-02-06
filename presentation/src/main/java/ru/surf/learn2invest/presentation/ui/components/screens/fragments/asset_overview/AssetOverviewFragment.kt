@@ -75,9 +75,9 @@ internal class AssetOverviewFragment : Fragment() {
                 if (state is CoinInfoState.Data) {
                     binding.coin.apply {
                         finResult.text = state.finResult
-                        activesCost.text = state.coinCostResult
-                        activesPrice.text = state.coinPriceChangesResult
-                        activesCount.text = state.coinCount
+                        coinsCost.text = state.coinCostResult
+                        coinsPrice.text = state.coinPriceChangesResult
+                        coinsCount.text = state.coinCount
                     }
                 }
             }

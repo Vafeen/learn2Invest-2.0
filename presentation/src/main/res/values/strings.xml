@@ -96,4 +96,8 @@
     <string name="max_quantity">Максимальное количество</string>
     <string name="have_quantity">Количество в портфеле</string>
     <string name="pcs">шт</string>
+    <string name="fin_result">Фин. результат</string>
+    <string name="coins_cost">Стоимость активов</string>
+    <string name="coins_price_change">Изманение цены активов</string>
+    <string name="coins_count">Количество активов</string>
 </resources>

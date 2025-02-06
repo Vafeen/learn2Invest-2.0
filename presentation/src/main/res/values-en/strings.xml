@@ -90,4 +90,8 @@
     <string name="max_quantity">Max amount</string>
     <string name="have_quantity">Quantity in briefcase</string>
     <string name="pcs">pcs</string>
+    <string name="fin_result">Fin result</string>
+    <string name="coins_cost">Coins cost</string>
+    <string name="coins_price_change">Coins price change</string>
+    <string name="coins_count">Coins count</string>
 </resources>

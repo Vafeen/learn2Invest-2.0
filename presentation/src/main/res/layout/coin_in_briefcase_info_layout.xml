@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginVertical="10dp"
     android:orientation="vertical"
     app:cardCornerRadius="20dp">
 
@@ -18,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Fin result"
+            android:text="@string/fin_result"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,45 +29,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/fin_result_text"
+            app:layout_constraintTop_toBottomOf="@id/fin_result_text"
             tools:text="100$/+50%" />
 
         <TextView
-            android:id="@+id/actives_cost_text"
+            android:id="@+id/coins_cost_text"
             style="@style/Text.Medium.14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Actives cost"
+            android:text="@string/coins_cost"
             app:layout_constraintStart_toStartOf="@+id/fin_result_text"
             app:layout_constraintTop_toBottomOf="@+id/fin_result_text" />
 
         <TextView
-            android:id="@+id/actives_cost"
+            android:id="@+id/coins_cost"
             style="@style/Text.Medium.14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/actives_cost_text"
+            app:layout_constraintTop_toBottomOf="@id/coins_cost_text"
             tools:text="100$/+50%" />
 
         <TextView
-            android:id="@+id/actives_price_text"
+            android:id="@+id/coins_price_text"
             style="@style/Text.Medium.14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Actives price change"
-            app:layout_constraintStart_toStartOf="@+id/actives_cost_text"
-            app:layout_constraintTop_toBottomOf="@+id/actives_cost_text" />
+            android:text="@string/coins_price_change"
+            app:layout_constraintStart_toStartOf="@+id/coins_cost_text"
+            app:layout_constraintTop_toBottomOf="@+id/coins_cost_text" />
 
         <TextView
-            android:id="@+id/actives_price"
+            android:id="@+id/coins_price"
             style="@style/Text.Medium.14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/actives_price_text"
+            app:layout_constraintTop_toBottomOf="@id/coins_price_text"
             tools:text="100$/+50%" />
 
         <TextView
@@ -75,17 +76,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Actives count"
-            app:layout_constraintStart_toStartOf="@+id/actives_price_text"
-            app:layout_constraintTop_toBottomOf="@+id/actives_price_text" />
+            android:text="@string/coins_count"
+            app:layout_constraintStart_toStartOf="@+id/coins_price_text"
+            app:layout_constraintTop_toBottomOf="@+id/coins_price_text" />
 
         <TextView
-            android:id="@+id/actives_count"
+            android:id="@+id/coins_count"
             style="@style/Text.Medium.14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/actives_count_text"
+            app:layout_constraintTop_toBottomOf="@id/actives_count_text"
             tools:text="10000" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
