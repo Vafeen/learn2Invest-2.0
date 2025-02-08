@@ -2,7 +2,6 @@ package ru.surf.learn2invest.presentation.ui.components.screens.trading_password
 
 import android.content.Context
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,10 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.cryptography.usecase.GetHashedPasswordUseCase
 import ru.surf.learn2invest.domain.cryptography.usecase.VerifyTradingPasswordUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
+import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.presentation.utils.isThisContains3NumbersIfIsNotEmpty
 import ru.surf.learn2invest.presentation.utils.isThisContainsSequenceIfIsNotEmpty
 import javax.inject.Inject
@@ -83,7 +82,7 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
         if (action != null) {
             when (action) {
                 TradingPasswordActivityActions.CreateTradingPassword -> MainActionButtonState(
-                    text = getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
+                    text = context.getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
                     isVisible = ruleState[RuleStateKey.RULE_1] == true &&
                             ruleState[RuleStateKey.RULE_2] == true &&
                             ruleState[RuleStateKey.RULE_3] == true &&
@@ -91,7 +90,7 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
                 )
 
                 TradingPasswordActivityActions.ChangeTradingPassword -> MainActionButtonState(
-                    text = getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
+                    text = context.getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
                     isVisible = ruleState[RuleStateKey.RULE_1] == true &&
                             ruleState[RuleStateKey.RULE_2] == true &&
                             ruleState[RuleStateKey.RULE_3] == true &&
@@ -100,7 +99,7 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
                 )
 
                 TradingPasswordActivityActions.RemoveTradingPassword -> MainActionButtonState(
-                    text = getString(TradingPasswordActivityActions.RemoveTradingPassword.resName),
+                    text = context.getString(TradingPasswordActivityActions.RemoveTradingPassword.resName),
                     isVisible = ruleState[RuleStateKey.RULE_4] == true
                 )
             }
@@ -173,14 +172,6 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
      * @return Drawable ресурс.
      */
     fun getDrawableRes(@DrawableRes res: Int) = ContextCompat.getDrawable(context, res)
-
-    /**
-     * Получает строку по идентификатору ресурса.
-     *
-     * @param res Идентификатор ресурса строки.
-     * @return Строка из ресурсов приложения.
-     */
-    fun getString(@StringRes res: Int) = ContextCompat.getString(context, res)
 
     /**
      * Инициализирует действие в зависимости от переданного intentAction.

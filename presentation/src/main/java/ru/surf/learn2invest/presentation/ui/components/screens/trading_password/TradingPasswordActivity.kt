@@ -11,13 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.presentation.R
-import ru.surf.learn2invest.presentation.databinding.ActivityTradingPasswordBinding
 import ru.surf.learn2invest.domain.utils.hideKeyboard
 import ru.surf.learn2invest.domain.utils.launchMAIN
+import ru.surf.learn2invest.domain.utils.showKeyboard
+import ru.surf.learn2invest.presentation.R
+import ru.surf.learn2invest.presentation.databinding.ActivityTradingPasswordBinding
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
-import ru.surf.learn2invest.domain.utils.showKeyboard
 import ru.surf.learn2invest.presentation.utils.textListener
 
 /**
@@ -52,11 +52,11 @@ internal class TradingPasswordActivity : AppCompatActivity() {
      */
     private fun configureRules() {
         binding.apply {
-            rules1.text = viewModel.getString(R.string.min_len_trading_password)
-            rules2.text = viewModel.getString(R.string.not_more_than_2)
-            rules3.text = viewModel.getString(R.string.no_seq_more_than_2)
-            rules4.text = viewModel.getString(R.string.pass_match)
-            rules5.text = viewModel.getString(R.string.old_pas_correct)
+            rules1.text = getString(R.string.min_len_trading_password)
+            rules2.text = getString(R.string.not_more_than_2)
+            rules3.text = getString(R.string.no_seq_more_than_2)
+            rules4.text = getString(R.string.pass_match)
+            rules5.text = getString(R.string.old_pas_correct)
         }
     }
 
@@ -94,7 +94,7 @@ internal class TradingPasswordActivity : AppCompatActivity() {
             lifecycleScope.launchMAIN {
                 viewModel.actionFlow.collect { action ->
                     action?.let {
-                        binding.header.text = viewModel.getString(it.resName)
+                        binding.header.text = getString(it.resName)
                         when (it) {
                             TradingPasswordActivityActions.CreateTradingPassword -> {
                                 // Логика создания торгового пароля

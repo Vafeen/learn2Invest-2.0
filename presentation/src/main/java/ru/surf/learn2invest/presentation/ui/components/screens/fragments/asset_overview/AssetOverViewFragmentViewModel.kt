@@ -18,7 +18,6 @@ import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import ru.surf.learn2invest.domain.network.usecase.GetCoinHistoryUseCase
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
-import ru.surf.learn2invest.presentation.utils.finResult
 import ru.surf.learn2invest.presentation.utils.formatAsPrice
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.priceChangesStr
@@ -41,7 +40,7 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
         combine(formattedPriceFlow, getBySymbolAssetInvestUseCase.invoke(symbol)) { price, asset ->
             if (asset != null) {
                 CoinInfoState.Data(
-                    finResult = finResult(asset, price),
+                    finResult = FinResult(asset, price),
                     coinPriceChangesResult = priceChangesStr(asset, price),
                     coinCostResult = (price * asset.amount).formatAsPrice(2).getWithCurrency(),
                     coinCount = "${asset.amount}",

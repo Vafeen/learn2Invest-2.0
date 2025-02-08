@@ -9,7 +9,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -17,12 +16,12 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.surf.learn2invest.domain.utils.launchIO
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignUpBinding
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInActivity
-import ru.surf.learn2invest.domain.utils.launchIO
-import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import ru.surf.learn2invest.presentation.utils.textListener
@@ -116,7 +115,7 @@ internal class SignUpActivity : AppCompatActivity() {
             resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         binding.signupBtn.backgroundTintList = ColorStateList.valueOf(
-            resources.getColor(
+            getColor(
                 if (binding.signupBtn.isEnabled) {
                     if (isDarkTheme)
                         R.color.accent_background_dark
@@ -138,15 +137,13 @@ internal class SignUpActivity : AppCompatActivity() {
         }
 
         firstname.trim() != firstname -> {
-            binding.nameErrorTextView.text =
-                ContextCompat.getString(this, R.string.contains_spaces)
+            binding.nameErrorTextView.text = getString(R.string.contains_spaces)
             binding.nameErrorTextView.isVisible = true
             false
         }
 
         firstname.length > viewModel.lengthLimit -> {
-            binding.nameErrorTextView.text =
-                ContextCompat.getString(this, R.string.limit_len_exceeded)
+            binding.nameErrorTextView.text = getString(R.string.limit_len_exceeded)
             binding.nameErrorTextView.isVisible = true
             false
         }
@@ -164,15 +161,13 @@ internal class SignUpActivity : AppCompatActivity() {
         }
 
         lastName.trim() != lastName -> {
-            binding.lastnameErrorTextView.text =
-                ContextCompat.getString(this, R.string.contains_spaces)
+            binding.lastnameErrorTextView.text = getString(R.string.contains_spaces)
             binding.lastnameErrorTextView.isVisible = true
             false
         }
 
         lastName.length > viewModel.lengthLimit -> {
-            binding.lastnameErrorTextView.text =
-                ContextCompat.getString(this, R.string.limit_len_exceeded)
+            binding.lastnameErrorTextView.text = getString(R.string.limit_len_exceeded)
             binding.lastnameErrorTextView.isVisible = true
             false
         }
@@ -186,7 +181,7 @@ internal class SignUpActivity : AppCompatActivity() {
 
     private fun onNextClicked(): Boolean {
         if (viewModel.firstnameFlow.value.isEmpty()) {
-            binding.nameErrorTextView.text = ContextCompat.getString(this, R.string.empty_error)
+            binding.nameErrorTextView.text = getString(R.string.empty_error)
             binding.nameErrorTextView.isVisible = true
             return true
         }
@@ -196,7 +191,7 @@ internal class SignUpActivity : AppCompatActivity() {
 
     private fun onDoneClicked(lastName: String): Boolean {
         if (lastName.isEmpty()) {
-            binding.lastnameErrorTextView.text = ContextCompat.getString(this, R.string.empty_error)
+            binding.lastnameErrorTextView.text = getString(R.string.empty_error)
             binding.lastnameErrorTextView.isVisible = true
             return true
         } else {

@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +20,7 @@ import ru.surf.learn2invest.presentation.databinding.FragmentPortfolioBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.refill_account_dialog.RefillAccountDialog
 import ru.surf.learn2invest.presentation.ui.components.chart.AssetBalanceHistoryFormatter
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
+import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.BaseResFragment
 import ru.surf.learn2invest.presentation.utils.DevStrLink
 import ru.surf.learn2invest.presentation.utils.getVersionName
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
@@ -34,7 +33,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-internal class PortfolioFragment : Fragment() {
+internal class PortfolioFragment : BaseResFragment() {
     private lateinit var binding: FragmentPortfolioBinding
     private lateinit var chartHelper: LineChartHelper
     private val viewModel: PortfolioFragmentViewModel by viewModels()
@@ -107,17 +106,11 @@ internal class PortfolioFragment : Fragment() {
                     else "%+.2f%%".format(Locale.getDefault(), percentage)
 
                     background = when {
-                        percentage > 0 -> AppCompatResources.getDrawable(
-                            requireContext(), R.drawable.percent_increase_background
-                        )
+                        percentage > 0 -> getDrawableRes(R.drawable.percent_increase_background)
 
-                        percentage < 0 -> AppCompatResources.getDrawable(
-                            requireContext(), R.drawable.percent_recession_background
-                        )
+                        percentage < 0 -> getDrawableRes(R.drawable.percent_recession_background)
 
-                        else -> AppCompatResources.getDrawable(
-                            requireContext(), R.drawable.percent_zero_background
-                        )
+                        else -> getDrawableRes(R.drawable.percent_zero_background)
                     }
                 }
             }

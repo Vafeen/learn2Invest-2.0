@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.domain.utils.launchMAIN
@@ -15,6 +14,7 @@ import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentAssetOverviewBinding
 import ru.surf.learn2invest.presentation.ui.components.chart.Last7DaysFormatter
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
+import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.BaseResFragment
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.NoArgException
 import ru.surf.learn2invest.presentation.utils.formatAsPrice
@@ -28,7 +28,7 @@ import javax.inject.Inject
  * Фрагмент обзора актива в [AssetReviewActivity][ru.surf.learn2invest.ui.components.screens.fragments.asset_review.AssetReviewActivity]
  */
 @AndroidEntryPoint
-internal class AssetOverviewFragment : Fragment() {
+internal class AssetOverviewFragment : BaseResFragment() {
     private lateinit var binding: FragmentAssetOverviewBinding
 
     @Inject
@@ -39,11 +39,12 @@ internal class AssetOverviewFragment : Fragment() {
             id = (requireArguments().getString(AssetConstants.ID.key) ?: throw NoArgException(
                 AssetConstants.ID.key
             )),
-            symbol =(requireArguments().getString(AssetConstants.SYMBOL.key) ?: throw NoArgException(
-                AssetConstants.SYMBOL.key
-            )) ,
+            symbol = (requireArguments().getString(AssetConstants.SYMBOL.key)
+                ?: throw NoArgException(
+                    AssetConstants.SYMBOL.key
+                )),
 
-        )
+            )
     }
 
     override fun onCreateView(
@@ -74,7 +75,8 @@ internal class AssetOverviewFragment : Fragment() {
                 binding.coin.root.isVisible = state is CoinInfoState.Data
                 if (state is CoinInfoState.Data) {
                     binding.coin.apply {
-                        finResult.text = state.finResult
+                        finResult.text = state.finResult.formattedStr()
+                        finResult.setTextColor(getColorRes(state.finResult.color()))
                         coinsCost.text = state.coinCostResult
                         coinsPrice.text = state.coinPriceChangesResult
                         coinsCount.text = state.coinCount
@@ -87,12 +89,13 @@ internal class AssetOverviewFragment : Fragment() {
             resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         val accentColor =
-            requireContext().getColor(if (isDarkTheme) R.color.accent_background_dark else R.color.accent_background)
+            getColorRes(if (isDarkTheme) R.color.accent_background_dark else R.color.accent_background)
 
         binding.coin.root.setCardBackgroundColor(accentColor)
 
         return binding.root
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -105,7 +108,7 @@ internal class AssetOverviewFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(id: String, symbol:String): AssetOverviewFragment {
+        fun newInstance(id: String, symbol: String): AssetOverviewFragment {
             Log.d("state", "id=$id symbol=$symbol")
             val fragment = AssetOverviewFragment()
             val args = Bundle()

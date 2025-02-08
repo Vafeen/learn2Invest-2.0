@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,9 +18,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentMarketReviewBinding
-import ru.surf.learn2invest.domain.utils.launchMAIN
+import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.BaseResFragment
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import javax.inject.Inject
 
@@ -30,7 +30,7 @@ import javax.inject.Inject
  * Фрагмент обзора рынка в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
 @AndroidEntryPoint
-internal class MarketReviewFragment : Fragment() {
+internal class MarketReviewFragment : BaseResFragment() {
     private val binding by lazy { FragmentMarketReviewBinding.inflate(layoutInflater) }
     private val viewModel: MarketReviewFragmentViewModel by viewModels()
 
@@ -111,7 +111,7 @@ internal class MarketReviewFragment : Fragment() {
 
                     filterByMarketcap.backgroundTintList =
                         ColorStateList.valueOf(
-                            resources.getColor(
+                            getColorRes(
                                 if (it[FILTER_BY_MARKETCAP] == true) {
                                     if (isDarkTheme)
                                         R.color.accent_background_dark
@@ -127,7 +127,7 @@ internal class MarketReviewFragment : Fragment() {
                         )
                     filterByChangePercent24Hr.backgroundTintList =
                         ColorStateList.valueOf(
-                            resources.getColor(
+                            getColorRes(
                                 if (it[FILTER_BY_PERCENT] == true) {
                                     if (isDarkTheme)
                                         R.color.accent_background_dark
@@ -143,7 +143,7 @@ internal class MarketReviewFragment : Fragment() {
                         )
                     filterByPrice.backgroundTintList =
                         ColorStateList.valueOf(
-                            resources.getColor(
+                            getColorRes(
                                 if (it[FILTER_BY_PRICE] == true) {
                                     if (isDarkTheme)
                                         R.color.accent_background_dark
@@ -198,11 +198,11 @@ internal class MarketReviewFragment : Fragment() {
                 searchEditText.text.clear()
             }
 
-            searchEditText.setOnFocusChangeListener { v, hasFocus ->
+            searchEditText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) viewModel.setSearchState(true)
             }
 
-            searchEditText.setOnItemClickListener { parent, view, position, id ->
+            searchEditText.setOnItemClickListener { _, _, _, _ ->
                 viewModel.setSearchState(true, searchEditText.text.toString())
             }
 
