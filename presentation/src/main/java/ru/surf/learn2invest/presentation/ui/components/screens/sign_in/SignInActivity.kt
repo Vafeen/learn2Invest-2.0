@@ -208,8 +208,7 @@ internal class SignInActivity : AppCompatActivity() {
                         needReturn = true, truePIN = viewModel.isVerified
                     ) {
                         viewModel.clearPIN()
-                        if (viewModel.isVerified) binding.enterPin.text =
-                            this@SignInActivity.getString(R.string.enter_new_pin)
+                        if (viewModel.isVerified) binding.enterPin.text = getString(R.string.enter_new_pin)
                         viewModel.unblockKeyBoard()
                     }
                 }

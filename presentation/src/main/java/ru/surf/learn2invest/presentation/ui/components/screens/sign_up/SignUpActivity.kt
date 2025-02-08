@@ -9,7 +9,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -221,6 +221,5 @@ internal class SignUpActivity : AppCompatActivity() {
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    private fun View.showKeyboard() = ViewCompat.getWindowInsetsController(this)
-        ?.show(WindowInsetsCompat.Type.ime())
+    private fun View.showKeyboard() = WindowCompat.getInsetsController(window,this).show(WindowInsetsCompat.Type.ime())
 }
