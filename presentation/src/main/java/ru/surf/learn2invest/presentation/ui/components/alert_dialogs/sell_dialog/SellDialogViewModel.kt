@@ -20,7 +20,7 @@ import ru.surf.learn2invest.domain.database.usecase.InsertTransactionUseCase
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.domain.network.ResponseResult
-import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
+import ru.surf.learn2invest.domain.network.usecase.GetCoinReviewUseCase
 import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.LotsData
@@ -31,7 +31,7 @@ internal class SellDialogViewModel @AssistedInject constructor(
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val insertAssetInvestUseCase: InsertAssetInvestUseCase,
     private val deleteAssetInvestUseCase: DeleteAssetInvestUseCase,
-    private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
+    private val getCoinReviewUseCase: GetCoinReviewUseCase,
     private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
     val isTrueTradingPasswordOrIsNotDefinedUseCase: IsTrueTradingPasswordOrIsNotDefinedUseCase,
     @Assisted("id") val id: String,
@@ -109,7 +109,7 @@ internal class SellDialogViewModel @AssistedInject constructor(
     fun startUpdatingPriceFLow() {
         realTimeUpdateJob = viewModelScope.launchIO {
             while (true) {
-                when (val result = getAllCoinReviewUseCase.invoke(_coinFlow.value.assetID)) {
+                when (val result = getCoinReviewUseCase.invoke(_coinFlow.value.assetID)) {
                     is ResponseResult.Success -> {
                         _coinFlow.emit(_coinFlow.value.copy(coinPrice = result.value.priceUsd))
                     }

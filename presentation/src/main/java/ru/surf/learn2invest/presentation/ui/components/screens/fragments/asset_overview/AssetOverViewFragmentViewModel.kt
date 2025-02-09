@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.combine
 import ru.surf.learn2invest.domain.database.usecase.GetBySymbolAssetInvestUseCase
 import ru.surf.learn2invest.domain.domain_models.AugmentedCoinReview
 import ru.surf.learn2invest.domain.network.ResponseResult
-import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
 import ru.surf.learn2invest.domain.network.usecase.GetCoinHistoryUseCase
+import ru.surf.learn2invest.domain.network.usecase.GetCoinReviewUseCase
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.presentation.utils.formatAsPrice
@@ -24,7 +24,7 @@ import ru.surf.learn2invest.presentation.utils.priceChangesStr
 
 internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val getCoinHistoryUseCase: GetCoinHistoryUseCase,
-    private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
+    private val getCoinReviewUseCase: GetCoinReviewUseCase,
     getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
     @Assisted("id") var id: String,
     @Assisted("symbol") val symbol: String,
@@ -72,7 +72,7 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
                 data = response.value.mapIndexed { index, coinPriceResponse ->
                     Entry(index.toFloat(), coinPriceResponse.priceUsd)
                 }.toMutableList()
-                val coinResponse = getAllCoinReviewUseCase(id)
+                val coinResponse = getCoinReviewUseCase(id)
                 if (coinResponse is ResponseResult.Success) {
                     updateChartData(coinResponse)
                 }
@@ -83,7 +83,7 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     fun startRealTimeUpdate() {
         realTimeUpdateJob = viewModelScope.launchIO {
             while (true) {
-                val result = getAllCoinReviewUseCase(id)
+                val result = getCoinReviewUseCase(id)
                 if (result is ResponseResult.Success) updateChartData(result)
                 delay(5000)
             }

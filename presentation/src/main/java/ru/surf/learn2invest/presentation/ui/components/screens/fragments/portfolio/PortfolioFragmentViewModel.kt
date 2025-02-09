@@ -25,7 +25,7 @@ import ru.surf.learn2invest.domain.database.usecase.InsertByLimitAssetBalanceHis
 import ru.surf.learn2invest.domain.domain_models.AssetBalanceHistory
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.network.ResponseResult
-import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
+import ru.surf.learn2invest.domain.network.usecase.GetCoinReviewUseCase
 import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.utils.launchIO
 import java.math.BigDecimal
@@ -41,7 +41,7 @@ internal class PortfolioFragmentViewModel @Inject constructor(
     private val getAllAssetBalanceHistoryUseCase: GetAllAssetBalanceHistoryUseCase,
     private val insertAssetBalanceHistoryUseCase: InsertAssetBalanceHistoryUseCase,
     private val insertByLimitAssetBalanceHistoryUseCase: InsertByLimitAssetBalanceHistoryUseCase,
-    private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
+    private val getCoinReviewUseCase: GetCoinReviewUseCase,
     private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
 ) :
     ViewModel() {
@@ -148,7 +148,7 @@ internal class PortfolioFragmentViewModel @Inject constructor(
         var initialInvestment = 0f
         var currentPrice: Float
         for (asset in assets) {
-            val response = getAllCoinReviewUseCase(asset.assetID)
+            val response = getCoinReviewUseCase(asset.assetID)
             if (response is ResponseResult.Success) {
                 currentPrice = response.value.priceUsd
                 priceChanges[asset.symbol] = currentPrice

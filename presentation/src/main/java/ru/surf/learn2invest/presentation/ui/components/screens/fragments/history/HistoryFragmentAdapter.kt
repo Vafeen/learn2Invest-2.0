@@ -11,20 +11,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.load
 import dagger.hilt.android.qualifiers.ActivityContext
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.domain.domain_models.Transaction
-import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
+import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_review.AssetReviewActivity
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.TransactionAdapterDiffCallback
 import ru.surf.learn2invest.presentation.utils.AssetConstants
+import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import javax.inject.Inject
 
 internal class HistoryFragmentAdapter @Inject constructor(
-    private val imageLoader: ImageLoader, @ActivityContext var context: Context
+    @ActivityContext var context: Context,
+    private val loadCoinIconUseCase: LoadCoinIconUseCase,
 ) : RecyclerView.Adapter<HistoryFragmentAdapter.ViewHolder>() {
 
     var data: List<Transaction> = listOf()
@@ -57,10 +57,10 @@ internal class HistoryFragmentAdapter @Inject constructor(
             else coin.name
             coinBottomTextInfo.text = coin.symbol
             if (coin.transactionType == TransactionsType.Sell) {
-                coinTopNumericInfo.text = "+ ${coin.dealPrice}$"
+                coinTopNumericInfo.text = "+ ${coin.dealPrice.getWithCurrency()}"
                 coinTopNumericInfo.setTextColor(coinBottomNumericInfo.context.getColor(R.color.increase))
             } else {
-                coinTopNumericInfo.text = "- ${coin.dealPrice}$"
+                coinTopNumericInfo.text = "- ${coin.dealPrice.getWithCurrency()}"
                 coinTopNumericInfo.setTextColor(
                     coinBottomNumericInfo.context.getColor(
                         if (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
@@ -71,11 +71,8 @@ internal class HistoryFragmentAdapter @Inject constructor(
                     )
                 )
             }
-            coinBottomNumericInfo.text = "${coin.coinPrice}$"
-
-            coinIcon.load(
-                data = "${API_ICON}${coin.symbol.lowercase()}.svg", imageLoader = imageLoader
-            )
+            coinBottomNumericInfo.text = coin.coinPrice.getWithCurrency()
+            loadCoinIconUseCase.invoke(coinIcon, coin.symbol)
             itemView.setOnClickListener {
                 context.startActivity(Intent(context, AssetReviewActivity::class.java).apply {
                     putExtras(Bundle().apply {

@@ -10,11 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.load
 import dagger.hilt.android.qualifiers.ActivityContext
 import ru.surf.learn2invest.domain.domain_models.CoinReview
-import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
+import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_review.AssetReviewActivity
 import ru.surf.learn2invest.presentation.utils.AssetConstants
@@ -25,7 +23,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 internal class MarketReviewAdapter @Inject constructor(
-    private val imageLoader: ImageLoader,
+    private val loadCoinIconUseCase: LoadCoinIconUseCase,
     @ActivityContext var context: Context
 ) : RecyclerView.Adapter<MarketReviewAdapter.ViewHolder>() {
     var data: List<CoinReview> = listOf()
@@ -69,14 +67,7 @@ internal class MarketReviewAdapter @Inject constructor(
                 coinBottomNumericInfo.setTextColor(coinBottomNumericInfo.context.getColor(R.color.increase))
             } else coinBottomNumericInfo.setTextColor(coinBottomNumericInfo.context.getColor(R.color.recession))
             coinBottomNumericInfo.text = "${coin.changePercent24Hr.round()}%"
-            coinIcon.load(
-                data = "$API_ICON${coin.symbol.lowercase()}.svg",
-                imageLoader = imageLoader
-            )
-            {
-                placeholder(R.drawable.placeholder)
-                error(R.drawable.coin_placeholder)
-            }
+            loadCoinIconUseCase.invoke(coinIcon, coin.symbol)
             itemView.setOnClickListener {
                 context.startActivity(Intent(context, AssetReviewActivity::class.java).apply {
                     putExtras(Bundle().apply {

@@ -10,11 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.load
 import dagger.hilt.android.qualifiers.ActivityContext
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
-import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
+import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_review.AssetReviewActivity
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.MapDiffCallback
@@ -26,8 +24,8 @@ import javax.inject.Inject
 
 
 internal class PortfolioAdapter @Inject constructor(
-    private val imageLoader: ImageLoader,
-    @ActivityContext var context: Context
+    private val loadCoinIconUseCase: LoadCoinIconUseCase,
+    @ActivityContext var context: Context,
 ) : RecyclerView.Adapter<PortfolioAdapter.PortfolioViewHolder>() {
 
     var assets: List<AssetInvest> = emptyList()
@@ -103,15 +101,23 @@ internal class PortfolioAdapter @Inject constructor(
                     }
                 }
             )
-
-            coinIcon.load(
-                data = "$API_ICON${asset.symbol.lowercase()}.svg",
-                imageLoader = imageLoader
-            )
-            {
-                placeholder(R.drawable.placeholder)
-                error(R.drawable.coin_placeholder)
-            }
+            loadCoinIconUseCase.invoke(coinIcon, asset.symbol)
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

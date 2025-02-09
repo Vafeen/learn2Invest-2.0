@@ -61,4 +61,7 @@ dependencies {
     implementation(libs.logging.interceptor)
     // using fingerprint
     implementation(libs.androidx.biometric)
+    //coil
+    implementation(libs.coil.svg)
+    implementation(libs.coil)
 }

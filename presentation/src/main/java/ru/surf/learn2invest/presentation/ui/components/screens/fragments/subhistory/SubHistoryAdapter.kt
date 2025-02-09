@@ -9,19 +9,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.load
 import dagger.hilt.android.qualifiers.ActivityContext
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.domain.domain_models.Transaction
-import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
+import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.TransactionAdapterDiffCallback
+import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import javax.inject.Inject
 
 internal class SubHistoryAdapter @Inject constructor(
-    private val loader: ImageLoader,
-    @ActivityContext var context: Context
+    private val loadCoinIconUseCase: LoadCoinIconUseCase,
+    @ActivityContext var context: Context,
 ) : RecyclerView.Adapter<SubHistoryAdapter.ViewHolder>() {
     var data: List<Transaction> = listOf()
         set(value) {
@@ -55,10 +54,10 @@ internal class SubHistoryAdapter @Inject constructor(
                 else data[position].name
             coinBottomTextInfo.text = data[position].amount.toString()
             if (data[position].transactionType == TransactionsType.Sell) {
-                coinTopNumericInfo.text = "+ ${data[position].dealPrice}$"
+                coinTopNumericInfo.text = "+ ${data[position].dealPrice.getWithCurrency()}"
                 coinTopNumericInfo.setTextColor(coinBottomNumericInfo.context.getColor(R.color.increase))
             } else {
-                coinTopNumericInfo.text = "- ${data[position].dealPrice}$"
+                coinTopNumericInfo.text = "- ${data[position].dealPrice.getWithCurrency()}"
                 coinTopNumericInfo.setTextColor(
                     coinBottomNumericInfo.context.getColor(
                         if (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
@@ -70,11 +69,7 @@ internal class SubHistoryAdapter @Inject constructor(
                 )
             }
             coinBottomNumericInfo.text = "${data[position].coinPrice}$"
-
-            coinIcon.load(
-                data = "${API_ICON}${data[position].symbol.lowercase()}.svg",
-                imageLoader = loader
-            )
+            loadCoinIconUseCase.invoke(coinIcon, data[position].symbol)
         }
     }
 

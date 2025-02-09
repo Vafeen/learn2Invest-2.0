@@ -3,14 +3,10 @@ package ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import coil.ImageLoader
-import coil.decode.SvgDecoder
-import coil.request.Disposable
-import coil.request.ImageRequest
 import dagger.hilt.android.AndroidEntryPoint
-import ru.surf.learn2invest.domain.network.RetrofitLinks.API_ICON
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityAssetReviewBinding
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.buy_dialog.BuyDialog
@@ -27,7 +23,7 @@ import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 @AndroidEntryPoint
 internal class AssetReviewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAssetReviewBinding
-    private lateinit var disposable: Disposable
+    private val viewModel: AssetReviewActivityViewModel by viewModels()
     private var isOverviewSelected = true
 
 
@@ -70,26 +66,7 @@ internal class AssetReviewActivity : AppCompatActivity() {
 
         binding.coinName.text = name
         binding.coinSymbol.text = symbol
-
-        val imageLoader = ImageLoader.Builder(binding.coinIcon.context)
-            .components {
-                add(SvgDecoder.Factory())
-            }
-            .build()
-        val request = ImageRequest.Builder(binding.coinIcon.context)
-            .data("${API_ICON}${symbol.lowercase()}.svg")
-            .target(onSuccess = {
-                binding.coinIcon.setImageDrawable(it)
-            },
-                onError = {
-                    binding.coinIcon.setImageResource(R.drawable.coin_placeholder)
-                },
-                onStart = {
-                    binding.coinIcon.setImageResource(R.drawable.placeholder)
-                })
-            .build()
-        disposable = imageLoader.enqueue(request)
-
+        viewModel.loadImage(binding.coinIcon, symbol)
         binding.buyAssetBtn.setOnClickListener {
             BuyDialog.newInstance(id, name, symbol).showDialog(supportFragmentManager)
         }
@@ -118,12 +95,14 @@ internal class AssetReviewActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        disposable.dispose()
+        viewModel.cancelLoadingImage()
         super.onDestroy()
     }
 
     private fun goToFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
-            .commit()
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, fragment)
+            commit()
+        }
     }
 }

@@ -17,13 +17,13 @@ import ru.surf.learn2invest.domain.database.usecase.InsertSearchedCoinUseCase
 import ru.surf.learn2invest.domain.domain_models.CoinReview
 import ru.surf.learn2invest.domain.domain_models.SearchedCoin
 import ru.surf.learn2invest.domain.network.ResponseResult
-import ru.surf.learn2invest.domain.network.usecase.GetAllCoinReviewUseCase
+import ru.surf.learn2invest.domain.network.usecase.GetCoinReviewUseCase
 import ru.surf.learn2invest.domain.network.usecase.GetMarketReviewUseCase
 import ru.surf.learn2invest.domain.toCoinReview
+import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_MARKETCAP
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PERCENT
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PRICE
-import ru.surf.learn2invest.domain.utils.launchIO
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +31,7 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
     private val getMarkerReviewUseCase: GetMarketReviewUseCase,
     private val insertSearchedCoinUseCase: InsertSearchedCoinUseCase,
     private val getAllSearchedCoinUseCase: GetAllSearchedCoinUseCase,
-    private val getAllCoinReviewUseCase: GetAllCoinReviewUseCase,
+    private val getCoinReviewUseCase: GetCoinReviewUseCase,
     private val clearSearchedCoinUseCase: ClearSearchedCoinUseCase,
 ) : ViewModel() {
     private var _data: MutableStateFlow<List<CoinReview>> = MutableStateFlow(listOf())
@@ -56,12 +56,8 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
     private var _searchedData: MutableStateFlow<List<CoinReview>> =
         MutableStateFlow(listOf())
     val searchedData: StateFlow<List<CoinReview>> get() = _searchedData
-    var firstUpdateElement = 0
-        private set
-    var amountUpdateElement = 0
-        private set
-    var isRealtimeUpdate = false
-        private set
+    private var firstUpdateElement = 0
+    private var amountUpdateElement = 0
 
     init {
         initData()
@@ -73,14 +69,10 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
                 is ResponseResult.Success -> {
                     _isLoading.value = false
                     _isError.value = false
-                    val temp = result.value.toMutableList()
-                    temp.removeIf {
-                        it.marketCapUsd == 0.0f
-                    }
-                    temp.sortByDescending { it.marketCapUsd }
-                    _data.value = temp
+                    _data.value = result.value.toMutableList().filter {
+                        it.marketCapUsd > 0f && it.priceUsd > 0.1f
+                    }.sortedByDescending { it.marketCapUsd }
                 }
-
                 is ResponseResult.NetworkError -> {
                     _isLoading.value = false
                     _isError.value = true
@@ -146,7 +138,6 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
 
     fun updateData(firstElement: Int, lastElement: Int) {
         val tempUpdate = mutableListOf<CoinReview>()
-        isRealtimeUpdate = true
         val updateDestinationLink = if (_isSearch.value) _searchedData
         else _data
         if (updateDestinationLink.value.isNotEmpty()
@@ -158,7 +149,7 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 for (index in firstElement..lastElement) {
                     when (val result =
-                        getAllCoinReviewUseCase(updateDestinationLink.value[index].id)) {
+                        getCoinReviewUseCase.invoke(updateDestinationLink.value[index].id)) {
                         is ResponseResult.Success -> {
                             tempUpdate.add(result.value.toCoinReview())
                         }
