@@ -26,6 +26,16 @@ import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketr
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.marketreview.MarketReviewFragment.Companion.FILTER_BY_PRICE
 import javax.inject.Inject
 
+/**
+ * ViewModel для экрана MarketReview, который управляет состоянием данных для отображения
+ * информации о монетах и их фильтрации.
+ *
+ * @property getMarkerReviewUseCase Используется для получения списка всех рыночных обзоров.
+ * @property insertSearchedCoinUseCase Используется для добавления монет в список поисковых запросов.
+ * @property getAllSearchedCoinUseCase Используется для получения всех ранее добавленных монет в поисковых запросах.
+ * @property getCoinReviewUseCase Используется для получения подробной информации о конкретной монете.
+ * @property clearSearchedCoinUseCase Используется для очистки списка поисковых запросов.
+ */
 @HiltViewModel
 internal class MarketReviewFragmentViewModel @Inject constructor(
     private val getMarkerReviewUseCase: GetMarketReviewUseCase,
@@ -34,12 +44,28 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
     private val getCoinReviewUseCase: GetCoinReviewUseCase,
     private val clearSearchedCoinUseCase: ClearSearchedCoinUseCase,
 ) : ViewModel() {
+
+    /**
+     * Состояние, хранящее список монет с их рыночными обзорами.
+     */
     private var _data: MutableStateFlow<List<CoinReview>> = MutableStateFlow(listOf())
-    val data = _data.asStateFlow()
+    val data: StateFlow<List<CoinReview>> get() = _data.asStateFlow()
+
+    /**
+     * Состояние загрузки данных. Показывает, идет ли процесс загрузки.
+     */
     private var _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> get() = _isLoading
+
+    /**
+     * Состояние ошибки. Указывает, возникла ли ошибка при загрузке данных.
+     */
     private var _isError: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isError: StateFlow<Boolean> get() = _isError
+
+    /**
+     * Состояние фильтров для сортировки монет по различным критериям.
+     */
     private var _filterState: MutableStateFlow<Map<Int, Boolean>> = MutableStateFlow(
         mapOf(
             Pair(FILTER_BY_MARKETCAP, true),
@@ -48,21 +74,51 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
         )
     )
     val filterState: StateFlow<Map<Int, Boolean>> get() = _filterState
+
+    /**
+     * Состояние, указывающее на порядок сортировки (по возрастанию или убыванию).
+     */
     private val _filterOrder: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val filterOrder: StateFlow<Boolean> get() = _filterOrder
+
+    /**
+     * Флаг, указывающий, был ли уже применен фильтр по цене.
+     */
     private var firstTimePriceFilter = true
-    private val _isSearch: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    /**
+     * Состояние, указывающее, был ли выполнен поиск.
+     */
+    private var _isSearch: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearch: StateFlow<Boolean> get() = _isSearch
-    private var _searchedData: MutableStateFlow<List<CoinReview>> =
-        MutableStateFlow(listOf())
+
+    /**
+     * Состояние, содержащее данные, полученные по результатам поиска.
+     */
+    private var _searchedData: MutableStateFlow<List<CoinReview>> = MutableStateFlow(listOf())
     val searchedData: StateFlow<List<CoinReview>> get() = _searchedData
+
+    /**
+     * Индекс первого элемента, который должен быть обновлен при загрузке новых данных.
+     */
     private var firstUpdateElement = 0
+
+    /**
+     * Количество элементов, которые должны быть обновлены.
+     */
     private var amountUpdateElement = 0
 
+    /**
+     * Инициализация данных, выполняется при создании ViewModel.
+     * Получает рыночные обзоры и обновляет состояние данных.
+     */
     init {
         initData()
     }
 
+    /**
+     * Инициализирует данные, выполняет загрузку рыночных обзоров.
+     */
     private fun initData() {
         viewModelScope.launchIO {
             when (val result = getMarkerReviewUseCase()) {
@@ -73,6 +129,7 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
                         it.marketCapUsd > 0f && it.priceUsd > 0.1f
                     }.sortedByDescending { it.marketCapUsd }
                 }
+
                 is ResponseResult.NetworkError -> {
                     _isLoading.value = false
                     _isError.value = true
@@ -81,6 +138,11 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Активирует состояние фильтра для выбранного элемента.
+     *
+     * @param element Идентификатор фильтра.
+     */
     private fun activateFilterState(element: Int) {
         if (element != FILTER_BY_PRICE) firstTimePriceFilter = true
         _filterState.update {
@@ -88,6 +150,9 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Сортирует данные по рыночной капитализации.
+     */
     fun filterByMarketcap() {
         activateFilterState(FILTER_BY_MARKETCAP)
         _data.update {
@@ -95,6 +160,9 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Сортирует данные по процентному изменению за 24 часа.
+     */
     fun filterByPercent() {
         activateFilterState(FILTER_BY_PERCENT)
         _data.update {
@@ -102,6 +170,9 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Сортирует данные по цене.
+     */
     fun filterByPrice() {
         activateFilterState(FILTER_BY_PRICE)
         if (!firstTimePriceFilter) {
@@ -116,6 +187,12 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Устанавливает состояние поиска и обновляет данные с учетом поискового запроса.
+     *
+     * @param state Состояние поиска.
+     * @param searchRequest Строка поискового запроса.
+     */
     fun setSearchState(state: Boolean, searchRequest: String = "") {
         var tempSearch = listOf<String>()
         _isSearch.update {
@@ -129,17 +206,20 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
                 tempSearch = getAllSearchedCoinUseCase().first().map { it.coinID }
                 _searchedData.update {
                     _data.value.filter { element -> tempSearch.contains(element.name) }.reversed()
-
                 }
             }
         }
     }
 
-
+    /**
+     * Обновляет данные для отображения в указанном диапазоне элементов.
+     *
+     * @param firstElement Индекс первого элемента.
+     * @param lastElement Индекс последнего элемента.
+     */
     fun updateData(firstElement: Int, lastElement: Int) {
         val tempUpdate = mutableListOf<CoinReview>()
-        val updateDestinationLink = if (_isSearch.value) _searchedData
-        else _data
+        val updateDestinationLink = if (_isSearch.value) _searchedData else _data
         if (updateDestinationLink.value.isNotEmpty()
             && firstElement != NO_POSITION
             && updateDestinationLink.value.size > lastElement
@@ -170,6 +250,9 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
         } else initData()
     }
 
+    /**
+     * Очищает данные поиска.
+     */
     fun clearSearchData() {
         viewModelScope.launchIO {
             clearSearchedCoinUseCase()

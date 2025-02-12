@@ -32,7 +32,7 @@ import javax.inject.Inject
  * - Смена PIN-кода
  * - Аутентификация пользователя по PIN-коду
  *
- * Определение функция с помощью intent.action и [SignINActivityActions][ru.surf.learn2invest.ui.components.screens.sign_in.SignINActivityActions]
+ * Определение функция с помощью intent.action и [SignINActivityActions][ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions]
  */
 
 @AndroidEntryPoint

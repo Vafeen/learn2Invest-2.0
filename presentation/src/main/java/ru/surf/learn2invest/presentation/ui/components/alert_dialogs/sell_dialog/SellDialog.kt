@@ -25,22 +25,31 @@ import ru.surf.learn2invest.presentation.utils.textListener
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import javax.inject.Inject
 
-
 /**
- * Диалог продажи актива
- * @param dialogContext [Контекст открытия диалога]
- * @param lifecycleScope [Scope для выполнения асинхронных операция]
- * @param id [ID coin'а]
- * @param name [Имя (Bitcoin)]
- * @param symbol [Абревиатура (BTC)]
+ * Диалог для продажи актива.
+ *
+ * Этот диалог отображается при попытке пользователя продать актив (например, криптовалюту).
+ * Пользователь может выбрать количество лотов для продажи, ввести торговый пароль (если требуется),
+ * а также увидеть результат продажи, включая цену и доступное количество.
  */
 @AndroidEntryPoint
 internal class SellDialog : CustomBottomSheetDialog() {
+
+    /**
+     * Тег диалога для идентификации.
+     */
     override val dialogTag: String = "sell"
     private lateinit var binding: DialogSellBinding
 
+    /**
+     * Фабрика для создания ViewModel.
+     */
     @Inject
     lateinit var factory: SellDialogViewModel.Factory
+
+    /**
+     * ViewModel, который управляет логикой продажи актива.
+     */
     private val viewModel by viewModelCreator {
         val id = arguments?.getString(ID_KEY) ?: throw NoArgException(ID_KEY)
         val name = arguments?.getString(NAME_KEY) ?: throw NoArgException(NAME_KEY)
@@ -48,14 +57,25 @@ internal class SellDialog : CustomBottomSheetDialog() {
         factory.createViewModel(id, name, symbol)
     }
 
-    fun initListeners() {
+    /**
+     * Инициализирует слушателей для кнопок и других элементов управления в диалоге.
+     *
+     * Этот метод настраивает:
+     * - подписку на изменения профиля пользователя для отображения баланса.
+     * - обработчики для кнопок увеличения и уменьшения количества лотов.
+     * - обработчик изменения текста для ввода количества лотов и торгового пароля.
+     * - обновление UI в зависимости от состояния продажи.
+     */
+    private fun initListeners() {
         binding.apply {
             lifecycleScope.launchMAIN {
+                // Подписка на изменения профиля и обновление баланса
                 viewModel.profileFlow.collect {
                     balanceNum.text = it.fiatBalance.getWithCurrency()
                 }
             }
 
+            // Деактивация кнопки продажи по умолчанию
             buttonSell.isVisible = false
             buttonSell.setOnClickListener {
                 lifecycleScope.launchIO {
@@ -64,6 +84,7 @@ internal class SellDialog : CustomBottomSheetDialog() {
                 }
             }
 
+            // Обработчики для кнопок изменения количества лотов
             imageButtonPlus.setOnClickListener {
                 lifecycleScope.launchIO {
                     withContextMAIN {
@@ -87,6 +108,7 @@ internal class SellDialog : CustomBottomSheetDialog() {
                 }
             }
 
+            // Обработчик изменения текста для количества лотов
             enteringNumberOfLots.addTextChangedListener(
                 textListener(afterTextChanged = {
                     lifecycleScope.launchMAIN {
@@ -96,6 +118,8 @@ internal class SellDialog : CustomBottomSheetDialog() {
                     }
                 })
             )
+
+            // Обработчик изменения текста для торгового пароля
             tradingPasswordTV.addTextChangedListener(
                 textListener(afterTextChanged = {
                     lifecycleScope.launchIO {
@@ -103,6 +127,8 @@ internal class SellDialog : CustomBottomSheetDialog() {
                     }
                 })
             )
+
+            // Подписка на изменения состояния и обновление UI
             lifecycleScope.launchMAIN {
                 viewModel.stateFlow.collect { state ->
                     val lotsData = state.lotsData
@@ -115,8 +141,7 @@ internal class SellDialog : CustomBottomSheetDialog() {
                             result.text = requireContext().getString(R.string.no_asset_for_sale)
                         }
 
-                        state.coin.amount > 0f && lotsData.lots in 1..state.coin.amount
-                            -> {
+                        state.coin.amount > 0f && lotsData.lots in 1..state.coin.amount -> {
                             buttonSell.isVisible =
                                 viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
                                     profile = viewModel.profileFlow.value,
@@ -138,19 +163,25 @@ internal class SellDialog : CustomBottomSheetDialog() {
                     binding.haveQuantityNumber.text = "${state.coin.amount}"
 
                     if (lotsData.isUpdateTVNeeded) binding.enteringNumberOfLots.setText("${lotsData.lots}")
-
                 }
             }
-
-
         }
     }
 
+    /**
+     * Прерывает процесс обновления потока с ценой при закрытии диалога.
+     */
     override fun dismiss() {
         super.dismiss()
         viewModel.stopUpdatingPriceFlow()
     }
 
+    /**
+     * Выполняет продажу актива.
+     *
+     * Эта функция извлекает цену и количество лотов, указанных пользователем, и передает их в ViewModel для
+     * обработки продажи актива.
+     */
     private suspend fun sell() {
         val price = binding.priceNumber.text.toString().getFloatFromStringWithCurrency() ?: 0f
         val amountCurrent = binding.enteringNumberOfLots.text.toString().toInt()
@@ -166,7 +197,6 @@ internal class SellDialog : CustomBottomSheetDialog() {
         initListeners()
         return binding.root
     }
-
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -185,7 +215,6 @@ internal class SellDialog : CustomBottomSheetDialog() {
         return dialog
     }
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         lifecycleScope.launchIO {
@@ -199,6 +228,15 @@ internal class SellDialog : CustomBottomSheetDialog() {
         private const val ID_KEY = "ID_KEY"
         private const val NAME_KEY = "NAME_KEY"
         private const val SYMBOL_KEY = "SYMBOL_KEY"
+
+        /**
+         * Создает новый экземпляр диалога продажи с указанными параметрами.
+         *
+         * @param id ID актива.
+         * @param name Имя актива.
+         * @param symbol Символ актива.
+         * @return Новый экземпляр диалога продажи.
+         */
         fun newInstance(
             id: String,
             name: String,

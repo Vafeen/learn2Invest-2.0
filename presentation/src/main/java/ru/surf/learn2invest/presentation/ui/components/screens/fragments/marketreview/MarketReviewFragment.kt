@@ -25,7 +25,6 @@ import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import javax.inject.Inject
 
-
 /**
  * Фрагмент обзора рынка в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
@@ -38,18 +37,23 @@ internal class MarketReviewFragment : BaseResFragment() {
 
     @Inject
     lateinit var adapter: MarketReviewAdapter
+
+    // Создание представления фрагмента
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Установка цвета для статус-бара
         activity?.apply {
             setStatusBarColor(window, this, R.color.white, R.color.main_background_dark)
         }
 
+        // Настройка RecyclerView для отображения данных
         binding.marketReviewRecyclerview.layoutManager = LinearLayoutManager(this.requireContext())
         binding.marketReviewRecyclerview.adapter = adapter
 
+        // Слушаем изменения фильтрации
         lifecycleScope.launchMAIN {
             viewModel.filterOrder.collect {
                 binding.apply {
@@ -64,16 +68,17 @@ internal class MarketReviewFragment : BaseResFragment() {
             }
         }
 
+        // Слушаем состояние загрузки данных
         lifecycleScope.launchMAIN {
             viewModel.isLoading.collect {
                 binding.apply {
                     marketReviewRecyclerview.isVisible = it.not()
                     binding.progressBar.isVisible = it
                 }
-
             }
         }
 
+        // Слушаем ошибки при загрузке данных
         lifecycleScope.launchMAIN {
             viewModel.isError.collect {
                 binding.apply {
@@ -84,12 +89,14 @@ internal class MarketReviewFragment : BaseResFragment() {
             }
         }
 
+        // Обновление данных, отображаемых в адаптере
         lifecycleScope.launchMAIN {
             viewModel.searchedData.collect {
                 adapter.data = it
             }
         }
 
+        // Обработка новых данных для поиска
         lifecycleScope.launchMAIN {
             viewModel.data.collect {
                 if (it.isNotEmpty()) {
@@ -103,6 +110,7 @@ internal class MarketReviewFragment : BaseResFragment() {
             }
         }
 
+        // Настройка фильтров с учетом темы (темная/светлая)
         lifecycleScope.launchMAIN {
             viewModel.filterState.collect {
                 binding.apply {
@@ -161,6 +169,7 @@ internal class MarketReviewFragment : BaseResFragment() {
             }
         }
 
+        // Обработка состояния поиска
         lifecycleScope.launchMAIN {
             viewModel.isSearch.collect {
                 binding.apply {
@@ -178,6 +187,7 @@ internal class MarketReviewFragment : BaseResFragment() {
             }
         }
 
+        // Настройка обработчиков нажатий на кнопки фильтрации
         binding.apply {
             filterByMarketcap.setOnClickListener {
                 marketReviewRecyclerview.layoutManager?.scrollToPosition(0)
@@ -215,19 +225,23 @@ internal class MarketReviewFragment : BaseResFragment() {
                 hideKeyboardFrom(requireContext(), searchEditText)
             }
         }
+
         return binding.root
     }
 
+    // Запуск обновлений данных в реальном времени
     override fun onResume() {
         super.onResume()
         realTimeUpdateJob = startRealtimeUpdate()
     }
 
+    // Остановка обновлений данных при приостановке фрагмента
     override fun onPause() {
         super.onPause()
         realTimeUpdateJob.cancel()
     }
 
+    // Функция для обновления данных каждую 5 секунд
     private fun startRealtimeUpdate() = lifecycleScope.launch {
         while (true) {
             delay(5000)
@@ -239,13 +253,14 @@ internal class MarketReviewFragment : BaseResFragment() {
         }
     }
 
-
+    // Функция для скрытия клавиатуры
     private fun hideKeyboardFrom(context: Context, view: View) {
         val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
         view.clearFocus()
     }
 
+    // Константы для фильтров
     companion object {
         const val FILTER_BY_MARKETCAP = 0
         const val FILTER_BY_PERCENT = 1

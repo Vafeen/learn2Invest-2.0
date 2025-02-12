@@ -3,7 +3,6 @@ package ru.surf.learn2invest.presentation.ui.components.alert_dialogs.refill_acc
 import android.app.Dialog
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,40 +22,42 @@ import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.Cust
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 
 /**
- * Диалог пополнения баланса
+ * Диалоговое окно для пополнения баланса.
+ * Отображается в виде BottomSheetDialog и позволяет пользователю вводить сумму пополнения.
  */
 @AndroidEntryPoint
 internal class RefillAccountDialog : CustomBottomSheetDialog() {
+
     private lateinit var binding: DialogRefillAccountBinding
     override val dialogTag: String = "refillAccount"
     private val viewModel: RefillAccountDialogViewModel by viewModels()
 
-
+    /**
+     * Инициализация слушателей для обработки пользовательских действий в диалоговом окне.
+     */
     private fun initListeners() {
         binding.apply {
             lifecycleScope.launchMAIN {
-                viewModel.profileFlow.collect {
-                    balanceTextview.text = it.fiatBalance.getWithCurrency()
+                viewModel.profileFlow.collect { profile ->
+                    balanceTextview.text = profile.fiatBalance.getWithCurrency()
                 }
             }
+
             lifecycleScope.launchMAIN {
                 viewModel.enteredBalanceFLow.collect { balanceStr ->
-                    Log.d("s", balanceStr)
                     val template = requireContext().getString(R.string.enter_sum)
                     binding.apply {
                         TVEnteringSumOfBalance.text = balanceStr.ifEmpty { template }
-                        val isThisTemplate = balanceStr == template
+                        val isTemplate = balanceStr == template
 
-                        buttonDot.isVisible =
-                            balanceStr.let { it.isNotEmpty() && !it.contains(".") }
-                        backspace.isVisible = !isThisTemplate
+                        buttonDot.isVisible = balanceStr.isNotEmpty() && !balanceStr.contains(".")
+                        backspace.isVisible = !isTemplate
                         buttonRefill.isVisible = balanceStr.let {
-                            it.isNotEmpty() && !it.endsWith('.') && !isThisTemplate && it.toFloatOrNull()
-                                ?.let { f -> f > 0 } == true
+                            it.isNotEmpty() && !it.endsWith('.') && !isTemplate && it.toFloatOrNull()
+                                ?.let { amount -> amount > 0 } == true
                         }
-                        balanceClear.isVisible = !isThisTemplate
-                        button0.visibility =
-                            if (balanceStr != "0") View.VISIBLE else View.INVISIBLE // здесь так нужно, иначе верстка сломается
+                        balanceClear.isVisible = !isTemplate
+                        button0.visibility = if (balanceStr != "0") View.VISIBLE else View.INVISIBLE
                     }
                 }
             }
@@ -76,58 +77,64 @@ internal class RefillAccountDialog : CustomBottomSheetDialog() {
                 }
             }
 
-            binding.apply {
-                val numberButtons = listOf(
-                    button0,
-                    button1,
-                    button2,
-                    button3,
-                    button4,
-                    button5,
-                    button6,
-                    button7,
-                    button8,
-                    button9,
-                )
+            setupNumberPad()
+        }
+    }
 
-                for (index in 0..numberButtons.lastIndex) {
-                    val button = numberButtons[index]
-                    button.setOnClickListener {
-                        lifecycleScope.launchMAIN {
-                            button.isEnabled = false
-                            viewModel.addCharToBalance("$index")
-                            (it as TextView).tapOn()
-                            button.isEnabled = true
-                        }
-                    }
-                }
+    /**
+     * Настраивает обработку нажатий на цифровую клавиатуру.
+     */
+    private fun setupNumberPad() {
+        val numberButtons = listOf(
+            binding.button0,
+            binding.button1,
+            binding.button2,
+            binding.button3,
+            binding.button4,
+            binding.button5,
+            binding.button6,
+            binding.button7,
+            binding.button8,
+            binding.button9,
+        )
 
-                buttonDot.setOnClickListener {
-                    lifecycleScope.launchMAIN {
-                        buttonDot.isEnabled = false
-                        viewModel.addCharToBalance(".")
-                        (it as TextView).tapOn()
-                        buttonDot.isEnabled = true
-                    }
+        numberButtons.forEachIndexed { index, button ->
+            button.setOnClickListener {
+                lifecycleScope.launchMAIN {
+                    button.isEnabled = false
+                    viewModel.addCharToBalance("$index")
+                    (it as TextView).tapOn()
+                    button.isEnabled = true
                 }
+            }
+        }
 
-                backspace.setOnClickListener {
-                    lifecycleScope.launchMAIN {
-                        backspace.isEnabled = false
-                        viewModel.removeLastCharFromBalance()
-                        backspace.isEnabled = true
-                    }
-                }
+        binding.buttonDot.setOnClickListener {
+            lifecycleScope.launchMAIN {
+                binding.buttonDot.isEnabled = false
+                viewModel.addCharToBalance(".")
+                (it as TextView).tapOn()
+                binding.buttonDot.isEnabled = true
+            }
+        }
+
+        binding.backspace.setOnClickListener {
+            lifecycleScope.launchMAIN {
+                binding.backspace.isEnabled = false
+                viewModel.removeLastCharFromBalance()
+                binding.backspace.isEnabled = true
             }
         }
     }
 
-
+    /**
+     * Создаёт и настраивает диалоговое окно.
+     * Изменяет цвет навигационной панели в зависимости от текущей темы устройства.
+     */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener {
-            val window = dialog.window
-            if (window != null) {
+            dialog.window?.let { window ->
                 window.navigationBarColor = ContextCompat.getColor(
                     requireContext(),
                     if (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
@@ -141,6 +148,9 @@ internal class RefillAccountDialog : CustomBottomSheetDialog() {
         return dialog
     }
 
+    /**
+     * Создаёт представление диалогового окна.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -151,7 +161,9 @@ internal class RefillAccountDialog : CustomBottomSheetDialog() {
         return binding.root
     }
 
-
+    /**
+     * Закрывает диалоговое окно.
+     */
     fun cancel() {
         dismiss()
     }

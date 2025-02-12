@@ -22,6 +22,10 @@ import ru.surf.learn2invest.presentation.utils.formatAsPrice
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.priceChangesStr
 
+/**
+ * [ViewModel] для фрагмента [AssetOverviewFragment], отвечающий за логику получения и обновления данных актива.
+ * Загружает данные для графика, рыночной капитализации и информации о монете.
+ */
 internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val getCoinHistoryUseCase: GetCoinHistoryUseCase,
     private val getCoinReviewUseCase: GetCoinReviewUseCase,
@@ -36,6 +40,10 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val _formattedPriceFlow = MutableStateFlow(0f)
     val formattedMarketCapFlow = _formattedMarketCapFlow.asStateFlow()
     val formattedPriceFlow = _formattedPriceFlow.asStateFlow()
+
+    /**
+     * Поток, собирающий данные для отображения информации о монете
+     */
     val coinInfoFlow =
         combine(formattedPriceFlow, getBySymbolAssetInvestUseCase.invoke(symbol)) { price, asset ->
             if (asset != null) {
@@ -48,8 +56,9 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
             } else CoinInfoState.EmptyResult
         }
 
-
-
+    /**
+     * Обновление данных для графика и отображение рыночной капитализации и цены.
+     */
     private suspend fun updateChartData(coinResponse: ResponseResult.Success<AugmentedCoinReview>) {
         data = if (data.isNotEmpty()) {
             data.subList(0, data.lastIndex)
@@ -65,6 +74,9 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
         chartHelper.updateData(data)
     }
 
+    /**
+     * Загрузка исторических данных для актива и обновление графика.
+     */
     fun loadChartData() {
         viewModelScope.launchIO {
             val response = getCoinHistoryUseCase(id)
@@ -80,6 +92,9 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Запуск реального обновления данных с интервалом в 5 секунд.
+     */
     fun startRealTimeUpdate() {
         realTimeUpdateJob = viewModelScope.launchIO {
             while (true) {
@@ -90,7 +105,9 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
         }
     }
 
-
+    /**
+     * Остановка работы с реальными данными.
+     */
     fun stopRealTimeUpdateJob() {
         realTimeUpdateJob?.cancel()
         realTimeUpdateJob = null
@@ -98,6 +115,13 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
+        /**
+         * Создание экземпляра [AssetOverViewFragmentViewModel]
+         *
+         * @param id Идентификатор актива
+         * @param symbol Символ актива
+         * @return Новый экземпляр [AssetOverViewFragmentViewModel]
+         */
         fun createAssetOverViewFragmentViewModel(
             @Assisted("id") id: String,
             @Assisted("symbol") symbol: String,

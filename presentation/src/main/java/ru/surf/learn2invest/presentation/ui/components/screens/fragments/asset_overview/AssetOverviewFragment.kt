@@ -25,7 +25,8 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * Фрагмент обзора актива в [AssetReviewActivity][ru.surf.learn2invest.ui.components.screens.fragments.asset_review.AssetReviewActivity]
+ * Фрагмент, отображающий обзор актива, включая график и финансовую информацию.
+ * Использует [AssetOverViewFragmentViewModel] для получения данных и отображения их на экране.
  */
 @AndroidEntryPoint
 internal class AssetOverviewFragment : BaseResFragment() {
@@ -43,8 +44,7 @@ internal class AssetOverviewFragment : BaseResFragment() {
                 ?: throw NoArgException(
                     AssetConstants.SYMBOL.key
                 )),
-
-            )
+        )
     }
 
     override fun onCreateView(
@@ -53,9 +53,13 @@ internal class AssetOverviewFragment : BaseResFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentAssetOverviewBinding.inflate(inflater, container, false)
+
+        // Настройка и загрузка данных для графика
         viewModel.chartHelper = LineChartHelper(requireContext(), Last7DaysFormatter())
         viewModel.chartHelper.setupChart(binding.chart)
         viewModel.loadChartData()
+
+        // Сбор данных о рыночной капитализации и форматирование их для отображения
         lifecycleScope.launchMAIN {
             viewModel.formattedMarketCapFlow.collect {
                 binding.capitalisation.text = NumberFormat.getInstance(Locale.US).apply {
@@ -63,12 +67,15 @@ internal class AssetOverviewFragment : BaseResFragment() {
                 }.format(it).getWithCurrency()
             }
         }
+
+        // Сбор данных о цене и форматирование их для отображения
         lifecycleScope.launchMAIN {
             viewModel.formattedPriceFlow.collect {
                 binding.price.text = it.formatAsPrice(8).getWithCurrency()
             }
         }
 
+        // Сбор и отображение информации о монете
         lifecycleScope.launchMAIN {
             viewModel.coinInfoFlow.collect { state ->
                 Log.d("state", "$state")
@@ -85,17 +92,18 @@ internal class AssetOverviewFragment : BaseResFragment() {
             }
         }
 
+        // Определение темы (темная или светлая)
         val isDarkTheme =
             resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         val accentColor =
             getColorRes(if (isDarkTheme) R.color.accent_background_dark else R.color.accent_background)
 
+        // Установка фона для корневого элемента
         binding.coin.root.setCardBackgroundColor(accentColor)
 
         return binding.root
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -108,6 +116,13 @@ internal class AssetOverviewFragment : BaseResFragment() {
     }
 
     companion object {
+        /**
+         * Создание нового экземпляра фрагмента с параметрами для ID и символа актива.
+         *
+         * @param id Идентификатор актива
+         * @param symbol Символ актива
+         * @return Новый экземпляр [AssetOverviewFragment]
+         */
         fun newInstance(id: String, symbol: String): AssetOverviewFragment {
             Log.d("state", "id=$id symbol=$symbol")
             val fragment = AssetOverviewFragment()

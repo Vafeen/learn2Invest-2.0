@@ -18,7 +18,7 @@ import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.reset_stats
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 
 /**
- * Фрагмент профиля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
+ * Фрагмент профиля в [HostActivity][ru.surf.learn2invest.presentation.ui.components.screens.host.HostActivity]
  */
 @AndroidEntryPoint
 internal class ProfileFragment : Fragment() {

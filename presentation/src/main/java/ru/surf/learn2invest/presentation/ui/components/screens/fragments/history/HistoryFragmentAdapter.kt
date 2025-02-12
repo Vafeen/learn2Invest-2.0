@@ -22,6 +22,10 @@ import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import javax.inject.Inject
 
+/**
+ * Адаптер для отображения списка транзакций в [HistoryFragment].
+ * Используется для отображения данных транзакций, включая иконки монет и другую информацию.
+ */
 internal class HistoryFragmentAdapter @Inject constructor(
     @ActivityContext var context: Context,
     private val loadCoinIconUseCase: LoadCoinIconUseCase,
@@ -46,7 +50,6 @@ internal class HistoryFragmentAdapter @Inject constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.coin_item, parent, false))
-
 
     override fun getItemCount(): Int = data.size
 
@@ -84,6 +87,4 @@ internal class HistoryFragmentAdapter @Inject constructor(
             }
         }
     }
-
-
 }

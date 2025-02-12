@@ -34,6 +34,20 @@ import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 
+/**
+ * ViewModel для управления состоянием портфеля пользователя в приложении.
+ * Отвечает за получение данных о балансе активов, их изменениях, а также за обновление
+ * данных о ценах активов и вычисление изменений в портфеле.
+ *
+ * @param profileManager Менеджер профиля пользователя, который предоставляет доступ к данным
+ *                       профиля, таким как баланс активов и фиатный баланс.
+ * @param getAllAssetInvestUseCase UseCase для получения всех активов, в которые был сделан вклад.
+ * @param getAllAssetBalanceHistoryUseCase UseCase для получения истории баланса активов пользователя.
+ * @param insertAssetBalanceHistoryUseCase UseCase для вставки данных о балансе активов в историю.
+ * @param insertByLimitAssetBalanceHistoryUseCase UseCase для вставки данных о балансе активов с ограничением.
+ * @param getCoinReviewUseCase UseCase для получения данных о текущей цене актива.
+ * @param getBySymbolAssetInvestUseCase UseCase для получения информации о конкретном активе по его символу.
+ */
 @HiltViewModel
 internal class PortfolioFragmentViewModel @Inject constructor(
     private val profileManager: ProfileManager,
@@ -45,45 +59,65 @@ internal class PortfolioFragmentViewModel @Inject constructor(
     private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
 ) :
     ViewModel() {
+
+    // Константа для ограничения размера истории баланса
     private val HISTORY_LIMIT_SIZE = 7
 
+    // Состояние данных графика активов
     private val _chartData = MutableStateFlow<List<Entry>>(emptyList())
     val chartData: StateFlow<List<Entry>> = _chartData
+
+    // Баланс активов пользователя
     private val assetBalance = profileManager.profileFlow
-        .map { profile ->
-            profile.assetBalance
-        }.stateIn(viewModelScope, started = SharingStarted.Lazily, 0f)
+        .map { profile -> profile.assetBalance }
+        .stateIn(viewModelScope, started = SharingStarted.Lazily, 0f)
 
+    // Баланс фиатных средств пользователя
     val fiatBalance: Flow<Float> = profileManager.profileFlow
-        .map { profile ->
-            profile.fiatBalance
-        }.stateIn(viewModelScope, started = SharingStarted.Lazily, 0f)
+        .map { profile -> profile.fiatBalance }
+        .stateIn(viewModelScope, started = SharingStarted.Lazily, 0f)
 
+    // Общий баланс (активы + фиат)
     val totalBalance: Flow<Float> =
         combine(assetBalance, fiatBalance) { assetBalance, fiatBalance ->
             assetBalance + fiatBalance
         }
+
+    // Список активов
     val assetsFlow: Flow<List<AssetInvest>> = getAllAssetInvestUseCase()
         .flowOn(Dispatchers.IO)
-        .onEach { assets ->
-            loadPriceChanges(assets)
-        }
+        .onEach { assets -> loadPriceChanges(assets) }
 
+    // Изменения цен активов
     private val _priceChanges = MutableStateFlow<Map<String, Float>>(emptyMap())
     val priceChanges: StateFlow<Map<String, Float>> get() = _priceChanges
 
+    // Процентное изменение портфеля
     private val _portfolioChangePercentage = MutableStateFlow(0f)
     val portfolioChangePercentage: StateFlow<Float> get() = _portfolioChangePercentage
+
+    // Задача для обновления данных в реальном времени
     private var realTimeUpdateJob: Job? = null
+
+    /**
+     * Обновляет данные портфеля, включая баланс и цены активов.
+     */
     suspend fun refreshData() {
         checkAndUpdateBalanceHistory()
         loadPriceChanges(getAllAssetInvestUseCase().first())
     }
 
+    /**
+     * Получает даты всех записей в истории баланса активов.
+     *
+     * @return Список дат всех записей истории баланса активов.
+     */
     suspend fun getAssetBalanceHistoryDates(): List<Date> =
         getAllAssetBalanceHistoryUseCase().first().map { it.date }
 
-
+    /**
+     * Запускает периодическое обновление данных о ценах активов.
+     */
     fun startUpdatingPriceFLow() {
         realTimeUpdateJob = viewModelScope.launchIO {
             while (true) {
@@ -93,11 +127,17 @@ internal class PortfolioFragmentViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Останавливает обновление данных о ценах активов.
+     */
     fun stopUpdatingPriceFlow() {
         realTimeUpdateJob?.cancel()
         realTimeUpdateJob = null
     }
 
+    /**
+     * Обновляет данные графика на основе истории баланса активов.
+     */
     private suspend fun refreshChartData() {
         _chartData.value = getAllAssetBalanceHistoryUseCase().first()
             .mapIndexed { index, assetBalanceHistory ->
@@ -105,23 +145,27 @@ internal class PortfolioFragmentViewModel @Inject constructor(
             }
     }
 
+    /**
+     * Проверяет и обновляет историю баланса активов, если необходимо.
+     */
     private suspend fun checkAndUpdateBalanceHistory() {
-        val today = Calendar.getInstance()
-        today.set(Calendar.HOUR_OF_DAY, 0)
-        today.set(Calendar.MINUTE, 0)
-        today.set(Calendar.SECOND, 0)
-        today.set(Calendar.MILLISECOND, 0)
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
 
         val todayDate = today.time
 
         val todayBalanceHistory = getAllAssetBalanceHistoryUseCase().first().find {
-            val historyDate = Calendar.getInstance()
-            historyDate.time = it.date
-            historyDate.set(Calendar.HOUR_OF_DAY, 0)
-            historyDate.set(Calendar.MINUTE, 0)
-            historyDate.set(Calendar.SECOND, 0)
-            historyDate.set(Calendar.MILLISECOND, 0)
-
+            val historyDate = Calendar.getInstance().apply {
+                time = it.date
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
             historyDate.time == todayDate
         }
 
@@ -142,6 +186,11 @@ internal class PortfolioFragmentViewModel @Inject constructor(
         refreshChartData()
     }
 
+    /**
+     * Загружает изменения цен для всех активов.
+     *
+     * @param assets Список активов для которых необходимо обновить данные о ценах.
+     */
     private suspend fun loadPriceChanges(assets: List<AssetInvest>) {
         val priceChanges = mutableMapOf<String, Float>()
         var totalCurrentValue = 0f
@@ -157,7 +206,6 @@ internal class PortfolioFragmentViewModel @Inject constructor(
                 getBySymbolAssetInvestUseCase(asset.symbol).first()?.let {
                     initialInvestment += it.coinPrice * asset.amount
                 }
-
             }
         }
         profileManager.updateProfile {
@@ -169,6 +217,12 @@ internal class PortfolioFragmentViewModel @Inject constructor(
         calculatePortfolioChangePercentage(totalCurrentValue, initialInvestment)
     }
 
+    /**
+     * Вычисляет процентное изменение портфеля.
+     *
+     * @param totalCurrentValue Общая текущая стоимость активов.
+     * @param initialInvestment Начальная сумма инвестиций.
+     */
     private suspend fun calculatePortfolioChangePercentage(
         totalCurrentValue: Float,
         initialInvestment: Float

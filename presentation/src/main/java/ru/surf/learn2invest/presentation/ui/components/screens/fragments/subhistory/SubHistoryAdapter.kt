@@ -18,19 +18,29 @@ import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import javax.inject.Inject
 
+/**
+ * Адаптер для отображения истории сделок с криптовалютой в RecyclerView.
+ * В этом адаптере используются такие данные, как имя монеты, ее символ,
+ * цена сделки и количество.
+ */
 internal class SubHistoryAdapter @Inject constructor(
-    private val loadCoinIconUseCase: LoadCoinIconUseCase,
-    @ActivityContext var context: Context,
+    private val loadCoinIconUseCase: LoadCoinIconUseCase, // Используется для загрузки иконки монеты
+    @ActivityContext var context: Context, // Контекст активности для получения цветов и других ресурсов
 ) : RecyclerView.Adapter<SubHistoryAdapter.ViewHolder>() {
+
+    // Список данных о транзакциях
     var data: List<Transaction> = listOf()
         set(value) {
             val oldList = field
             val diffCallback = TransactionAdapterDiffCallback(oldList, value)
             val diffs = DiffUtil.calculateDiff(diffCallback)
             field = value
-            diffs.dispatchUpdatesTo(this)
+            diffs.dispatchUpdatesTo(this) // Обновление адаптера с использованием diffing
         }
 
+    /**
+     * ViewHolder для одного элемента списка.
+     */
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val coinIcon: ImageView = itemView.findViewById(R.id.coin_icon)
         val coinTopTextInfo: TextView = itemView.findViewById(R.id.coin_name)
@@ -47,12 +57,17 @@ internal class SubHistoryAdapter @Inject constructor(
 
     override fun getItemCount(): Int = data.size
 
+    /**
+     * Заполнение данных в view на основе позиции в списке.
+     */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.apply {
             coinTopTextInfo.text =
                 if (data[position].name.length > 12) "${data[position].name.substring(0..12)}..."
                 else data[position].name
             coinBottomTextInfo.text = data[position].amount.toString()
+
+            // Обработка данных в зависимости от типа транзакции (покупка или продажа)
             if (data[position].transactionType == TransactionsType.Sell) {
                 coinTopNumericInfo.text = "+ ${data[position].dealPrice.getWithCurrency()}"
                 coinTopNumericInfo.setTextColor(coinBottomNumericInfo.context.getColor(R.color.increase))
@@ -69,8 +84,7 @@ internal class SubHistoryAdapter @Inject constructor(
                 )
             }
             coinBottomNumericInfo.text = "${data[position].coinPrice}$"
-            loadCoinIconUseCase.invoke(coinIcon, data[position].symbol)
+            loadCoinIconUseCase.invoke(coinIcon, data[position].symbol) // Загрузка иконки монеты
         }
     }
-
 }

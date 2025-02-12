@@ -14,7 +14,14 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import ru.surf.learn2invest.presentation.R
 
 /**
- * Класс, который отвечает за внешнее отображение графика и обновление данных по точкам
+ * Класс, который отвечает за настройку и обновление данных графика.
+ *
+ * Этот класс инкапсулирует логику настройки графика с использованием библиотеки MPAndroidChart. Он
+ * позволяет задавать внешний вид графика, а также обновлять данные, отображаемые на графике, в
+ * зависимости от новых данных.
+ *
+ * @param context Контекст для доступа к ресурсам и настройкам приложения.
+ * @param dateFormatterStrategy Стратегия форматирования дат для оси X графика.
  */
 internal class LineChartHelper(
     private val context: Context,
@@ -22,6 +29,14 @@ internal class LineChartHelper(
 ) {
     private lateinit var chart: LineChart
 
+    /**
+     * Настройка графика с заданными параметрами.
+     *
+     * Этот метод инициализирует график, устанавливая настройки для отображения данных, а также
+     * форматирования оси X, оси Y и других параметров визуализации.
+     *
+     * @param lineChart Экземпляр графика, который будет настроен.
+     */
     fun setupChart(lineChart: LineChart) {
         this.chart = lineChart
         lineChart.apply {
@@ -67,6 +82,14 @@ internal class LineChartHelper(
         }
     }
 
+    /**
+     * Обновление данных графика с новыми точками.
+     *
+     * Этот метод обновляет данные на графике, изменяя диапазоны осей X и Y в зависимости от
+     * новых данных. Он также применяет стиль к графику, учитывая ночной или дневной режим.
+     *
+     * @param data Новый список данных (точек), который будет отображаться на графике.
+     */
     fun updateData(data: List<Entry>) {
         val lineDataSet = LineDataSet(data, "List")
         val lineData = LineData(lineDataSet)
@@ -95,6 +118,14 @@ internal class LineChartHelper(
         }
     }
 
+    /**
+     * Применяет стиль к набору данных линии.
+     *
+     * Этот метод настраивает внешний вид линии на графике, в том числе цвет, толщину линии,
+     * включение/выключение индикаторов и заполнение области под графиком.
+     *
+     * @param lineDataSet Набор данных линии, которому применяются стили.
+     */
     private fun styleLineDataSet(lineDataSet: LineDataSet) = lineDataSet.apply {
         color = ContextCompat.getColor(
             context,

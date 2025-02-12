@@ -25,15 +25,13 @@ import ru.surf.learn2invest.presentation.utils.textListener
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import javax.inject.Inject
 
-
 /**
- * Диалог покупки актива
- * @param dialogContext [Контекст открытия диалога]
- * @param id [ID coin'а]
- * @param name [Имя (Bitcoin)]
- * @param symbol [Абревиатура (BTC)]
+ * Диалог покупки актива.
+ *
+ * Отображает окно покупки актива, позволяя пользователю вводить количество лотов,
+ * взаимодействовать с кнопками увеличения/уменьшения лотов, вводить торговый пароль,
+ * а также выполнять покупку актива при наличии достаточного баланса.
  */
-
 @AndroidEntryPoint
 internal class BuyDialog : CustomBottomSheetDialog() {
     private lateinit var binding: DialogBuyBinding
@@ -41,6 +39,11 @@ internal class BuyDialog : CustomBottomSheetDialog() {
 
     @Inject
     lateinit var factory: BuyDialogViewModel.Factory
+
+    /**
+     * ViewModel для работы с данными о покупке актива.
+     * Инициализируется с обязательными параметрами (ID, имя, символ актива).
+     */
     private val viewModel by viewModelCreator {
         val id = arguments?.getString(ID_KEY) ?: throw NoArgException(ID_KEY)
         val name = arguments?.getString(NAME_KEY) ?: throw NoArgException(NAME_KEY)
@@ -56,6 +59,9 @@ internal class BuyDialog : CustomBottomSheetDialog() {
         return dialog
     }
 
+    /**
+     * Обновляет цвет навигационной панели в зависимости от темы приложения.
+     */
     private fun updateNavigationBarColor(dialog: BottomSheetDialog) {
         val window = dialog.window
         if (window != null) {
@@ -79,6 +85,9 @@ internal class BuyDialog : CustomBottomSheetDialog() {
         return binding.root
     }
 
+    /**
+     * Инициализация обработчиков событий для элементов интерфейса.
+     */
     private fun initListeners() {
         binding.apply {
             lifecycleScope.launchMAIN {
@@ -86,7 +95,6 @@ internal class BuyDialog : CustomBottomSheetDialog() {
                     balanceNum.text = it.fiatBalance.getWithCurrency()
                 }
             }
-
 
             buttonBuy.isVisible = false
 
@@ -99,25 +107,17 @@ internal class BuyDialog : CustomBottomSheetDialog() {
 
             imageButtonPlus.setOnClickListener {
                 lifecycleScope.launchIO {
-                    withContextMAIN {
-                        imageButtonPlus.isEnabled = false
-                    }
+                    withContextMAIN { imageButtonPlus.isEnabled = false }
                     viewModel.plusLot()
-                    withContextMAIN {
-                        imageButtonPlus.isEnabled = true
-                    }
+                    withContextMAIN { imageButtonPlus.isEnabled = true }
                 }
             }
 
             imageButtonMinus.setOnClickListener {
                 lifecycleScope.launchIO {
-                    withContextMAIN {
-                        imageButtonMinus.isEnabled = false
-                    }
+                    withContextMAIN { imageButtonMinus.isEnabled = false }
                     viewModel.minusLot()
-                    withContextMAIN {
-                        imageButtonMinus.isEnabled = true
-                    }
+                    withContextMAIN { imageButtonMinus.isEnabled = true }
                 }
             }
 
@@ -130,25 +130,25 @@ internal class BuyDialog : CustomBottomSheetDialog() {
                     }
                 })
             )
+
             lifecycleScope.launchMAIN {
                 viewModel.profileFlow.collect {
                     enteringNumberOfLots.isEnabled = it.fiatBalance != 0f
                 }
             }
-//            val mutex = Mutex()
-            tradingPassword.isVisible =
-                if (viewModel.profileFlow.value.tradingPasswordHash != null && viewModel.profileFlow.value.fiatBalance != 0f) {
-                    tradingPasswordTV.addTextChangedListener(
-                        textListener(afterTextChanged = {
-                            lifecycleScope.launchIO {
-//                                mutex.withLock {
-                                viewModel.setTradingPassword(binding.tradingPassword.editText?.text.toString())
-//                                }
-                            }
-                        })
-                    )
-                    true
-                } else false
+
+            tradingPassword.isVisible = viewModel.profileFlow.value.tradingPasswordHash != null &&
+                    viewModel.profileFlow.value.fiatBalance != 0f
+
+            if (tradingPassword.isVisible) {
+                tradingPasswordTV.addTextChangedListener(
+                    textListener(afterTextChanged = {
+                        lifecycleScope.launchIO {
+                            viewModel.setTradingPassword(binding.tradingPassword.editText?.text.toString())
+                        }
+                    })
+                )
+            }
 
             lifecycleScope.launchMAIN {
                 viewModel.stateFlow.collect { state ->
@@ -157,18 +157,15 @@ internal class BuyDialog : CustomBottomSheetDialog() {
                     val willPrice = lotsData.lots * coin.coinPrice
                     val fiatBalance = viewModel.profileFlow.value.fiatBalance
                     when {
-                        (viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
-                            viewModel.profileFlow.value,
-                            state.tradingPassword
-                        ) && lotsData.lots > 0f && fiatBalance != 0f &&
-                                willPrice <= fiatBalance
-                                ) -> {
-                            binding.buttonBuy.isVisible = true
+                        viewModel.isTrueTradingPasswordOrIsNotDefinedUseCase.invoke(
+                            viewModel.profileFlow.value, state.tradingPassword
+                        ) && lotsData.lots > 0f && fiatBalance != 0f && willPrice <= fiatBalance -> {
+                            buttonBuy.isVisible = true
                             result.text =
-                                "${requireContext().getString(R.string.itog)} ${willPrice.getWithCurrency()} "
+                                "${requireContext().getString(R.string.itog)} ${willPrice.getWithCurrency()}"
                         }
 
-                        (willPrice > fiatBalance || fiatBalance == 0f) -> {
+                        willPrice > fiatBalance || fiatBalance == 0f -> {
                             buttonBuy.isVisible = false
                             result.text =
                                 requireContext().getString(R.string.not_enough_money_for_buy)
@@ -179,37 +176,36 @@ internal class BuyDialog : CustomBottomSheetDialog() {
                             result.text = ""
                         }
                     }
-                    val maxQuantity = maxQuantity(price = coin.coinPrice, balance = state.balance)
+                    val maxQuantity = maxQuantity(coin.coinPrice, state.balance)
                     maxQuantityNumber.text = "$maxQuantity"
-                    imageButtonPlus.isVisible =
-                        lotsData.lots < maxQuantity
+                    imageButtonPlus.isVisible = lotsData.lots < maxQuantity
                     imageButtonMinus.isVisible = lotsData.lots > 0
-
-                    binding.priceNumber.text = state.coin.coinPrice.getWithCurrency()
-                }
-            }
-            lifecycleScope.launchMAIN {
-                viewModel.lotsFlow.collect { lotsData ->
-                    if (lotsData.isUpdateTVNeeded) binding.enteringNumberOfLots.setText("${lotsData.lots}")
-
+                    priceNumber.text = state.coin.coinPrice.getWithCurrency()
                 }
             }
         }
     }
 
+    /**
+     * Закрывает диалог и останавливает поток обновления цен.
+     */
     override fun dismiss() {
         super.dismiss()
         viewModel.stopUpdatingPriceFlow()
     }
 
+    /**
+     * Выполняет покупку актива.
+     */
     private suspend fun buy() {
-        val price =
-            binding.priceNumber.text.toString().getFloatFromStringWithCurrency()
+        val price = binding.priceNumber.text.toString().getFloatFromStringWithCurrency()
         val amountCurrent = binding.enteringNumberOfLots.text.toString().toInt()
-        if (price != null) viewModel.buy(amountCurrent = amountCurrent, price = price)
+        if (price != null) viewModel.buy(price, amountCurrent)
     }
 
-
+    /**
+     * Рассчитывает максимальное количество лотов, доступных для покупки.
+     */
     private fun maxQuantity(price: Float, balance: Float): Int = (balance / price).toInt()
 
     override fun onAttach(context: Context) {
@@ -225,11 +221,11 @@ internal class BuyDialog : CustomBottomSheetDialog() {
         private const val ID_KEY = "ID_KEY"
         private const val NAME_KEY = "NAME_KEY"
         private const val SYMBOL_KEY = "SYMBOL_KEY"
-        fun newInstance(
-            id: String,
-            name: String,
-            symbol: String,
-        ) = BuyDialog().apply {
+
+        /**
+         * Создаёт новый экземпляр диалога с переданными параметрами актива.
+         */
+        fun newInstance(id: String, name: String, symbol: String) = BuyDialog().apply {
             arguments = bundleOf(ID_KEY to id, NAME_KEY to name, SYMBOL_KEY to symbol)
         }
     }

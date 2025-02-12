@@ -31,7 +31,6 @@ import javax.inject.Inject
 /**
  * Фрагмент портфеля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
-
 @AndroidEntryPoint
 internal class PortfolioFragment : BaseResFragment() {
     private lateinit var binding: FragmentPortfolioBinding
@@ -41,9 +40,11 @@ internal class PortfolioFragment : BaseResFragment() {
     @Inject
     lateinit var adapter: PortfolioAdapter
 
+    // Создание представления фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
+        // Настройка цвета статус-бара
         activity?.apply {
             setStatusBarColor(
                 window,
@@ -53,9 +54,13 @@ internal class PortfolioFragment : BaseResFragment() {
             )
         }
 
+        // Инициализация привязки для фрагмента
         binding = FragmentPortfolioBinding.inflate(inflater, container, false)
 
+        // Настройка RecyclerView для отображения активов
         setupAssetsRecyclerView()
+
+        // Подписка на изменение общего баланса
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             viewModel.totalBalance.collect { balance ->
                 binding.balanceText.text = balance.getWithCurrency()
@@ -65,12 +70,14 @@ internal class PortfolioFragment : BaseResFragment() {
             }
         }
 
+        // Подписка на изменение баланса счета в фиатной валюте
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             viewModel.fiatBalance.collect { balance ->
                 binding.accountFunds.text = balance.getWithCurrency()
             }
         }
 
+        // Настройка графика с историей баланса активов
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             val dates = viewModel.getAssetBalanceHistoryDates()
             val dateFormatterStrategy = AssetBalanceHistoryFormatter(dates)
@@ -81,10 +88,12 @@ internal class PortfolioFragment : BaseResFragment() {
             }
         }
 
+        // Кнопка пополнения счета
         binding.topUpBtn.setOnClickListener {
             RefillAccountDialog().showDialog(parentFragmentManager)
         }
 
+        // Подписка на изменения активов и обновление списка
         viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.assetsFlow.collect { assets ->
                 adapter.assets = assets
@@ -93,18 +102,22 @@ internal class PortfolioFragment : BaseResFragment() {
             }
         }
 
+        // Подписка на изменения цен активов и обновление данных адаптера
         viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.priceChanges.collect { priceChanges ->
                 adapter.priceChanges = priceChanges
             }
         }
 
+        // Подписка на изменение процента изменения портфеля
         viewLifecycleOwner.lifecycleScope.launchMAIN {
             viewModel.portfolioChangePercentage.collect { percentage ->
                 binding.percent.apply {
+                    // Форматирование и установка текста процента
                     text = if (percentage == 0f) "%.2f%%".format(Locale.getDefault(), percentage)
                     else "%+.2f%%".format(Locale.getDefault(), percentage)
 
+                    // Установка фона в зависимости от изменения
                     background = when {
                         percentage > 0 -> getDrawableRes(R.drawable.percent_increase_background)
 
@@ -116,12 +129,15 @@ internal class PortfolioFragment : BaseResFragment() {
             }
         }
 
+        // Инициализация слушателей для бокового меню
         initDrawerListeners()
 
+        // Открытие бокового меню по нажатию на кнопку
         binding.imageButton.setOnClickListener {
             openDrawer()
         }
 
+        // Закрытие бокового меню при прикосновении к экрану
         binding.drawerLayout.setOnTouchListener { _, _ ->
             closeDrawer()
             false
@@ -130,24 +146,27 @@ internal class PortfolioFragment : BaseResFragment() {
         return binding.root
     }
 
+    // Метод для старта обновления цен при возобновлении видимости фрагмента
     override fun onResume() {
         super.onResume()
         viewModel.startUpdatingPriceFLow()
     }
 
+    // Метод для остановки обновления цен при скрытии фрагмента
     override fun onStop() {
         super.onStop()
         viewModel.stopUpdatingPriceFlow()
         closeDrawer()
     }
 
-
+    // Настройка RecyclerView для отображения активов
     private fun setupAssetsRecyclerView() {
         binding.assets.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.assets.adapter = adapter
     }
 
+    // Открытие бокового меню
     private fun openDrawer() {
         activity?.apply {
             val drawer = binding.drawerLayout
@@ -158,6 +177,7 @@ internal class PortfolioFragment : BaseResFragment() {
         }
     }
 
+    // Закрытие бокового меню
     private fun closeDrawer() {
         activity?.apply {
             val drawer = binding.drawerLayout
@@ -168,31 +188,33 @@ internal class PortfolioFragment : BaseResFragment() {
         }
     }
 
+    // Инициализация слушателей для бокового меню
     private fun initDrawerListeners() {
         binding.apply {
 
+            // Кнопка "Написать нам"
             contactUs.setOnClickListener {
-                // написать нам
                 startActivity(Intent(Intent.ACTION_SENDTO).apply {
                     data = Uri.parse("mailto: ${DevStrLink.CHERY}")
                 })
             }
 
+            // Кнопка для перехода к исходному коду
             code.setOnClickListener {
-                // исходный код
                 openLink(DevStrLink.CODE)
             }
 
+            // Кнопка для перехода к макету в Figma
             figma.setOnClickListener {
-                // фигма
                 openLink(DevStrLink.FIGMA)
             }
 
+            // Отображение версии приложения
             versionCode.text = requireContext().getVersionName()
         }
     }
 
-
+    // Открытие внешней ссылки
     private fun openLink(link: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
     }

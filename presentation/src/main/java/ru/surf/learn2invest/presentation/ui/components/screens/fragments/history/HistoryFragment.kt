@@ -18,7 +18,8 @@ import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import javax.inject.Inject
 
 /**
- * Фрагмент истории сделок в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
+ * Фрагмент, отображающий историю сделок. Является частью экрана [ru.surf.learn2invest.presentation.ui.components.screens.host.HostActivity].
+ * В данном фрагменте отображается список транзакций пользователя.
  */
 @AndroidEntryPoint
 internal class HistoryFragment : BaseResFragment() {
@@ -43,7 +44,7 @@ internal class HistoryFragment : BaseResFragment() {
         }
 
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
-        binding.historyRecyclerview.layoutManager = LinearLayoutManager(this.requireContext())
+        binding.historyRecyclerview.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerview.adapter = adapter
         return binding.root
     }
